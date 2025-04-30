@@ -133,36 +133,8 @@ const WorkoutView = () => {
                       <TabsTrigger value="strength" onClick={() => setSelectedExerciseType("strength")}>
                         Strength
                       </TabsTrigger>
-                      <TabsTrigger value="cardio" onClick={() => setSelectedExerciseType("cardio")}>
-                        Cardio
-                      </TabsTrigger>
-                      <TabsTrigger value="flexibility" onClick={() => setSelectedExerciseType("flexibility")}>
-                        Flexibility
-                      </TabsTrigger>
                     </TabsList>
                     <TabsContent value="strength" className="mt-4 max-h-96 overflow-y-auto">
-                      <div className="space-y-2">
-                        {filteredExercises.map((exercise) => (
-                          <Card key={exercise.id} className="cursor-pointer hover:bg-muted/50">
-                            <CardHeader className="p-3" onClick={() => handleAddExercise(exercise)}>
-                              <CardTitle className="text-base">{exercise.name}</CardTitle>
-                            </CardHeader>
-                          </Card>
-                        ))}
-                      </div>
-                    </TabsContent>
-                    <TabsContent value="cardio" className="mt-4 max-h-96 overflow-y-auto">
-                      <div className="space-y-2">
-                        {filteredExercises.map((exercise) => (
-                          <Card key={exercise.id} className="cursor-pointer hover:bg-muted/50">
-                            <CardHeader className="p-3" onClick={() => handleAddExercise(exercise)}>
-                              <CardTitle className="text-base">{exercise.name}</CardTitle>
-                            </CardHeader>
-                          </Card>
-                        ))}
-                      </div>
-                    </TabsContent>
-                    <TabsContent value="flexibility" className="mt-4 max-h-96 overflow-y-auto">
                       <div className="space-y-2">
                         {filteredExercises.map((exercise) => (
                           <Card key={exercise.id} className="cursor-pointer hover:bg-muted/50">
@@ -316,36 +288,8 @@ const WorkoutView = () => {
                   <TabsTrigger value="strength" onClick={() => setSelectedExerciseType("strength")}>
                     Strength
                   </TabsTrigger>
-                  <TabsTrigger value="cardio" onClick={() => setSelectedExerciseType("cardio")}>
-                    Cardio
-                  </TabsTrigger>
-                  <TabsTrigger value="flexibility" onClick={() => setSelectedExerciseType("flexibility")}>
-                    Flexibility
-                  </TabsTrigger>
                 </TabsList>
                 <TabsContent value="strength" className="mt-4 max-h-96 overflow-y-auto">
-                  <div className="space-y-2">
-                    {filteredExercises.map((exercise) => (
-                      <Card key={exercise.id} className="cursor-pointer hover:bg-muted/50">
-                        <CardHeader className="p-3" onClick={() => handleAddExercise(exercise)}>
-                          <CardTitle className="text-base">{exercise.name}</CardTitle>
-                        </CardHeader>
-                      </Card>
-                    ))}
-                  </div>
-                </TabsContent>
-                <TabsContent value="cardio" className="mt-4 max-h-96 overflow-y-auto">
-                  <div className="space-y-2">
-                    {filteredExercises.map((exercise) => (
-                      <Card key={exercise.id} className="cursor-pointer hover:bg-muted/50">
-                        <CardHeader className="p-3" onClick={() => handleAddExercise(exercise)}>
-                          <CardTitle className="text-base">{exercise.name}</CardTitle>
-                        </CardHeader>
-                      </Card>
-                    ))}
-                  </div>
-                </TabsContent>
-                <TabsContent value="flexibility" className="mt-4 max-h-96 overflow-y-auto">
                   <div className="space-y-2">
                     {filteredExercises.map((exercise) => (
                       <Card key={exercise.id} className="cursor-pointer hover:bg-muted/50">

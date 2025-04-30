@@ -32,10 +32,10 @@ export const exercises: Exercise[] = [
   },
   {
     id: "5",
-    name: "Running",
-    type: "cardio",
-    muscleGroups: ["legs", "cardiovascular"],
-    instructions: "Maintain good posture, land midfoot, and keep a consistent pace."
+    name: "Pec Deck",
+    type: "strength",
+    muscleGroups: ["chest", "shoulders"],
+    instructions: "Sit on the machine with your back against the pad. Adjust the seat height so that your arms are at shoulder level. Grasp the handles and bring them together in front of you, then return to start."
   },
   {
     id: "6",
@@ -53,24 +53,24 @@ export const exercises: Exercise[] = [
   },
   {
     id: "8",
-    name: "Bicycle Crunch",
+    name: "Kickbacks",
     type: "strength",
-    muscleGroups: ["core", "obliques"],
-    instructions: "Lie on your back with hands behind head. Bring opposite elbow to opposite knee while extending the other leg."
+    muscleGroups: ["triceps", "shoulders"],
+    instructions: "Stand with feet shoulder-width apart, holding a dumbbell in each hand. Bend at the waist with a flat back, keeping elbows close to your body. Extend your arms back until they are straight, then return to start."
   },
   {
     id: "9",
-    name: "Jumping Rope",
-    type: "cardio",
-    muscleGroups: ["calves", "shoulders", "cardiovascular"],
-    instructions: "Jump with both feet, keeping jumps small and quick. Rotate the rope with wrists, not arms."
+    name: "Overhead Tricep Extension",
+    type: "strength",
+    muscleGroups: ["triceps", "shoulders"],
+    instructions: "Stand with feet shoulder-width apart, holding a dumbbell with both hands above your head. Keeping your elbows close to your ears, lower the weight behind your head, then press it back up."
   },
   {
     id: "10",
-    name: "Downward Dog",
-    type: "flexibility",
-    muscleGroups: ["hamstrings", "shoulders", "calves"],
-    instructions: "Start on hands and knees. Lift hips up and back, straightening legs and pressing chest toward thighs to form an inverted V shape."
+    name: "Shrugs",
+    type: "strength",
+    muscleGroups: ["traps", "shoulders"],
+    instructions: "Stand with feet shoulder-width apart, holding dumbbells at your sides. Raise your shoulders toward your ears as high as possible, then lower back down."
   },
   {
     id: "11",
@@ -141,6 +141,48 @@ export const exercises: Exercise[] = [
     type: "strength",
     muscleGroups: ["chest", "shoulders"],
     instructions: "Stand between two cable machines with handles at chest height. With arms extended, pull the handles forward and across your body, then slowly return to the starting position."
+  },
+  {
+    id: "21",
+    name: "Seated Row",
+    type: "strength",
+    muscleGroups: ["back", "biceps", "forearms"],
+    instructions: "Sit at a cable row machine with feet on the platform. Grasp the handle with both hands, keeping your back straight. Pull the handle toward your abdomen, squeezing your shoulder blades together, then return to start."
+  },
+  {
+    id: "22",
+    name: "Leg Curl",
+    type: "strength",
+    muscleGroups: ["hamstrings"],
+    instructions: "Lie face down on a leg curl machine with ankles under the pad. Curl your legs up toward your butt, then lower back to start."
+  },
+  {
+    id: "23",
+    name: "Calf Raise",
+    type: "strength",
+    muscleGroups: ["calves"],
+    instructions: "Stand on the edge of a step with heels hanging off. Raise your heels as high as possible, then lower them below the step level."
+  },
+  {
+    id: "24",
+    name: "Chest Fly",
+    type: "strength",
+    muscleGroups: ["chest", "shoulders"],
+    instructions: "Lie on a bench with dumbbells in each hand, arms extended above your chest. Lower the weights out to the sides in a wide arc, then bring them back together over your chest."
+  },
+  {
+    id: "25",
+    name: "Russian Twist",
+    type: "strength",
+    muscleGroups: ["core", "obliques"],
+    instructions: "Sit on the floor with knees bent and feet flat. Lean back slightly, holding a weight with both hands. Rotate your torso to one side, then the other, while keeping your core engaged."
+  },
+  {
+    id: "26",
+    name: "Preacher Curl",
+    type: "strength",
+    muscleGroups: ["biceps", "forearms"],
+    instructions: "Sit at a preacher curl bench with your upper arms resting on the pad. Hold a barbell or dumbbell with an underhand grip. Curl the weight up toward your shoulders, then lower with control."
   }
 ];
 

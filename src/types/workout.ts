@@ -1,5 +1,5 @@
 
-export type ExerciseType = 'strength' | 'cardio' | 'flexibility';
+export type ExerciseType = 'strength';
 
 export interface Exercise {
   id: string;

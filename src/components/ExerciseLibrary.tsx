@@ -73,8 +73,6 @@ const ExerciseLibrary = () => {
         <TabsList>
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="strength">Strength</TabsTrigger>
-          <TabsTrigger value="cardio">Cardio</TabsTrigger>
-          <TabsTrigger value="flexibility">Flexibility</TabsTrigger>
         </TabsList>
         <TabsContent value="all" className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -94,30 +92,6 @@ const ExerciseLibrary = () => {
           )}
         </TabsContent>
         <TabsContent value="strength" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredExercises.map((exercise) => (
-              <ExerciseCard
-                key={exercise.id}
-                exercise={exercise}
-                onSelect={setSelectedExercise}
-                onAdd={handleAddToWorkout}
-              />
-            ))}
-          </div>
-        </TabsContent>
-        <TabsContent value="cardio" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredExercises.map((exercise) => (
-              <ExerciseCard
-                key={exercise.id}
-                exercise={exercise}
-                onSelect={setSelectedExercise}
-                onAdd={handleAddToWorkout}
-              />
-            ))}
-          </div>
-        </TabsContent>
-        <TabsContent value="flexibility" className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredExercises.map((exercise) => (
               <ExerciseCard
