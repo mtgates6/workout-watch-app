@@ -51,12 +51,12 @@ const WorkoutView = () => {
       description: `${exercise.name} added to workout`,
     });
   };
-  const handleRemoveExercise = (exercise: Exercise) => {
-    removeExerciseFromWorkout(exercise);
+  const handleRemoveExercise = (exerciseId: String) => {
+    removeExerciseFromWorkout(exerciseId);
     setDialogOpen(false);
     toast({
       title: "Exercise Removed",
-      description: `${exercise.name} removed from workout`,
+      description: `The exercise removed from workout`,
     });
   };
 
@@ -168,11 +168,12 @@ const WorkoutView = () => {
                 <CardHeader className="bg-muted/30">
                   <CardTitle>{exerciseItem.exercise.name}</CardTitle>
                   <Button
-                    variant="link"
+                    variant="outline"
+                    size="sm"
                     className="text-red-500 hover:text-red-700"
-                    onClick={() => handleRemoveExercise(exerciseItem.exercise)}
+                    onClick={() => handleRemoveExercise(exerciseItem.id)}
                   >
-                    X
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </CardHeader>
                 <CardContent className="pt-4">

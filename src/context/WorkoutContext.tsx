@@ -9,7 +9,7 @@ interface WorkoutContextType {
   workoutSummary: WorkoutSummary;
   startWorkout: (name: string) => void;
   addExerciseToWorkout: (exercise: Exercise) => void;
-  removeExerciseFromWorkout: (exercise: Exercise) => void;
+  removeExerciseFromWorkout: (exerciseId: String) => void;
   addSetToExercise: (exerciseId: string) => void;
   removeSetFromExercise: (exerciseId: string, setId: string) => void;
   updateSet: (exerciseId: string, setId: string, updates: Partial<WorkoutSet>) => void;
@@ -127,12 +127,12 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   };
 
-  const removeExerciseFromWorkout = (exercise: Exercise) => {
+  const removeExerciseFromWorkout = (exerciseId : String) => {
     if (!activeWorkout) return;
       
       setActiveWorkout({
         ...activeWorkout,
-        exercises: activeWorkout.exercises.filter(ex => ex.exercise.id !== exercise.id),
+        exercises: activeWorkout.exercises.filter(ex => ex.id !== exerciseId),
       });
     }
 
