@@ -166,7 +166,7 @@ const WorkoutView = () => {
             {activeWorkout.exercises.map((exerciseItem) => (
               <Card key={exerciseItem.id}>
                 <CardHeader className="bg-muted/30 flex items-center justify-between p-4">
-                  <CardTitle className="flex items-center">{exerciseItem.exercise.name}
+                  <CardTitle className="flex items-center justify-between">{exerciseItem.exercise.name}
                     <Button
                     variant="outline"
                     size="icon"
