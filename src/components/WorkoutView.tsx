@@ -15,6 +15,7 @@ const WorkoutView = () => {
   const { 
     activeWorkout, 
     addExerciseToWorkout, 
+    removeExerciseFromWorkout,
     addSetToExercise,
     removeSetFromExercise, 
     updateSet, 
@@ -48,6 +49,14 @@ const WorkoutView = () => {
     toast({
       title: "Exercise Added",
       description: `${exercise.name} added to workout`,
+    });
+  };
+  const handleRemoveExercise = (exercise: Exercise) => {
+    removeExerciseFromWorkout(exercise);
+    setDialogOpen(false);
+    toast({
+      title: "Exercise Removed",
+      description: `${exercise.name} removed from workout`,
     });
   };
 
