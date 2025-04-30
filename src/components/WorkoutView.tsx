@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Button } from "@/components/ui/button";
@@ -8,12 +7,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { exercises } from "@/data/exercises";
 import { Exercise } from "@/types/workout";
-import { AlertCircle, CheckCircle2, Clock, Plus } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, Plus, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 
 const WorkoutView = () => {
-  const { activeWorkout, addExerciseToWorkout, addSetToExercise, updateSet, completeWorkout, cancelWorkout } = useWorkout();
+  const { 
+    activeWorkout, 
+    addExerciseToWorkout, 
+    addSetToExercise,
+    removeSetFromExercise, 
+    updateSet, 
+    completeWorkout, 
+    cancelWorkout 
+  } = useWorkout();
   const [selectedExerciseType, setSelectedExerciseType] = useState<string>("strength");
   const [dialogOpen, setDialogOpen] = useState(false);
   const { toast } = useToast();
@@ -46,6 +53,14 @@ const WorkoutView = () => {
 
   const handleAddSet = (exerciseId: string) => {
     addSetToExercise(exerciseId);
+  };
+
+  const handleRemoveSet = (exerciseId: string, setId: string) => {
+    removeSetFromExercise(exerciseId, setId);
+    toast({
+      title: "Set Removed",
+      description: "Set has been removed from the exercise",
+    });
   };
 
   const handleUpdateSet = (
@@ -173,7 +188,7 @@ const WorkoutView = () => {
                   <CardTitle>{exerciseItem.exercise.name}</CardTitle>
                 </CardHeader>
                 <CardContent className="pt-4">
-                  <div className="grid grid-cols-4 gap-4 text-sm font-medium mb-2">
+                  <div className="grid grid-cols-5 gap-4 text-sm font-medium mb-2">
                     <div>SET</div>
                     {exerciseItem.exercise.type === "strength" ? (
                       <>
@@ -192,10 +207,11 @@ const WorkoutView = () => {
                       </>
                     )}
                     <div className="text-right">DONE</div>
+                    <div className="text-right">ACTIONS</div>
                   </div>
                   <div className="space-y-2">
                     {exerciseItem.sets.map((set, index) => (
-                      <div key={set.id} className="grid grid-cols-4 gap-4 items-center py-1 border-t">
+                      <div key={set.id} className="grid grid-cols-5 gap-4 items-center py-1 border-t">
                         <div>{index + 1}</div>
                         {exerciseItem.exercise.type === "strength" ? (
                           <>
@@ -252,6 +268,17 @@ const WorkoutView = () => {
                             }
                           >
                             <CheckCircle2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="text-right">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-red-500 hover:text-red-700"
+                            onClick={() => handleRemoveSet(exerciseItem.id, set.id)}
+                            disabled={exerciseItem.sets.length <= 1}
+                          >
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>

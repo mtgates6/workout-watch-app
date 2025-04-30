@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Workout, WorkoutExercise, WorkoutSet, WorkoutSummary, Exercise } from "@/types/workout";
@@ -11,6 +10,7 @@ interface WorkoutContextType {
   startWorkout: (name: string) => void;
   addExerciseToWorkout: (exercise: Exercise) => void;
   addSetToExercise: (exerciseId: string) => void;
+  removeSetFromExercise: (exerciseId: string, setId: string) => void;
   updateSet: (exerciseId: string, setId: string, updates: Partial<WorkoutSet>) => void;
   completeWorkout: () => void;
   cancelWorkout: () => void;
@@ -126,6 +126,28 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   };
 
+  const removeSetFromExercise = (exerciseId: string, setId: string) => {
+    if (!activeWorkout) return;
+
+    setActiveWorkout({
+      ...activeWorkout,
+      exercises: activeWorkout.exercises.map(ex => {
+        if (ex.id === exerciseId) {
+          // Don't allow removing the last set
+          if (ex.sets.length <= 1) {
+            return ex;
+          }
+          
+          return {
+            ...ex,
+            sets: ex.sets.filter(set => set.id !== setId),
+          };
+        }
+        return ex;
+      }),
+    });
+  };
+
   const updateSet = (exerciseId: string, setId: string, updates: Partial<WorkoutSet>) => {
     if (!activeWorkout) return;
 
@@ -178,6 +200,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
         startWorkout,
         addExerciseToWorkout,
         addSetToExercise,
+        removeSetFromExercise,
         updateSet,
         completeWorkout,
         cancelWorkout,
