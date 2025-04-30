@@ -183,7 +183,57 @@ export const exercises: Exercise[] = [
     type: "strength",
     muscleGroups: ["biceps", "forearms"],
     instructions: "Sit at a preacher curl bench with your upper arms resting on the pad. Hold a barbell or dumbbell with an underhand grip. Curl the weight up toward your shoulders, then lower with control."
+  },
+  {
+    id: "27",
+    name: "Skull Crusher",
+    type: "strength",
+    muscleGroups: ["triceps", "forearms"],
+    instructions: "Lie on a bench holding a barbell or dumbbells above your chest. Lower the weight toward your forehead by bending your elbows, then press back up."
+  },
+  {
+    id: "28",
+    name: "Leg Extension",
+    type: "strength",
+    muscleGroups: ["quadriceps"],
+    instructions: "Sit on a leg extension machine with ankles under the pad. Extend your legs until they are straight, then lower back to start."
+  },
+  {
+    id: "29",
+    name: "Hip Thrust",
+    type: "strength",
+    muscleGroups: ["glutes", "hamstrings"],
+    instructions: "Sit on the ground with your upper back against a bench and feet flat on the floor. Roll a barbell over your hips. Drive through your heels to lift your hips toward the ceiling, squeezing your glutes at the top."
+  },
+  {
+    id: "30",
+    name: "Cable Tricep Pushdown",
+    type: "strength",
+    muscleGroups: ["triceps"],
+    instructions: "Stand facing a cable machine with a rope or straight bar attachment. Grasp the handle with both hands, elbows close to your body. Push the handle down until your arms are fully extended, then return to start."
+  },
+  {
+    id: "31",
+    name: "Seated Dumbbell Shoulder Press",
+    type: "strength",
+    muscleGroups: ["shoulders", "triceps"],
+    instructions: "Sit on a bench with back support, holding dumbbells at shoulder height. Press the weights overhead until arms are fully extended, then lower back to starting position."
+  },
+  {
+    id: "32",
+    name: "Cable Lateral Raise",
+    type: "strength",
+    muscleGroups: ["shoulders", "traps"],
+    instructions: "Stand next to a cable machine with the pulley at the lowest setting. Grasp the handle with one hand and raise it out to the side until your arm is parallel to the floor, then lower with control."
+  },
+  {
+    id: "33",
+    name: "Dumbbell Fly",
+    type: "strength",
+    muscleGroups: ["chest", "shoulders"],
+    instructions: "Lie on a bench holding dumbbells above your chest. Lower the weights out to the sides in a wide arc, then bring them back together over your chest."
   }
+
 ];
 
 export const getExerciseById = (id: string): Exercise | undefined => {
