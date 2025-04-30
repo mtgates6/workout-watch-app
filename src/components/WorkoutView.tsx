@@ -167,6 +167,13 @@ const WorkoutView = () => {
               <Card key={exerciseItem.id}>
                 <CardHeader className="bg-muted/30">
                   <CardTitle>{exerciseItem.exercise.name}</CardTitle>
+                  <Button
+                    variant="link"
+                    className="text-red-500 hover:text-red-700"
+                    onClick={() => handleRemoveExercise(exerciseItem.exercise)}
+                  >
+                    X
+                  </Button>
                 </CardHeader>
                 <CardContent className="pt-4">
                   <div className="grid grid-cols-5 gap-4 text-sm font-medium mb-2">
