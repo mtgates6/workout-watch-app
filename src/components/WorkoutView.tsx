@@ -165,12 +165,12 @@ const WorkoutView = () => {
           <div className="space-y-6">
             {activeWorkout.exercises.map((exerciseItem) => (
               <Card key={exerciseItem.id}>
-                <CardHeader className="bg-muted/30">
-                  <CardTitle>{exerciseItem.exercise.name}</CardTitle>
+                <CardHeader className="bg-muted/30 flex items-center justify-between p-4">
+                  <CardTitle className="text-base font-medium" >{exerciseItem.exercise.name}</CardTitle>
                   <Button
                     variant="outline"
-                    size="sm"
-                    className="text-red-500 hover:text-red-700"
+                    size="icon"
+                    className="text-red-500 hover:text-red-700 p-1"
                     onClick={() => handleRemoveExercise(exerciseItem.id)}
                   >
                     <Trash2 className="h-4 w-4" />

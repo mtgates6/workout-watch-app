@@ -209,6 +209,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
         workoutSummary,
         startWorkout,
         addExerciseToWorkout,
+        removeExerciseFromWorkout,
         addSetToExercise,
         removeSetFromExercise,
         updateSet,
