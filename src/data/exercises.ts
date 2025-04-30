@@ -232,6 +232,34 @@ export const exercises: Exercise[] = [
     type: "strength",
     muscleGroups: ["chest", "shoulders"],
     instructions: "Lie on a bench holding dumbbells above your chest. Lower the weights out to the sides in a wide arc, then bring them back together over your chest."
+  },
+  {
+    id: "34",
+    name: "Cable Face Pull",
+    type: "strength",
+    muscleGroups: ["rear delts", "upper back", "rotator cuff"],
+    instructions: "Stand facing a cable machine with the pulley at head height. Grasp the rope attachment with both hands and pull it toward your face, separating the ends as you pull, then slowly return to start."
+  },
+  {
+    id: "35",
+    name: "Dumbbell Chest Press",
+    type: "strength",
+    muscleGroups: ["chest", "triceps", "shoulders"],
+    instructions: "Lie on a bench holding dumbbells at chest level. Press the weights overhead until arms are fully extended, then lower back to starting position."
+  },
+  {
+    id: "36",
+    name: "Cable Row",
+    type: "strength",
+    muscleGroups: ["back", "biceps", "forearms"],
+    instructions: "Sit at a cable row machine with feet on the platform. Grasp the handle with both hands, keeping your back straight. Pull the handle toward your abdomen, squeezing your shoulder blades together, then return to start."   
+  },
+  {
+    id: "37",
+    name: "Chest Supported Row",
+    type: "strength",
+    muscleGroups: ["back", "biceps", "forearms"],
+    instructions: "Lie face down on an incline bench with a dumbbell in each hand. Pull the weights up toward your sides, squeezing your shoulder blades together, then lower with control."  
   }
 
 ];
