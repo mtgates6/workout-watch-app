@@ -260,8 +260,28 @@ export const exercises: Exercise[] = [
     type: "strength",
     muscleGroups: ["back", "biceps", "forearms"],
     instructions: "Lie face down on an incline bench with a dumbbell in each hand. Pull the weights up toward your sides, squeezing your shoulder blades together, then lower with control."  
+  },
+  {
+    id: "38",
+    name: "Hack Squat",
+    type: "strength",
+    muscleGroups: ["quadriceps", "hamstrings", "glutes"],
+    instructions: "Stand on a hack squat machine with feet shoulder-width apart. Lower your body by bending your knees and pushing your hips back, then press back up to standing." 
+  },
+  {
+    id: "39",
+    name: "Cable Crunch",
+    type: "strength",
+    muscleGroups: ["core", "abs"],
+    instructions: "Kneel in front of a cable machine with the pulley at the highest setting. Grasp the rope attachment and pull it down to your shoulders. Crunch your abs, bringing your elbows toward your knees, then return to start."
+  },
+  {
+    id: "40",
+    name: "Lunges",
+    type: "strength",
+    muscleGroups: ["quadriceps", "hamstrings", "glutes"],
+    instructions: "Stand with feet shoulder-width apart. Step forward with one leg, lowering your body until both knees are bent at 90 degrees. Push back to starting position and repeat on the other leg."  
   }
-
 ];
 
 export const getExerciseById = (id: string): Exercise | undefined => {
