@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from "react";
+
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Workout, WorkoutExercise, WorkoutSet, WorkoutSummary, Exercise } from "@/types/workout";
 import { exercises } from "@/data/exercises";
@@ -24,12 +25,40 @@ const initialSummary: WorkoutSummary = {
   totalDuration: 0,
 };
 
+const STORAGE_KEY = "fitness_workout_data";
+
 const WorkoutContext = createContext<WorkoutContextType | undefined>(undefined);
 
 export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
-  const [activeWorkout, setActiveWorkout] = useState<Workout | null>(null);
+  const [workouts, setWorkouts] = useState<Workout[]>(() => {
+    // Load workouts from localStorage on initial render
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      return parsedData.workouts || [];
+    }
+    return [];
+  });
+  
+  const [activeWorkout, setActiveWorkout] = useState<Workout | null>(() => {
+    // Load active workout from localStorage on initial render
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      return parsedData.activeWorkout || null;
+    }
+    return null;
+  });
+  
   const [workoutSummary, setWorkoutSummary] = useState<WorkoutSummary>(initialSummary);
+
+  // Save data to localStorage whenever workouts or activeWorkout change
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ 
+      workouts, 
+      activeWorkout 
+    }));
+  }, [workouts, activeWorkout]);
 
   // Calculate workout summary whenever workouts change
   React.useEffect(() => {
@@ -130,11 +159,11 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const removeExerciseFromWorkout = (exerciseId : String) => {
     if (!activeWorkout) return;
       
-      setActiveWorkout({
-        ...activeWorkout,
-        exercises: activeWorkout.exercises.filter(ex => ex.id !== exerciseId),
-      });
-    }
+    setActiveWorkout({
+      ...activeWorkout,
+      exercises: activeWorkout.exercises.filter(ex => ex.id !== exerciseId),
+    });
+  }
 
   const removeSetFromExercise = (exerciseId: string, setId: string) => {
     if (!activeWorkout) return;
