@@ -15,11 +15,14 @@ import { useNavigate } from "react-router-dom";
 
 const ExerciseLibrary = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedExerciseType, setSelectedExerciseType] = useState<string>("all");
+  const [selectedBodyPart, setSelectedBodyPart] = useState<string>("all");
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const { activeWorkout, addExerciseToWorkout, startWorkout } = useWorkout();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Get unique body parts from exercises
+  const bodyParts = ["all", ...Array.from(new Set(exercises.flatMap(ex => ex.muscleGroups)))];
 
   const handleAddToWorkout = (exercise: Exercise) => {
     if (!activeWorkout) {
@@ -44,7 +47,7 @@ const ExerciseLibrary = () => {
   const filteredExercises = exercises
     .filter(
       (exercise) =>
-        (selectedExerciseType === "all" || exercise.type === selectedExerciseType) &&
+        (selectedBodyPart === "all" || exercise.muscleGroups.includes(selectedBodyPart)) &&
         (searchQuery === "" ||
           exercise.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           exercise.muscleGroups.some((group) =>
@@ -69,12 +72,19 @@ const ExerciseLibrary = () => {
         />
       </div>
 
-      <Tabs defaultValue="all" onValueChange={setSelectedExerciseType}>
-        <TabsList>
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="strength">Strength</TabsTrigger>
+      <Tabs defaultValue="all" onValueChange={setSelectedBodyPart}>
+        <TabsList className="flex flex-wrap">
+          {bodyParts.map(part => (
+            <TabsTrigger 
+              key={part} 
+              value={part}
+              className="capitalize"
+            >
+              {part}
+            </TabsTrigger>
+          ))}
         </TabsList>
-        <TabsContent value="all" className="mt-6">
+        <TabsContent value={selectedBodyPart} className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredExercises.map((exercise) => (
               <ExerciseCard
@@ -90,18 +100,6 @@ const ExerciseLibrary = () => {
               <p className="text-muted-foreground">No exercises found. Try a different search term.</p>
             </div>
           )}
-        </TabsContent>
-        <TabsContent value="strength" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredExercises.map((exercise) => (
-              <ExerciseCard
-                key={exercise.id}
-                exercise={exercise}
-                onSelect={setSelectedExercise}
-                onAdd={handleAddToWorkout}
-              />
-            ))}
-          </div>
         </TabsContent>
       </Tabs>
 
@@ -122,7 +120,7 @@ const ExerciseLibrary = () => {
                   <h4 className="text-sm font-medium mb-1">Muscle Groups</h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedExercise.muscleGroups.map((group) => (
-                      <Badge key={group} variant="secondary">
+                      <Badge key={group} variant="secondary" className="capitalize">
                         {group}
                       </Badge>
                     ))}
@@ -175,7 +173,7 @@ const ExerciseCard = ({ exercise, onSelect, onAdd }: ExerciseCardProps) => {
       <CardContent>
         <div className="flex flex-wrap gap-1 mb-4">
           {exercise.muscleGroups.map((group) => (
-            <Badge key={group} variant="secondary" className="text-xs">
+            <Badge key={group} variant="secondary" className="text-xs capitalize">
               {group}
             </Badge>
           ))}

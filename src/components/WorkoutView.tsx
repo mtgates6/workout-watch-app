@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Button } from "@/components/ui/button";
@@ -7,10 +8,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { exercises } from "@/data/exercises";
 import { Exercise } from "@/types/workout";
-import { AlertCircle, CheckCircle2, Clock, Plus, Trash2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const WorkoutView = () => {
   const { 
@@ -23,11 +25,12 @@ const WorkoutView = () => {
     completeWorkout, 
     cancelWorkout 
   } = useWorkout();
-  const [selectedExerciseType, setSelectedExerciseType] = useState<string>("strength");
+  const [selectedBodyPart, setSelectedBodyPart] = useState<string>("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const [collapsedExercises, setCollapsedExercises] = useState<Record<string, boolean>>({});
 
   if (!activeWorkout) {
     return (
@@ -53,6 +56,7 @@ const WorkoutView = () => {
       description: `${exercise.name} added to workout`,
     });
   };
+
   const handleRemoveExercise = (exerciseId: String) => {
     removeExerciseFromWorkout(exerciseId);
     setDialogOpen(false);
@@ -81,6 +85,19 @@ const WorkoutView = () => {
     value: number | boolean
   ) => {
     updateSet(exerciseId, setId, { [field]: value });
+    
+    // Check if all sets are completed after updating
+    const exerciseItem = activeWorkout.exercises.find(ex => ex.id === exerciseId);
+    if (exerciseItem) {
+      const allSetsCompleted = exerciseItem.sets.every(set => set.completed);
+      if (allSetsCompleted) {
+        // Auto-collapse exercise when all sets are completed
+        setCollapsedExercises(prev => ({
+          ...prev,
+          [exerciseId]: true
+        }));
+      }
+    }
   };
 
   const handleCompleteWorkout = () => {
@@ -91,10 +108,30 @@ const WorkoutView = () => {
     });
     navigate("/");
   };
+  
+  const toggleExerciseCollapse = (exerciseId: string) => {
+    setCollapsedExercises(prev => ({
+      ...prev,
+      [exerciseId]: !prev[exerciseId]
+    }));
+  };
+  
+  const isExerciseCollapsed = (exerciseId: string) => {
+    return !!collapsedExercises[exerciseId];
+  };
+  
+  const isExerciseCompleted = (exerciseId: string) => {
+    const exercise = activeWorkout.exercises.find(ex => ex.id === exerciseId);
+    return exercise ? exercise.sets.every(set => set.completed) : false;
+  };
 
-  const filteredExercises = exercises.filter(
-    (exercise) => exercise.type === selectedExerciseType
-  );
+  // Get unique body parts from exercises
+  const bodyParts = ["all", ...Array.from(new Set(exercises.flatMap(ex => ex.muscleGroups)))];
+  
+  // Filter exercises based on selected body part
+  const filteredExercises = selectedBodyPart === "all" 
+    ? exercises 
+    : exercises.filter(ex => ex.muscleGroups.includes(selectedBodyPart));
 
   return (
     <div className="space-y-6">
@@ -139,13 +176,20 @@ const WorkoutView = () => {
                   <DialogHeader>
                     <DialogTitle>Add Exercise</DialogTitle>
                   </DialogHeader>
-                  <Tabs defaultValue="strength">
-                    <TabsList className="w-full">
-                      <TabsTrigger value="strength" onClick={() => setSelectedExerciseType("strength")}>
-                        Strength
-                      </TabsTrigger>
+                  <Tabs defaultValue="all">
+                    <TabsList className="w-full flex flex-wrap">
+                      {bodyParts.map(part => (
+                        <TabsTrigger 
+                          key={part} 
+                          value={part}
+                          onClick={() => setSelectedBodyPart(part)}
+                          className="capitalize"
+                        >
+                          {part}
+                        </TabsTrigger>
+                      ))}
                     </TabsList>
-                    <TabsContent value="strength" className="mt-4 max-h-96 overflow-y-auto">
+                    <TabsContent value={selectedBodyPart} className="mt-4 max-h-96 overflow-y-auto">
                       <div className="space-y-2">
                         {filteredExercises.map((exercise) => (
                           <Card key={exercise.id} className="cursor-pointer hover:bg-muted/50">
@@ -166,10 +210,25 @@ const WorkoutView = () => {
         <>
           <div className="space-y-6">
             {activeWorkout.exercises.map((exerciseItem) => (
-              <Card key={exerciseItem.id}>
-                <CardHeader>
+              <Card 
+                key={exerciseItem.id} 
+                className={`${isExerciseCompleted(exerciseItem.id) ? 'border-green-200 bg-green-50/50 dark:bg-green-950/20' : ''}`}
+              >
+                <CardHeader className="pb-2">
                   <div className="flex items-center justify-between w-full"> 
-                    <CardTitle>{exerciseItem.exercise.name}</CardTitle>
+                    <div className="flex items-center gap-2">
+                      <CollapsibleTrigger 
+                        onClick={() => toggleExerciseCollapse(exerciseItem.id)}
+                        className="hover:bg-muted rounded-full p-1"
+                      >
+                        {isExerciseCollapsed(exerciseItem.id) ? (
+                          <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                        ) : (
+                          <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                        )}
+                      </CollapsibleTrigger>
+                      <CardTitle>{exerciseItem.exercise.name}</CardTitle>
+                    </div>
                     <Button
                       variant="outline"
                       size="icon"
@@ -179,126 +238,134 @@ const WorkoutView = () => {
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                </CardHeader>
-                <CardContent className="pt-4">
-                  {/* Updated grid layout with revised column sizing for mobile and desktop */}
-                  <div className={`grid ${isMobile ? 'grid-cols-12 gap-2' : 'grid-cols-5 gap-4'} text-sm font-medium mb-2`}>
-                    <div className={isMobile ? 'col-span-2' : ''}>SET</div>
-                    {exerciseItem.exercise.type === "strength" ? (
-                      <>
-                        <div className={isMobile ? 'col-span-4' : ''}>WEIGHT</div>
-                        <div className={isMobile ? 'col-span-4' : ''}>REPS</div>
-                      </>
-                    ) : exerciseItem.exercise.type === "cardio" ? (
-                      <>
-                        <div className={isMobile ? 'col-span-4' : ''}>DISTANCE</div>
-                        <div className={isMobile ? 'col-span-4' : ''}>TIME</div>
-                      </>
-                    ) : (
-                      <>
-                        <div className={isMobile ? 'col-span-4' : ''}>TIME</div>
-                        <div className={isMobile ? 'col-span-4' : ''}>NOTES</div>
-                      </>
-                    )}
-                    <div className={`${isMobile ? 'text-center col-span-1' : 'text-right'}`}>✓</div>
-                    <div className={`${isMobile ? 'col-span-1' : ''} text-right`}>⨯</div>
+                  <div className="flex flex-wrap gap-1 ml-7">
+                    {exerciseItem.exercise.muscleGroups.map(group => (
+                      <span key={group} className="text-xs text-muted-foreground capitalize">{group}</span>
+                    ))}
                   </div>
-                  <div className="space-y-2">
-                    {exerciseItem.sets.map((set, index) => (
-                      <div key={set.id} className={`grid ${isMobile ? 'grid-cols-12 gap-2' : 'grid-cols-5 gap-4'} items-center py-1 border-t`}>
-                        <div className={isMobile ? 'col-span-2 text-center' : ''}>{index + 1}</div>
+                </CardHeader>
+                <Collapsible defaultOpen={!isExerciseCollapsed(exerciseItem.id)}>
+                  <CollapsibleContent>
+                    <CardContent className="pt-4">
+                      <div className={`grid ${isMobile ? 'grid-cols-12 gap-2' : 'grid-cols-5 gap-4'} text-sm font-medium mb-2`}>
+                        <div className={isMobile ? 'col-span-2' : ''}>SET</div>
                         {exerciseItem.exercise.type === "strength" ? (
                           <>
-                            <div className={isMobile ? 'col-span-4' : ''}>
-                              <Input
-                                type="number"
-                                placeholder="lbs"
-                                value={set.weight || ""}
-                                onChange={(e) =>
-                                  handleUpdateSet(
-                                    exerciseItem.id,
-                                    set.id,
-                                    "weight",
-                                    parseFloat(e.target.value) || 0
-                                  )
-                                }
-                                className="h-10 text-center"
-                              />
-                            </div>
-                            <div className={isMobile ? 'col-span-4' : ''}>
-                              <Input
-                                type="number"
-                                placeholder="reps"
-                                value={set.reps || ""}
-                                onChange={(e) =>
-                                  handleUpdateSet(
-                                    exerciseItem.id,
-                                    set.id,
-                                    "reps",
-                                    parseInt(e.target.value) || 0
-                                  )
-                                }
-                                className="h-10 text-center"
-                              />
-                            </div>
+                            <div className={isMobile ? 'col-span-4' : ''}>WEIGHT</div>
+                            <div className={isMobile ? 'col-span-4' : ''}>REPS</div>
+                          </>
+                        ) : exerciseItem.exercise.type === "cardio" ? (
+                          <>
+                            <div className={isMobile ? 'col-span-4' : ''}>DISTANCE</div>
+                            <div className={isMobile ? 'col-span-4' : ''}>TIME</div>
                           </>
                         ) : (
                           <>
-                            <div className={isMobile ? 'col-span-4' : ''}>
-                              <Input
-                                type="number"
-                                placeholder={exerciseItem.exercise.type === "cardio" ? "meters" : "seconds"}
-                                className="h-10 text-center"
-                              />
-                            </div>
-                            <div className={isMobile ? 'col-span-4' : ''}>
-                              <Input
-                                type="number"
-                                placeholder={exerciseItem.exercise.type === "cardio" ? "seconds" : "notes"}
-                                className="h-10 text-center"
-                              />
-                            </div>
+                            <div className={isMobile ? 'col-span-4' : ''}>TIME</div>
+                            <div className={isMobile ? 'col-span-4' : ''}>NOTES</div>
                           </>
                         )}
-                        <div className={`${isMobile ? 'col-span-1 flex items-center justify-center' : 'text-right'}`}>
-                          <Button
-                            variant={set.completed ? "default" : "outline"}
-                            size="sm"
-                            className={`${set.completed ? "bg-fitness-success hover:bg-fitness-success/90" : ""} ${isMobile ? 'p-1 h-8 w-8' : ''}`}
-                            onClick={() =>
-                              handleUpdateSet(exerciseItem.id, set.id, "completed", !set.completed)
-                            }
-                          >
-                            <CheckCircle2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        <div className={`${isMobile ? 'col-span-1 flex items-center justify-center' : 'text-right'}`}>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className={`text-red-500 hover:text-red-700 ${isMobile ? 'p-1 h-8 w-8' : ''}`}
-                            onClick={() => handleRemoveSet(exerciseItem.id, set.id)}
-                            disabled={exerciseItem.sets.length <= 1}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <div className={`${isMobile ? 'text-center col-span-1' : 'text-right'}`}>✓</div>
+                        <div className={`${isMobile ? 'col-span-1' : ''} text-right`}>⨯</div>
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between border-t pt-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleAddSet(exerciseItem.id)}
-                  >
-                    Add Set
-                  </Button>
-                  <div className="text-sm text-muted-foreground">
-                    {exerciseItem.sets.filter(s => s.completed).length} of {exerciseItem.sets.length} sets completed
-                  </div>
-                </CardFooter>
+                      <div className="space-y-2">
+                        {exerciseItem.sets.map((set, index) => (
+                          <div key={set.id} className={`grid ${isMobile ? 'grid-cols-12 gap-2' : 'grid-cols-5 gap-4'} items-center py-1 border-t`}>
+                            <div className={isMobile ? 'col-span-2 text-center' : ''}>{index + 1}</div>
+                            {exerciseItem.exercise.type === "strength" ? (
+                              <>
+                                <div className={isMobile ? 'col-span-4' : ''}>
+                                  <Input
+                                    type="number"
+                                    placeholder="lbs"
+                                    value={set.weight || ""}
+                                    onChange={(e) =>
+                                      handleUpdateSet(
+                                        exerciseItem.id,
+                                        set.id,
+                                        "weight",
+                                        parseFloat(e.target.value) || 0
+                                      )
+                                    }
+                                    className="h-10 text-center"
+                                  />
+                                </div>
+                                <div className={isMobile ? 'col-span-4' : ''}>
+                                  <Input
+                                    type="number"
+                                    placeholder="reps"
+                                    value={set.reps || ""}
+                                    onChange={(e) =>
+                                      handleUpdateSet(
+                                        exerciseItem.id,
+                                        set.id,
+                                        "reps",
+                                        parseInt(e.target.value) || 0
+                                      )
+                                    }
+                                    className="h-10 text-center"
+                                  />
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className={isMobile ? 'col-span-4' : ''}>
+                                  <Input
+                                    type="number"
+                                    placeholder={exerciseItem.exercise.type === "cardio" ? "meters" : "seconds"}
+                                    className="h-10 text-center"
+                                  />
+                                </div>
+                                <div className={isMobile ? 'col-span-4' : ''}>
+                                  <Input
+                                    type="number"
+                                    placeholder={exerciseItem.exercise.type === "cardio" ? "seconds" : "notes"}
+                                    className="h-10 text-center"
+                                  />
+                                </div>
+                              </>
+                            )}
+                            <div className={`${isMobile ? 'col-span-1 flex items-center justify-center' : 'text-right'}`}>
+                              <Button
+                                variant={set.completed ? "default" : "outline"}
+                                size="sm"
+                                className={`${set.completed ? "bg-fitness-success hover:bg-fitness-success/90" : ""} ${isMobile ? 'p-1 h-8 w-8' : ''}`}
+                                onClick={() =>
+                                  handleUpdateSet(exerciseItem.id, set.id, "completed", !set.completed)
+                                }
+                              >
+                                <CheckCircle2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            <div className={`${isMobile ? 'col-span-1 flex items-center justify-center' : 'text-right'}`}>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className={`text-red-500 hover:text-red-700 ${isMobile ? 'p-1 h-8 w-8' : ''}`}
+                                onClick={() => handleRemoveSet(exerciseItem.id, set.id)}
+                                disabled={exerciseItem.sets.length <= 1}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                    <CardFooter className="flex justify-between border-t pt-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleAddSet(exerciseItem.id)}
+                      >
+                        Add Set
+                      </Button>
+                      <div className="text-sm text-muted-foreground">
+                        {exerciseItem.sets.filter(s => s.completed).length} of {exerciseItem.sets.length} sets completed
+                      </div>
+                    </CardFooter>
+                  </CollapsibleContent>
+                </Collapsible>
               </Card>
             ))}
           </div>
@@ -313,13 +380,20 @@ const WorkoutView = () => {
               <DialogHeader>
                 <DialogTitle>Add Exercise</DialogTitle>
               </DialogHeader>
-              <Tabs defaultValue="strength">
-                <TabsList className="w-full">
-                  <TabsTrigger value="strength" onClick={() => setSelectedExerciseType("strength")}>
-                    Strength
-                  </TabsTrigger>
+              <Tabs defaultValue="all">
+                <TabsList className="w-full flex flex-wrap">
+                  {bodyParts.map(part => (
+                    <TabsTrigger 
+                      key={part} 
+                      value={part}
+                      onClick={() => setSelectedBodyPart(part)}
+                      className="capitalize"
+                    >
+                      {part}
+                    </TabsTrigger>
+                  ))}
                 </TabsList>
-                <TabsContent value="strength" className="mt-4 max-h-96 overflow-y-auto">
+                <TabsContent value={selectedBodyPart} className="mt-4 max-h-96 overflow-y-auto">
                   <div className="space-y-2">
                     {filteredExercises.map((exercise) => (
                       <Card key={exercise.id} className="cursor-pointer hover:bg-muted/50">
