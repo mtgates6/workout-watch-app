@@ -10,6 +10,7 @@ import { Exercise } from "@/types/workout";
 import { AlertCircle, CheckCircle2, Clock, Plus, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const WorkoutView = () => {
   const { 
@@ -26,6 +27,7 @@ const WorkoutView = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   if (!activeWorkout) {
     return (
@@ -97,7 +99,7 @@ const WorkoutView = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight">{activeWorkout.name}</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{activeWorkout?.name || 'Workout'}</h1>
         <div className="flex space-x-2">
           <Button variant="outline" onClick={cancelWorkout}>
             Cancel
@@ -116,7 +118,7 @@ const WorkoutView = () => {
         <span>Workout in progress</span>
       </div>
 
-      {activeWorkout.exercises.length === 0 ? (
+      {!activeWorkout || activeWorkout.exercises.length === 0 ? (
         <Card>
           <CardContent className="pt-6 flex flex-col items-center justify-center space-y-4">
             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
@@ -166,7 +168,7 @@ const WorkoutView = () => {
             {activeWorkout.exercises.map((exerciseItem) => (
               <Card key={exerciseItem.id}>
                 <CardHeader>
-                  <div className="bg-muted/30 flex items-center justify-between w-full"> 
+                  <div className="flex items-center justify-between w-full"> 
                     <CardTitle>{exerciseItem.exercise.name}</CardTitle>
                     <Button
                       variant="outline"
@@ -179,81 +181,90 @@ const WorkoutView = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="pt-4">
-                  <div className="grid grid-cols-5 gap-4 text-sm font-medium mb-2">
-                    <div>SET</div>
+                  {/* Updated grid layout with revised column sizing for mobile and desktop */}
+                  <div className={`grid ${isMobile ? 'grid-cols-12 gap-2' : 'grid-cols-5 gap-4'} text-sm font-medium mb-2`}>
+                    <div className={isMobile ? 'col-span-2' : ''}>SET</div>
                     {exerciseItem.exercise.type === "strength" ? (
                       <>
-                        <div>WEIGHT</div>
-                        <div>REPS</div>
+                        <div className={isMobile ? 'col-span-4' : ''}>WEIGHT</div>
+                        <div className={isMobile ? 'col-span-4' : ''}>REPS</div>
                       </>
                     ) : exerciseItem.exercise.type === "cardio" ? (
                       <>
-                        <div>DISTANCE</div>
-                        <div>TIME</div>
+                        <div className={isMobile ? 'col-span-4' : ''}>DISTANCE</div>
+                        <div className={isMobile ? 'col-span-4' : ''}>TIME</div>
                       </>
                     ) : (
                       <>
-                        <div>TIME</div>
-                        <div>NOTES</div>
+                        <div className={isMobile ? 'col-span-4' : ''}>TIME</div>
+                        <div className={isMobile ? 'col-span-4' : ''}>NOTES</div>
                       </>
                     )}
-                    <div className="text-right">DONE</div>
-                    <div className="text-right">ACTIONS</div>
+                    <div className={`${isMobile ? 'text-center col-span-1' : 'text-right'}`}>✓</div>
+                    <div className={`${isMobile ? 'col-span-1' : ''} text-right`}>⨯</div>
                   </div>
                   <div className="space-y-2">
                     {exerciseItem.sets.map((set, index) => (
-                      <div key={set.id} className="grid grid-cols-5 gap-4 items-center py-1 border-t">
-                        <div>{index + 1}</div>
+                      <div key={set.id} className={`grid ${isMobile ? 'grid-cols-12 gap-2' : 'grid-cols-5 gap-4'} items-center py-1 border-t`}>
+                        <div className={isMobile ? 'col-span-2 text-center' : ''}>{index + 1}</div>
                         {exerciseItem.exercise.type === "strength" ? (
                           <>
-                            <Input
-                              type="number"
-                              placeholder="lbs"
-                              value={set.weight || ""}
-                              onChange={(e) =>
-                                handleUpdateSet(
-                                  exerciseItem.id,
-                                  set.id,
-                                  "weight",
-                                  parseFloat(e.target.value) || 0
-                                )
-                              }
-                              className="h-8"
-                            />
-                            <Input
-                              type="number"
-                              placeholder="reps"
-                              value={set.reps || ""}
-                              onChange={(e) =>
-                                handleUpdateSet(
-                                  exerciseItem.id,
-                                  set.id,
-                                  "reps",
-                                  parseInt(e.target.value) || 0
-                                )
-                              }
-                              className="h-8"
-                            />
+                            <div className={isMobile ? 'col-span-4' : ''}>
+                              <Input
+                                type="number"
+                                placeholder="lbs"
+                                value={set.weight || ""}
+                                onChange={(e) =>
+                                  handleUpdateSet(
+                                    exerciseItem.id,
+                                    set.id,
+                                    "weight",
+                                    parseFloat(e.target.value) || 0
+                                  )
+                                }
+                                className="h-10 text-center"
+                              />
+                            </div>
+                            <div className={isMobile ? 'col-span-4' : ''}>
+                              <Input
+                                type="number"
+                                placeholder="reps"
+                                value={set.reps || ""}
+                                onChange={(e) =>
+                                  handleUpdateSet(
+                                    exerciseItem.id,
+                                    set.id,
+                                    "reps",
+                                    parseInt(e.target.value) || 0
+                                  )
+                                }
+                                className="h-10 text-center"
+                              />
+                            </div>
                           </>
                         ) : (
                           <>
-                            <Input
-                              type="number"
-                              placeholder={exerciseItem.exercise.type === "cardio" ? "meters" : "seconds"}
-                              className="h-8"
-                            />
-                            <Input
-                              type="number"
-                              placeholder={exerciseItem.exercise.type === "cardio" ? "seconds" : "notes"}
-                              className="h-8"
-                            />
+                            <div className={isMobile ? 'col-span-4' : ''}>
+                              <Input
+                                type="number"
+                                placeholder={exerciseItem.exercise.type === "cardio" ? "meters" : "seconds"}
+                                className="h-10 text-center"
+                              />
+                            </div>
+                            <div className={isMobile ? 'col-span-4' : ''}>
+                              <Input
+                                type="number"
+                                placeholder={exerciseItem.exercise.type === "cardio" ? "seconds" : "notes"}
+                                className="h-10 text-center"
+                              />
+                            </div>
                           </>
                         )}
-                        <div className="text-right">
+                        <div className={`${isMobile ? 'col-span-1 flex items-center justify-center' : 'text-right'}`}>
                           <Button
                             variant={set.completed ? "default" : "outline"}
                             size="sm"
-                            className={set.completed ? "bg-fitness-success hover:bg-fitness-success/90" : ""}
+                            className={`${set.completed ? "bg-fitness-success hover:bg-fitness-success/90" : ""} ${isMobile ? 'p-1 h-8 w-8' : ''}`}
                             onClick={() =>
                               handleUpdateSet(exerciseItem.id, set.id, "completed", !set.completed)
                             }
@@ -261,11 +272,11 @@ const WorkoutView = () => {
                             <CheckCircle2 className="h-4 w-4" />
                           </Button>
                         </div>
-                        <div className="text-right">
+                        <div className={`${isMobile ? 'col-span-1 flex items-center justify-center' : 'text-right'}`}>
                           <Button
                             variant="outline"
                             size="sm"
-                            className="text-red-500 hover:text-red-700"
+                            className={`text-red-500 hover:text-red-700 ${isMobile ? 'p-1 h-8 w-8' : ''}`}
                             onClick={() => handleRemoveSet(exerciseItem.id, set.id)}
                             disabled={exerciseItem.sets.length <= 1}
                           >
