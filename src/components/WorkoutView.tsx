@@ -1,8 +1,7 @@
-
 import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -11,404 +10,338 @@ import { Exercise, MuscleGroup } from "@/types/workout";
 import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const muscleGroups: MuscleGroup[] = [
+  'chest',
+  'back',
+  'shoulders',
+  'biceps',
+  'triceps',
+  'quads',
+  'hamstrings',
+  'glutes',
+  'calves',
+  'core'
+];
 
 const WorkoutView = () => {
-  const { 
-    activeWorkout, 
-    addExerciseToWorkout, 
+  const {
+    activeWorkout,
+    endWorkout,
+    updateSetCompletion,
     removeExerciseFromWorkout,
+    removeSetFromExercise,
     addSetToExercise,
-    removeSetFromExercise, 
-    updateSet, 
-    completeWorkout, 
-    cancelWorkout 
+    addExerciseToWorkout,
   } = useWorkout();
-  const [selectedBodyPart, setSelectedBodyPart] = useState<"all" | MuscleGroup>("all");
-  const [dialogOpen, setDialogOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
-  const [collapsedExercises, setCollapsedExercises] = useState<Record<string, boolean>>({});
 
+  const updateSet = (setIndex: number, exerciseIndex: number, completed: boolean) => {
+    if (activeWorkout) {
+      const exerciseId = activeWorkout.exercises[exerciseIndex].exercise.id;
+      const setId = activeWorkout.exercises[exerciseIndex].sets[setIndex].id;
+      updateSetCompletion(exerciseId, setId, completed);
+    }
+  };
+
+  const handleEndWorkout = () => {
+    endWorkout();
+    toast({
+      title: "Workout Ended",
+      description: "Your workout has been saved to history.",
+    });
+    navigate("/");
+  };
+
+  const handleRemoveExercise = (exerciseIndex: number) => {
+    if (activeWorkout) {
+      const exerciseId = activeWorkout.exercises[exerciseIndex].exercise.id;
+      removeExerciseFromWorkout(exerciseId);
+      toast({
+        title: "Exercise Removed",
+        description: "Exercise removed from your workout.",
+      });
+    }
+  };
+
+  const handleRemoveSet = (exerciseIndex: number, setIndex: number) => {
+    if (activeWorkout) {
+      const exerciseId = activeWorkout.exercises[exerciseIndex].exercise.id;
+      const setId = activeWorkout.exercises[exerciseIndex].sets[setIndex].id;
+      removeSetFromExercise(exerciseId, setId);
+      toast({
+        title: "Set Removed",
+        description: "Set removed from exercise.",
+      });
+    }
+  };
+
+  const handleAddSet = (exerciseIndex: number) => {
+    if (activeWorkout) {
+      const exerciseId = activeWorkout.exercises[exerciseIndex].exercise.id;
+      addSetToExercise(exerciseId);
+      toast({
+        title: "Set Added",
+        description: "Set added to exercise.",
+      });
+    }
+  };
+
+  const calculateWorkoutTime = (workout: any) => {
+    const now = new Date();
+    const workoutDate = new Date(workout.date);
+    const diff = now.getTime() - workoutDate.getTime();
+    return Math.floor(diff / 60000);
+  };
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<MuscleGroup | "all">("all");
+  const [showAddExerciseDialog, setShowAddExerciseDialog] = useState(false);
+  
+  const filteredExercises = exercises.filter(
+    (exercise) =>
+      exercise.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (selectedMuscleGroup === "all" || exercise.muscleGroups.includes(selectedMuscleGroup as MuscleGroup))
+  );
+
+  const handleAddExercise = (exercise: Exercise) => {
+    addExerciseToWorkout(exercise);
+    setShowAddExerciseDialog(false);
+    toast({
+      title: "Exercise Added",
+      description: `${exercise.name} added to your workout`,
+    });
+  };
+  
   if (!activeWorkout) {
     return (
-      <div className="flex flex-col items-center justify-center h-[70vh]">
-        <AlertCircle className="h-16 w-16 text-muted-foreground mb-4" />
-        <h2 className="text-2xl font-bold mb-2">No Active Workout</h2>
-        <p className="text-muted-foreground mb-6">Start a new workout to track your progress</p>
-        <Button
-          onClick={() => navigate("/")}
-          className="bg-fitness-primary hover:bg-fitness-secondary"
-        >
-          Return to Dashboard
+      <div className="flex flex-col items-center justify-center h-full">
+        <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
+        <h2 className="text-2xl font-bold tracking-tight">No active workout</h2>
+        <p className="text-muted-foreground">Start a workout from the home page to begin.</p>
+        <Button onClick={() => navigate("/")} className="mt-4">
+          Go to Home
         </Button>
       </div>
     );
   }
 
-  const handleAddExercise = (exercise: Exercise) => {
-    addExerciseToWorkout(exercise);
-    setDialogOpen(false);
-    toast({
-      title: "Exercise Added",
-      description: `${exercise.name} added to workout`,
-    });
-  };
-
-  const handleRemoveExercise = (exerciseId: String) => {
-    removeExerciseFromWorkout(exerciseId);
-    setDialogOpen(false);
-    toast({
-      title: "Exercise Removed",
-      description: `The exercise removed from workout`,
-    });
-  };
-
-  const handleAddSet = (exerciseId: string) => {
-    addSetToExercise(exerciseId);
-  };
-
-  const handleRemoveSet = (exerciseId: string, setId: string) => {
-    removeSetFromExercise(exerciseId, setId);
-    toast({
-      title: "Set Removed",
-      description: "Set has been removed from the exercise",
-    });
-  };
-
-  const handleUpdateSet = (
-    exerciseId: string,
-    setId: string,
-    field: "weight" | "reps" | "completed",
-    value: number | boolean
-  ) => {
-    updateSet(exerciseId, setId, { [field]: value });
-    
-    // Check if all sets are completed after updating
-    const exerciseItem = activeWorkout.exercises.find(ex => ex.id === exerciseId);
-    if (exerciseItem) {
-      const allSetsCompleted = exerciseItem.sets.every(set => set.completed);
-      if (allSetsCompleted) {
-        // Auto-collapse exercise when all sets are completed
-        setCollapsedExercises(prev => ({
-          ...prev,
-          [exerciseId]: true
-        }));
-      }
-    }
-  };
-
-  const handleCompleteWorkout = () => {
-    completeWorkout();
-    toast({
-      title: "Workout Completed",
-      description: "Great job! Your workout has been saved.",
-    });
-    navigate("/");
-  };
-  
-  const toggleExerciseCollapse = (exerciseId: string) => {
-    setCollapsedExercises(prev => ({
-      ...prev,
-      [exerciseId]: !prev[exerciseId]
-    }));
-  };
-  
-  const isExerciseCollapsed = (exerciseId: string) => {
-    return !!collapsedExercises[exerciseId];
-  };
-  
-  const isExerciseCompleted = (exerciseId: string) => {
-    const exercise = activeWorkout.exercises.find(ex => ex.id === exerciseId);
-    return exercise ? exercise.sets.every(set => set.completed) : false;
-  };
-
-  // Get unique body parts from exercises
-  const bodyParts = ["all", ...Array.from(new Set(exercises.flatMap(ex => ex.muscleGroups)))] as ("all" | MuscleGroup)[];
-  
-  // Filter exercises based on selected body part
-  const filteredExercises = selectedBodyPart === "all" 
-    ? exercises 
-    : exercises.filter(ex => ex.muscleGroups.includes(selectedBodyPart));
-
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight">{activeWorkout?.name || 'Workout'}</h1>
-        <div className="flex space-x-2">
-          <Button variant="outline" onClick={cancelWorkout}>
-            Cancel
+    <div className="space-y-6 pb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">{activeWorkout.name}</h1>
+          <p className="text-muted-foreground">
+            {new Date(activeWorkout.date).toLocaleDateString()} •{" "}
+            {calculateWorkoutTime(activeWorkout)} minutes
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button onClick={handleEndWorkout} variant="outline">
+            End Workout
           </Button>
-          <Button 
-            className="bg-fitness-success hover:bg-fitness-success/90" 
-            onClick={handleCompleteWorkout}
-          >
-            Complete Workout
-          </Button>
+          <Dialog open={showAddExerciseDialog} onOpenChange={setShowAddExerciseDialog}>
+            <DialogTrigger asChild>
+              <Button className="bg-fitness-primary hover:bg-fitness-secondary">
+                <Plus className="mr-1 h-4 w-4" /> Add Exercise
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px] max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Add Exercise</DialogTitle>
+              </DialogHeader>
+              <div className="flex flex-col gap-4 py-4">
+                <div className="flex flex-col gap-2">
+                  <Input 
+                    type="text"
+                    placeholder="Search exercises..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <Select
+                    value={selectedMuscleGroup}
+                    onValueChange={(value) => setSelectedMuscleGroup(value as MuscleGroup | "all")}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select Muscle Group" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Muscle Groups</SelectItem>
+                      {muscleGroups.map((group) => (
+                        <SelectItem key={group} value={group} className="capitalize">
+                          {group.charAt(0).toUpperCase() + group.slice(1)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2 max-h-[50vh] overflow-y-auto">
+                  {filteredExercises.length > 0 ? (
+                    filteredExercises.map((exercise) => (
+                      <div
+                        key={exercise.id}
+                        onClick={() => handleAddExercise(exercise)}
+                        className="p-3 border rounded-md cursor-pointer hover:bg-accent"
+                      >
+                        <div className="font-medium">{exercise.name}</div>
+                        <div className="text-xs text-muted-foreground flex flex-wrap gap-1 mt-1">
+                          {exercise.muscleGroups.map((group) => (
+                            <span key={group} className="bg-secondary text-secondary-foreground px-1.5 py-0.5 rounded-sm capitalize">
+                              {group}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-4 text-muted-foreground">
+                      No exercises found
+                    </div>
+                  )}
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
-      <div className="flex items-center space-x-2 text-muted-foreground">
-        <Clock className="h-4 w-4" />
-        <span>Workout in progress</span>
-      </div>
-
-      {!activeWorkout || activeWorkout.exercises.length === 0 ? (
-        <Card>
-          <CardContent className="pt-6 flex flex-col items-center justify-center space-y-4">
-            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-              <Plus className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <div className="text-center space-y-2">
-              <h3 className="text-xl font-medium">Add Your First Exercise</h3>
-              <p className="text-muted-foreground">
-                Start building your workout by adding exercises
-              </p>
-              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-fitness-primary hover:bg-fitness-secondary">
-                    Add Exercise
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>Add Exercise</DialogTitle>
-                  </DialogHeader>
-                  <Tabs defaultValue="all">
-                    <TabsList className="w-full flex flex-wrap">
-                      {bodyParts.map(part => (
-                        <TabsTrigger 
-                          key={part} 
-                          value={part}
-                          onClick={() => setSelectedBodyPart(part)}
-                          className="capitalize"
-                        >
-                          {part}
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
-                    <TabsContent value={selectedBodyPart} className="mt-4 max-h-96 overflow-y-auto">
-                      <div className="space-y-2">
-                        {filteredExercises.map((exercise) => (
-                          <Card key={exercise.id} className="cursor-pointer hover:bg-muted/50">
-                            <CardHeader className="p-3" onClick={() => handleAddExercise(exercise)}>
-                              <CardTitle className="text-base">{exercise.name}</CardTitle>
-                            </CardHeader>
-                          </Card>
-                        ))}
-                      </div>
-                    </TabsContent>
-                  </Tabs>
-                </DialogContent>
-              </Dialog>
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <>
-          <div className="space-y-6">
-            {activeWorkout.exercises.map((exerciseItem) => (
-              <Card 
-                key={exerciseItem.id} 
-                className={`${isExerciseCompleted(exerciseItem.id) ? 'border-green-200 bg-green-50/50 dark:bg-green-950/20' : ''}`}
-              >
-                <Collapsible defaultOpen={!isExerciseCollapsed(exerciseItem.id)}>
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center justify-between w-full"> 
-                      <div className="flex items-center gap-2">
-                        <CollapsibleTrigger 
-                          onClick={() => toggleExerciseCollapse(exerciseItem.id)}
-                          className="hover:bg-muted rounded-full p-1"
-                        >
-                          {isExerciseCollapsed(exerciseItem.id) ? (
-                            <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                          ) : (
-                            <ChevronUp className="h-5 w-5 text-muted-foreground" />
-                          )}
-                        </CollapsibleTrigger>
-                        <CardTitle>{exerciseItem.exercise.name}</CardTitle>
-                      </div>
+      <Tabs defaultValue="incomplete" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
+          <TabsTrigger value="complete">Complete</TabsTrigger>
+        </TabsList>
+        <TabsContent value="incomplete" className="space-y-4">
+          {activeWorkout.exercises
+            .filter((exercise) => !exercise.sets.every((set) => set.completed))
+            .map((exercise, exerciseIndex) => (
+              <Card key={exercise.exercise.id}>
+                <CardHeader>
+                  <CardTitle className="flex justify-between items-center">
+                    {exercise.exercise.name}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveExercise(exerciseIndex)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </CardTitle>
+                  <CardDescription>
+                    {exercise.exercise.muscleGroups.join(", ")}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {exercise.sets.map((set, setIndex) => (
+                    <div key={set.id} className="grid grid-cols-4 gap-2 items-center">
+                      <Input
+                        type="number"
+                        placeholder="Weight"
+                        defaultValue={set.weight}
+                        disabled
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Reps"
+                        defaultValue={set.reps}
+                        disabled
+                      />
                       <Button
                         variant="outline"
+                        onClick={() => updateSet(setIndex, exerciseIndex, !set.completed)}
+                      >
+                        {set.completed ? (
+                          <CheckCircle2 className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <Clock className="h-4 w-4" />
+                        )}
+                      </Button>
+                      <Button
+                        variant="ghost"
                         size="icon"
-                        className="text-red-500 hover:text-red-700 p-1 ml-2" 
-                        onClick={() => handleRemoveExercise(exerciseItem.id)}
+                        onClick={() => handleRemoveSet(exerciseIndex, setIndex)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-                    <div className="flex flex-wrap gap-1 ml-7">
-                      {exerciseItem.exercise.muscleGroups.map(group => (
-                        <span key={group} className="text-xs text-muted-foreground capitalize">{group}</span>
-                      ))}
-                    </div>
-                  </CardHeader>
-                  <CollapsibleContent>
-                    <CardContent className="pt-4">
-                      <div className={`grid ${isMobile ? 'grid-cols-12 gap-2' : 'grid-cols-5 gap-4'} text-sm font-medium mb-2`}>
-                        <div className={isMobile ? 'col-span-2' : ''}>SET</div>
-                        {exerciseItem.exercise.type === "strength" ? (
-                          <>
-                            <div className={isMobile ? 'col-span-4' : ''}>WEIGHT</div>
-                            <div className={isMobile ? 'col-span-4' : ''}>REPS</div>
-                          </>
-                        ) : exerciseItem.exercise.type === "cardio" ? (
-                          <>
-                            <div className={isMobile ? 'col-span-4' : ''}>DISTANCE</div>
-                            <div className={isMobile ? 'col-span-4' : ''}>TIME</div>
-                          </>
-                        ) : (
-                          <>
-                            <div className={isMobile ? 'col-span-4' : ''}>TIME</div>
-                            <div className={isMobile ? 'col-span-4' : ''}>NOTES</div>
-                          </>
-                        )}
-                        <div className={`${isMobile ? 'text-center col-span-1' : 'text-right'}`}>✓</div>
-                        <div className={`${isMobile ? 'col-span-1' : ''} text-right`}>⨯</div>
-                      </div>
-                      <div className="space-y-2">
-                        {exerciseItem.sets.map((set, index) => (
-                          <div key={set.id} className={`grid ${isMobile ? 'grid-cols-12 gap-2' : 'grid-cols-5 gap-4'} items-center py-1 border-t`}>
-                            <div className={isMobile ? 'col-span-2 text-center' : ''}>{index + 1}</div>
-                            {exerciseItem.exercise.type === "strength" ? (
-                              <>
-                                <div className={isMobile ? 'col-span-4' : ''}>
-                                  <Input
-                                    type="number"
-                                    placeholder="lbs"
-                                    value={set.weight || ""}
-                                    onChange={(e) =>
-                                      handleUpdateSet(
-                                        exerciseItem.id,
-                                        set.id,
-                                        "weight",
-                                        parseFloat(e.target.value) || 0
-                                      )
-                                    }
-                                    className="h-10 text-center"
-                                  />
-                                </div>
-                                <div className={isMobile ? 'col-span-4' : ''}>
-                                  <Input
-                                    type="number"
-                                    placeholder="reps"
-                                    value={set.reps || ""}
-                                    onChange={(e) =>
-                                      handleUpdateSet(
-                                        exerciseItem.id,
-                                        set.id,
-                                        "reps",
-                                        parseInt(e.target.value) || 0
-                                      )
-                                    }
-                                    className="h-10 text-center"
-                                  />
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <div className={isMobile ? 'col-span-4' : ''}>
-                                  <Input
-                                    type="number"
-                                    placeholder={exerciseItem.exercise.type === "cardio" ? "meters" : "seconds"}
-                                    className="h-10 text-center"
-                                  />
-                                </div>
-                                <div className={isMobile ? 'col-span-4' : ''}>
-                                  <Input
-                                    type="number"
-                                    placeholder={exerciseItem.exercise.type === "cardio" ? "seconds" : "notes"}
-                                    className="h-10 text-center"
-                                  />
-                                </div>
-                              </>
-                            )}
-                            <div className={`${isMobile ? 'col-span-1 flex items-center justify-center' : 'text-right'}`}>
-                              <Button
-                                variant={set.completed ? "default" : "outline"}
-                                size="sm"
-                                className={`${set.completed ? "bg-fitness-success hover:bg-fitness-success/90" : ""} ${isMobile ? 'p-1 h-8 w-8' : ''}`}
-                                onClick={() =>
-                                  handleUpdateSet(exerciseItem.id, set.id, "completed", !set.completed)
-                                }
-                              >
-                                <CheckCircle2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                            <div className={`${isMobile ? 'col-span-1 flex items-center justify-center' : 'text-right'}`}>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className={`text-red-500 hover:text-red-700 ${isMobile ? 'p-1 h-8 w-8' : ''}`}
-                                onClick={() => handleRemoveSet(exerciseItem.id, set.id)}
-                                disabled={exerciseItem.sets.length <= 1}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-between border-t pt-4">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleAddSet(exerciseItem.id)}
-                      >
-                        Add Set
-                      </Button>
-                      <div className="text-sm text-muted-foreground">
-                        {exerciseItem.sets.filter(s => s.completed).length} of {exerciseItem.sets.length} sets completed
-                      </div>
-                    </CardFooter>
-                  </CollapsibleContent>
-                </Collapsible>
+                  ))}
+                  <Button onClick={() => handleAddSet(exerciseIndex)} className="w-full">
+                    <Plus className="mr-2 h-4 w-4" /> Add Set
+                  </Button>
+                </CardContent>
               </Card>
             ))}
-          </div>
+        </TabsContent>
 
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="w-full">
-                <Plus className="mr-2 h-4 w-4" /> Add Exercise
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>Add Exercise</DialogTitle>
-              </DialogHeader>
-              <Tabs defaultValue="all">
-                <TabsList className="w-full flex flex-wrap">
-                  {bodyParts.map(part => (
-                    <TabsTrigger 
-                      key={part} 
-                      value={part}
-                      onClick={() => setSelectedBodyPart(part)}
-                      className="capitalize"
+        <TabsContent value="complete" className="space-y-4">
+          {activeWorkout.exercises
+            .filter((exercise) => exercise.sets.every((set) => set.completed))
+            .map((exercise, exerciseIndex) => (
+              <Card key={exercise.exercise.id}>
+                <CardHeader>
+                  <CardTitle className="flex justify-between items-center">
+                    {exercise.exercise.name}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveExercise(exerciseIndex)}
                     >
-                      {part}
-                    </TabsTrigger>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </CardTitle>
+                  <CardDescription>
+                    {exercise.exercise.muscleGroups.join(", ")}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {exercise.sets.map((set, setIndex) => (
+                    <div key={set.id} className="grid grid-cols-4 gap-2 items-center">
+                      <Input
+                        type="number"
+                        placeholder="Weight"
+                        defaultValue={set.weight}
+                        disabled
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Reps"
+                        defaultValue={set.reps}
+                        disabled
+                      />
+                      <Button
+                        variant="outline"
+                        onClick={() => updateSet(setIndex, exerciseIndex, !set.completed)}
+                      >
+                        {set.completed ? (
+                          <CheckCircle2 className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <Clock className="h-4 w-4" />
+                        )}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleRemoveSet(exerciseIndex, setIndex)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   ))}
-                </TabsList>
-                <TabsContent value={selectedBodyPart} className="mt-4 max-h-96 overflow-y-auto">
-                  <div className="space-y-2">
-                    {filteredExercises.map((exercise) => (
-                      <Card key={exercise.id} className="cursor-pointer hover:bg-muted/50">
-                        <CardHeader className="p-3" onClick={() => handleAddExercise(exercise)}>
-                          <CardTitle className="text-base">{exercise.name}</CardTitle>
-                        </CardHeader>
-                      </Card>
-                    ))}
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </DialogContent>
-          </Dialog>
-        </>
-      )}
+                  <Button onClick={() => handleAddSet(exerciseIndex)} className="w-full">
+                    <Plus className="mr-2 h-4 w-4" /> Add Set
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
