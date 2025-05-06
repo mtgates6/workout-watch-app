@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { exercises } from "@/data/exercises";
-import { Exercise } from "@/types/workout";
+import { Exercise, MuscleGroup } from "@/types/workout";
 import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
