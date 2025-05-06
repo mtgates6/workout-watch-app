@@ -10,19 +10,36 @@ import { useToast } from "@/components/ui/use-toast";
 import { Search, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Exercise } from "@/types/workout";
+import { Exercise, MuscleGroup } from "@/types/workout";
 import { useNavigate } from "react-router-dom";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const muscleGroups: MuscleGroup[] = [
+  'chest',
+  'back',
+  'shoulders',
+  'biceps',
+  'triceps',
+  'quads',
+  'hamstrings',
+  'glutes',
+  'calves',
+  'core'
+];
 
 const ExerciseLibrary = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedBodyPart, setSelectedBodyPart] = useState<string>("all");
+  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<MuscleGroup | "all">("all");
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const { activeWorkout, addExerciseToWorkout, startWorkout } = useWorkout();
   const { toast } = useToast();
   const navigate = useNavigate();
-
-  // Get unique body parts from exercises
-  const bodyParts = ["all", ...Array.from(new Set(exercises.flatMap(ex => ex.muscleGroups)))];
 
   const handleAddToWorkout = (exercise: Exercise) => {
     if (!activeWorkout) {
@@ -47,7 +64,7 @@ const ExerciseLibrary = () => {
   const filteredExercises = exercises
     .filter(
       (exercise) =>
-        (selectedBodyPart === "all" || exercise.muscleGroups.includes(selectedBodyPart)) &&
+        (selectedMuscleGroup === "all" || exercise.muscleGroups.includes(selectedMuscleGroup as MuscleGroup)) &&
         (searchQuery === "" ||
           exercise.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           exercise.muscleGroups.some((group) =>
@@ -62,46 +79,49 @@ const ExerciseLibrary = () => {
         <p className="text-muted-foreground">Browse and add exercises to your workout</p>
       </div>
 
-      <div className="flex items-center space-x-2 mb-4 relative">
-        <Search className="absolute left-2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search exercises or muscle groups..."
-          className="pl-8"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search exercises..."
+            className="pl-8"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <Select
+          value={selectedMuscleGroup}
+          onValueChange={(value) => setSelectedMuscleGroup(value as MuscleGroup | "all")}
+        >
+          <SelectTrigger className="w-full md:w-[180px]">
+            <SelectValue placeholder="Filter by muscle" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Muscles</SelectItem>
+            {muscleGroups.map(muscle => (
+              <SelectItem key={muscle} value={muscle} className="capitalize">
+                {muscle.charAt(0).toUpperCase() + muscle.slice(1)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
-      <Tabs defaultValue="all" onValueChange={setSelectedBodyPart}>
-        <TabsList className="flex flex-wrap">
-          {bodyParts.map(part => (
-            <TabsTrigger 
-              key={part} 
-              value={part}
-              className="capitalize"
-            >
-              {part}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        <TabsContent value={selectedBodyPart} className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredExercises.map((exercise) => (
-              <ExerciseCard
-                key={exercise.id}
-                exercise={exercise}
-                onSelect={setSelectedExercise}
-                onAdd={handleAddToWorkout}
-              />
-            ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filteredExercises.map((exercise) => (
+          <ExerciseCard
+            key={exercise.id}
+            exercise={exercise}
+            onSelect={setSelectedExercise}
+            onAdd={handleAddToWorkout}
+          />
+        ))}
+        {filteredExercises.length === 0 && (
+          <div className="col-span-full text-center py-12">
+            <p className="text-muted-foreground">No exercises found. Try a different search term.</p>
           </div>
-          {filteredExercises.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">No exercises found. Try a different search term.</p>
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
+        )}
+      </div>
 
       <Dialog open={!!selectedExercise} onOpenChange={(open) => !open && setSelectedExercise(null)}>
         <DialogContent>

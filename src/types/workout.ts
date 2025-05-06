@@ -1,11 +1,22 @@
-
 export type ExerciseType = 'strength';
+
+export type MuscleGroup = 
+  | 'chest'
+  | 'back'
+  | 'shoulders'
+  | 'biceps'
+  | 'triceps'
+  | 'quads'
+  | 'hamstrings'
+  | 'glutes'
+  | 'calves'
+  | 'core';
 
 export interface Exercise {
   id: string;
   name: string;
   type: ExerciseType;
-  muscleGroups: string[];
+  muscleGroups: MuscleGroup[];
   instructions?: string;
 }
 
