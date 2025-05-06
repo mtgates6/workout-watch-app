@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Button } from "@/components/ui/button";
@@ -44,11 +45,11 @@ const WorkoutView = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const updateSet = (setIndex: number, exerciseIndex: number, completed: boolean) => {
+  const handleSetCompletion = (setIndex: number, exerciseIndex: number, completed: boolean) => {
     if (activeWorkout) {
       const exerciseId = activeWorkout.exercises[exerciseIndex].exercise.id;
       const setId = activeWorkout.exercises[exerciseIndex].sets[setIndex].id;
-      updateSet(exerciseId, setId, completed);
+      updateSet(exerciseId, setId, { completed });
     }
   };
 
@@ -255,7 +256,7 @@ const WorkoutView = () => {
                       />
                       <Button
                         variant="outline"
-                        onClick={() => updateSet(setIndex, exerciseIndex, !set.completed)}
+                        onClick={() => handleSetCompletion(setIndex, exerciseIndex, !set.completed)}
                       >
                         {set.completed ? (
                           <CheckCircle2 className="h-4 w-4 text-green-500" />
@@ -317,7 +318,7 @@ const WorkoutView = () => {
                       />
                       <Button
                         variant="outline"
-                        onClick={() => updateSet(setIndex, exerciseIndex, !set.completed)}
+                        onClick={() => handleSetCompletion(setIndex, exerciseIndex, !set.completed)}
                       >
                         {set.completed ? (
                           <CheckCircle2 className="h-4 w-4 text-green-500" />
