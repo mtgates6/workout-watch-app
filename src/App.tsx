@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import WorkoutPage from "./pages/WorkoutPage";
 import ExercisesPage from "./pages/ExercisesPage";
 import HistoryPage from "./pages/HistoryPage";
+import PlannerPage from "./pages/PlannerPage";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 import { WorkoutProvider } from "./context/WorkoutContext";
@@ -27,6 +28,7 @@ const App = () => (
               <Route path="/workout" element={<WorkoutPage />} />
               <Route path="/exercises" element={<ExercisesPage />} />
               <Route path="/history" element={<HistoryPage />} />
+              <Route path="/planner" element={<PlannerPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>

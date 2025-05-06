@@ -3,7 +3,7 @@ import React from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Clock, CalendarDays, Dumbbell, TrendingUp } from "lucide-react";
+import { Clock, CalendarDays, Dumbbell, TrendingUp, CalendarPlus } from "lucide-react";
 import { formatDuration } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 
@@ -68,6 +68,14 @@ const Dashboard = () => {
             >
               <Dumbbell className="mr-2 h-4 w-4" />
               Start a new workout
+            </Button>
+            <Button
+              onClick={() => navigate("/planner")}
+              variant="outline"
+              className="w-full justify-start text-left font-normal"
+            >
+              <CalendarPlus className="mr-2 h-4 w-4" />
+              Plan weekly workouts
             </Button>
             <Button
               onClick={() => navigate("/exercises")}

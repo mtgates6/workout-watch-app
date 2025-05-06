@@ -34,6 +34,7 @@ export interface Workout {
   duration?: number; // in seconds
   notes?: string;
   completed: boolean;
+  planned?: boolean;
 }
 
 export interface WorkoutSummary {
@@ -41,4 +42,14 @@ export interface WorkoutSummary {
   thisWeekWorkouts: number;
   totalDuration: number; // in seconds
   favoriteExercise?: string;
+}
+
+export interface WorkoutPlan {
+  id: string;
+  name: string;
+  workouts: {
+    id: string;
+    date: string;
+    workoutId: string;
+  }[];
 }

@@ -17,6 +17,10 @@ interface WorkoutContextType {
   completeWorkout: () => void;
   cancelWorkout: () => void;
   getWorkout: (id: string) => Workout | undefined;
+  createPlannedWorkout: (name: string, date: string) => Workout;
+  getWorkoutsByDate: (date: string) => Workout[];
+  startPlannedWorkout: (workoutId: string) => void;
+  deletePlannedWorkout: (workoutId: string) => void;
 }
 
 const initialSummary: WorkoutSummary = {
@@ -229,6 +233,55 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const getWorkout = (id: string) => {
     return workouts.find((workout) => workout.id === id);
   };
+  
+  // New functions for planned workouts
+  const createPlannedWorkout = (name: string, date: string) => {
+    const newWorkout: Workout = {
+      id: uuidv4(),
+      name,
+      exercises: [],
+      date,
+      completed: false,
+      planned: true,
+    };
+    
+    setWorkouts(prev => [...prev, newWorkout]);
+    return newWorkout;
+  };
+  
+  const getWorkoutsByDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+    
+    return workouts.filter(workout => {
+      const workoutDate = new Date(workout.date);
+      return workoutDate >= startOfDay && workoutDate <= endOfDay;
+    });
+  };
+  
+  const startPlannedWorkout = (workoutId: string) => {
+    const plannedWorkout = workouts.find(w => w.id === workoutId && w.planned);
+    
+    if (!plannedWorkout) return;
+    
+    // Create a new active workout based on the planned workout
+    const newActiveWorkout: Workout = {
+      ...plannedWorkout,
+      id: uuidv4(), // Generate new ID for the active workout
+      date: new Date().toISOString(), // Set current date
+      planned: false, // No longer a planned workout
+    };
+    
+    setActiveWorkout(newActiveWorkout);
+  };
+  
+  const deletePlannedWorkout = (workoutId: string) => {
+    setWorkouts(prev => prev.filter(workout => workout.id !== workoutId));
+  };
 
   return (
     <WorkoutContext.Provider
@@ -245,6 +298,10 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
         completeWorkout,
         cancelWorkout,
         getWorkout,
+        createPlannedWorkout,
+        getWorkoutsByDate,
+        startPlannedWorkout,
+        deletePlannedWorkout,
       }}
     >
       {children}
