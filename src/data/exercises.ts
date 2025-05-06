@@ -13,7 +13,7 @@ export const exercises: Exercise[] = [
     id: "2",
     name: "Squat",
     type: "strength",
-    muscleGroups: ["quadriceps", "hamstrings", "glutes"],
+    muscleGroups: ["quads", "hamstrings", "glutes"],
     instructions: "Stand with feet shoulder-width apart. Lower your body by bending your knees and pushing your hips back as if sitting in a chair. Lower until thighs are parallel to the ground, then return to standing."
   },
   {
@@ -69,21 +69,21 @@ export const exercises: Exercise[] = [
     id: "10",
     name: "Shrugs",
     type: "strength",
-    muscleGroups: ["traps", "shoulders"],
+    muscleGroups: ["shoulders", "back"],
     instructions: "Stand with feet shoulder-width apart, holding dumbbells at your sides. Raise your shoulders toward your ears as high as possible, then lower back down."
   },
   {
     id: "11",
     name: "Dumbbell Row",
     type: "strength",
-    muscleGroups: ["back", "biceps", "forearms"],
+    muscleGroups: ["back", "biceps"],
     instructions: "Place one knee and hand on a bench, with the other foot on the floor. Hold a dumbbell in your free hand, arm extended. Pull the weight up to your side while keeping your back flat."
   },
   {
     id: "12",
     name: "Barbell Curl",
     type: "strength",
-    muscleGroups: ["biceps", "forearms"],
+    muscleGroups: ["biceps"],
     instructions: "Stand with feet shoulder-width apart, holding a barbell with an underhand grip. Keeping elbows close to sides, curl the weight up toward your shoulders, then lower with control."
   },
   {
@@ -97,7 +97,7 @@ export const exercises: Exercise[] = [
     id: "14",
     name: "Leg Press",
     type: "strength",
-    muscleGroups: ["quadriceps", "hamstrings", "glutes"],
+    muscleGroups: ["quads", "hamstrings", "glutes"],
     instructions: "Sit in the leg press machine with feet on the platform shoulder-width apart. Release the safety bars, lower the platform by bending your knees, then push it back up."
   },
   {
@@ -111,28 +111,28 @@ export const exercises: Exercise[] = [
     id: "16",
     name: "Romanian Deadlift",
     type: "strength",
-    muscleGroups: ["hamstrings", "glutes", "lower back"],
+    muscleGroups: ["hamstrings", "glutes", "back"],
     instructions: "Stand holding a barbell in front of your thighs. Keeping your back straight and knees slightly bent, hinge at the hips to lower the bar toward the floor, then return to standing."
   },
   {
     id: "17",
     name: "Incline Bench Press",
     type: "strength",
-    muscleGroups: ["upper chest", "shoulders", "triceps"],
+    muscleGroups: ["chest", "shoulders", "triceps"],
     instructions: "Lie on an incline bench with feet on the floor. Grip the barbell with hands wider than shoulder-width. Lower the bar to your upper chest, then press back up."
   },
   {
     id: "18",
     name: "Face Pull",
     type: "strength",
-    muscleGroups: ["rear delts", "upper back", "rotator cuff"],
+    muscleGroups: ["shoulders", "back"],
     instructions: "Stand facing a cable machine with rope attachment at head height. Pull the rope toward your face, separating the ends as you pull, then slowly return to start."
   },
   {
     id: "19",
     name: "Dumbbell Lateral Raise",
     type: "strength",
-    muscleGroups: ["shoulders", "traps"],
+    muscleGroups: ["shoulders"],
     instructions: "Stand holding dumbbells at your sides. Keeping a slight bend in the elbows, raise the weights out to the sides until arms are parallel to the floor, then lower with control."
   },
   {
@@ -146,7 +146,7 @@ export const exercises: Exercise[] = [
     id: "21",
     name: "Seated Row",
     type: "strength",
-    muscleGroups: ["back", "biceps", "forearms"],
+    muscleGroups: ["back", "biceps"],
     instructions: "Sit at a cable row machine with feet on the platform. Grasp the handle with both hands, keeping your back straight. Pull the handle toward your abdomen, squeezing your shoulder blades together, then return to start."
   },
   {
@@ -174,28 +174,28 @@ export const exercises: Exercise[] = [
     id: "25",
     name: "Russian Twist",
     type: "strength",
-    muscleGroups: ["core", "obliques"],
+    muscleGroups: ["core"],
     instructions: "Sit on the floor with knees bent and feet flat. Lean back slightly, holding a weight with both hands. Rotate your torso to one side, then the other, while keeping your core engaged."
   },
   {
     id: "26",
     name: "Preacher Curl",
     type: "strength",
-    muscleGroups: ["biceps", "forearms"],
+    muscleGroups: ["biceps"],
     instructions: "Sit at a preacher curl bench with your upper arms resting on the pad. Hold a barbell or dumbbell with an underhand grip. Curl the weight up toward your shoulders, then lower with control."
   },
   {
     id: "27",
     name: "Skull Crusher",
     type: "strength",
-    muscleGroups: ["triceps", "forearms"],
+    muscleGroups: ["triceps"],
     instructions: "Lie on a bench holding a barbell or dumbbells above your chest. Lower the weight toward your forehead by bending your elbows, then press back up."
   },
   {
     id: "28",
     name: "Leg Extension",
     type: "strength",
-    muscleGroups: ["quadriceps"],
+    muscleGroups: ["quads"],
     instructions: "Sit on a leg extension machine with ankles under the pad. Extend your legs until they are straight, then lower back to start."
   },
   {
@@ -223,7 +223,7 @@ export const exercises: Exercise[] = [
     id: "32",
     name: "Cable Lateral Raise",
     type: "strength",
-    muscleGroups: ["shoulders", "traps"],
+    muscleGroups: ["shoulders"],
     instructions: "Stand next to a cable machine with the pulley at the lowest setting. Grasp the handle with one hand and raise it out to the side until your arm is parallel to the floor, then lower with control."
   },
   {
@@ -237,7 +237,7 @@ export const exercises: Exercise[] = [
     id: "34",
     name: "Cable Face Pull",
     type: "strength",
-    muscleGroups: ["rear delts", "upper back", "rotator cuff"],
+    muscleGroups: ["shoulders", "back"],
     instructions: "Stand facing a cable machine with the pulley at head height. Grasp the rope attachment with both hands and pull it toward your face, separating the ends as you pull, then slowly return to start."
   },
   {
@@ -251,35 +251,35 @@ export const exercises: Exercise[] = [
     id: "36",
     name: "Cable Row",
     type: "strength",
-    muscleGroups: ["back", "biceps", "forearms"],
+    muscleGroups: ["back", "biceps"],
     instructions: "Sit at a cable row machine with feet on the platform. Grasp the handle with both hands, keeping your back straight. Pull the handle toward your abdomen, squeezing your shoulder blades together, then return to start."   
   },
   {
     id: "37",
     name: "Chest Supported Row",
     type: "strength",
-    muscleGroups: ["back", "biceps", "forearms"],
+    muscleGroups: ["back", "biceps"],
     instructions: "Lie face down on an incline bench with a dumbbell in each hand. Pull the weights up toward your sides, squeezing your shoulder blades together, then lower with control."  
   },
   {
     id: "38",
     name: "Hack Squat",
     type: "strength",
-    muscleGroups: ["quadriceps", "hamstrings", "glutes"],
+    muscleGroups: ["quads", "hamstrings", "glutes"],
     instructions: "Stand on a hack squat machine with feet shoulder-width apart. Lower your body by bending your knees and pushing your hips back, then press back up to standing." 
   },
   {
     id: "39",
     name: "Cable Crunch",
     type: "strength",
-    muscleGroups: ["core", "abs"],
+    muscleGroups: ["core"],
     instructions: "Kneel in front of a cable machine with the pulley at the highest setting. Grasp the rope attachment and pull it down to your shoulders. Crunch your abs, bringing your elbows toward your knees, then return to start."
   },
   {
     id: "40",
     name: "Lunges",
     type: "strength",
-    muscleGroups: ["quadriceps", "hamstrings", "glutes"],
+    muscleGroups: ["quads", "hamstrings", "glutes"],
     instructions: "Stand with feet shoulder-width apart. Step forward with one leg, lowering your body until both knees are bent at 90 degrees. Push back to starting position and repeat on the other leg."  
   }
 ];

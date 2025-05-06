@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { exercises } from "@/data/exercises";
 import { useWorkout } from "@/context/WorkoutContext";

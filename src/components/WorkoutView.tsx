@@ -24,7 +24,7 @@ const WorkoutView = () => {
     completeWorkout, 
     cancelWorkout 
   } = useWorkout();
-  const [selectedBodyPart, setSelectedBodyPart] = useState<string>("all");
+  const [selectedBodyPart, setSelectedBodyPart] = useState<"all" | MuscleGroup>("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -125,7 +125,7 @@ const WorkoutView = () => {
   };
 
   // Get unique body parts from exercises
-  const bodyParts = ["all", ...Array.from(new Set(exercises.flatMap(ex => ex.muscleGroups)))];
+  const bodyParts = ["all", ...Array.from(new Set(exercises.flatMap(ex => ex.muscleGroups)))] as ("all" | MuscleGroup)[];
   
   // Filter exercises based on selected body part
   const filteredExercises = selectedBodyPart === "all" 
