@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Button } from "@/components/ui/button";
@@ -214,37 +213,37 @@ const WorkoutView = () => {
                 key={exerciseItem.id} 
                 className={`${isExerciseCompleted(exerciseItem.id) ? 'border-green-200 bg-green-50/50 dark:bg-green-950/20' : ''}`}
               >
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between w-full"> 
-                    <div className="flex items-center gap-2">
-                      <CollapsibleTrigger 
-                        onClick={() => toggleExerciseCollapse(exerciseItem.id)}
-                        className="hover:bg-muted rounded-full p-1"
-                      >
-                        {isExerciseCollapsed(exerciseItem.id) ? (
-                          <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                        ) : (
-                          <ChevronUp className="h-5 w-5 text-muted-foreground" />
-                        )}
-                      </CollapsibleTrigger>
-                      <CardTitle>{exerciseItem.exercise.name}</CardTitle>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="text-red-500 hover:text-red-700 p-1 ml-2" 
-                      onClick={() => handleRemoveExercise(exerciseItem.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="flex flex-wrap gap-1 ml-7">
-                    {exerciseItem.exercise.muscleGroups.map(group => (
-                      <span key={group} className="text-xs text-muted-foreground capitalize">{group}</span>
-                    ))}
-                  </div>
-                </CardHeader>
                 <Collapsible defaultOpen={!isExerciseCollapsed(exerciseItem.id)}>
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between w-full"> 
+                      <div className="flex items-center gap-2">
+                        <CollapsibleTrigger 
+                          onClick={() => toggleExerciseCollapse(exerciseItem.id)}
+                          className="hover:bg-muted rounded-full p-1"
+                        >
+                          {isExerciseCollapsed(exerciseItem.id) ? (
+                            <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                          ) : (
+                            <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                          )}
+                        </CollapsibleTrigger>
+                        <CardTitle>{exerciseItem.exercise.name}</CardTitle>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="text-red-500 hover:text-red-700 p-1 ml-2" 
+                        onClick={() => handleRemoveExercise(exerciseItem.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-1 ml-7">
+                      {exerciseItem.exercise.muscleGroups.map(group => (
+                        <span key={group} className="text-xs text-muted-foreground capitalize">{group}</span>
+                      ))}
+                    </div>
+                  </CardHeader>
                   <CollapsibleContent>
                     <CardContent className="pt-4">
                       <div className={`grid ${isMobile ? 'grid-cols-12 gap-2' : 'grid-cols-5 gap-4'} text-sm font-medium mb-2`}>
