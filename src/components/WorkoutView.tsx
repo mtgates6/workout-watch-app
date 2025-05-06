@@ -34,8 +34,8 @@ const muscleGroups: MuscleGroup[] = [
 const WorkoutView = () => {
   const {
     activeWorkout,
-    endWorkout,
-    updateSetCompletion,
+    completeWorkout,
+    updateSet,
     removeExerciseFromWorkout,
     removeSetFromExercise,
     addSetToExercise,
@@ -48,12 +48,12 @@ const WorkoutView = () => {
     if (activeWorkout) {
       const exerciseId = activeWorkout.exercises[exerciseIndex].exercise.id;
       const setId = activeWorkout.exercises[exerciseIndex].sets[setIndex].id;
-      updateSetCompletion(exerciseId, setId, completed);
+      updateSet(exerciseId, setId, completed);
     }
   };
 
   const handleEndWorkout = () => {
-    endWorkout();
+    completeWorkout();
     toast({
       title: "Workout Ended",
       description: "Your workout has been saved to history.",
