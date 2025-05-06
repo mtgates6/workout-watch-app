@@ -53,6 +53,14 @@ const WorkoutView = () => {
     }
   };
 
+  const handleSetUpdate = (exerciseIndex: number, setIndex: number, field: 'weight' | 'reps', value: number) => {
+    if (activeWorkout) {
+      const exerciseId = activeWorkout.exercises[exerciseIndex].exercise.id;
+      const setId = activeWorkout.exercises[exerciseIndex].sets[setIndex].id;
+      updateSet(exerciseId, setId, { [field]: value });
+    }
+  };
+
   const handleEndWorkout = () => {
     completeWorkout();
     toast({
@@ -246,13 +254,13 @@ const WorkoutView = () => {
                         type="number"
                         placeholder="Weight"
                         defaultValue={set.weight}
-                        disabled
+                        onChange={(e) => handleSetUpdate(exerciseIndex, setIndex, 'weight', Number(e.target.value))}
                       />
                       <Input
                         type="number"
                         placeholder="Reps"
                         defaultValue={set.reps}
-                        disabled
+                        onChange={(e) => handleSetUpdate(exerciseIndex, setIndex, 'reps', Number(e.target.value))}
                       />
                       <Button
                         variant="outline"
@@ -308,13 +316,13 @@ const WorkoutView = () => {
                         type="number"
                         placeholder="Weight"
                         defaultValue={set.weight}
-                        disabled
+                        onChange={(e) => handleSetUpdate(exerciseIndex, setIndex, 'weight', Number(e.target.value))}
                       />
                       <Input
                         type="number"
                         placeholder="Reps"
                         defaultValue={set.reps}
-                        disabled
+                        onChange={(e) => handleSetUpdate(exerciseIndex, setIndex, 'reps', Number(e.target.value))}
                       />
                       <Button
                         variant="outline"
