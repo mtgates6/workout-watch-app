@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { format, addDays, startOfWeek } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -15,6 +14,7 @@ import { exercises } from "@/data/exercises";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Textarea } from "@/components/ui/textarea";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const PlannerPage = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -136,6 +136,16 @@ const PlannerPage = () => {
 
   const handleRemoveExerciseFromPlan = (exerciseId: string) => {
     setPlannedExercises(plannedExercises.filter(e => e.id !== exerciseId));
+  };
+
+  const handleDragEnd = (result: any) => {
+    if (!result.destination) return; // If dropped outside the list, do nothing
+  
+    const reorderedExercises = Array.from(plannedExercises);
+    const [movedItem] = reorderedExercises.splice(result.source.index, 1);
+    reorderedExercises.splice(result.destination.index, 0, movedItem);
+  
+    setPlannedExercises(reorderedExercises);
   };
 
   const filteredExercises = exercises
@@ -346,24 +356,41 @@ const PlannerPage = () => {
             <div>
               <label className="text-sm font-medium mb-2 block">Planned Exercises</label>
               {plannedExercises.length > 0 ? (
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {plannedExercises.map(exercise => (
-                    <div 
-                      key={exercise.id} 
-                      className="flex justify-between items-center p-2 bg-muted rounded-md"
-                    >
-                      <span>{exercise.name}</span>
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        onClick={() => handleRemoveExerciseFromPlan(exercise.id)}
-                        className="text-red-500"
+                <DragDropContext onDragEnd={handleDragEnd}>
+                  <Droppable droppableId="plannedExercises">
+                    {(provided) => (
+                      <div
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        className="space-y-2 max-h-40 overflow-y-auto"
                       >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+                        {plannedExercises.map((exercise, index) => (
+                          <Draggable key={exercise.id} draggableId={exercise.id} index={index}>
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                className="flex justify-between items-center p-2 bg-muted rounded-md"
+                              >
+                                <span>{exercise.name}</span>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => handleRemoveExerciseFromPlan(exercise.id)}
+                                  className="text-red-500"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
               ) : (
                 <div className="p-4 border border-dashed rounded-md text-center text-muted-foreground">
                   No exercises added yet. Search above to add exercises.
