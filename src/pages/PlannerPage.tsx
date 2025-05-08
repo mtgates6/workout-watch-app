@@ -363,7 +363,7 @@ const PlannerPage = () => {
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                         style={{ padding: 8 }}
-                        className="space-y-2 max-h-40 overflow-y-auto"
+                        className="space-y-2"
                       >
                         {plannedExercises.map((exercise, index) => (
                           <Draggable key={exercise.id} draggableId={exercise.id} index={index}>
@@ -377,7 +377,7 @@ const PlannerPage = () => {
                                 userSelect: "none",
                                 margin: "0 0 8px 0",
                                 background: snapshot.isDragging ? "#e0f2fe" : "", // Optional: lighter color on drag
-                                ...provided.draggableProps.style, // 💥 MUST be last
+                                ...provided.draggableProps.style, //  MUST be last
                               }}
                             >
                               <span>{exercise.name}</span>
