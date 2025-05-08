@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { ExerciseCard } from "./workout/ExerciseCard";
 import { AddExerciseDialog } from "./workout/AddExerciseDialog";
 import { NoActiveWorkout } from "./workout/NoActiveWorkout";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Plus } from "lucide-react";
 
 const WorkoutView = () => {
   const {
@@ -125,20 +127,38 @@ const WorkoutView = () => {
         </div>
       </div>
 
-      <div className="space-y-4">
-        {activeWorkout.exercises.map((exercise, exerciseIndex) => (
-          <ExerciseCard
-            key={exercise.id || exercise.exercise.id}
-            exercise={exercise}
-            exerciseIndex={exerciseIndex}
-            handleRemoveExercise={handleRemoveExercise}
-            handleSetCompletion={handleSetCompletion}
-            handleSetUpdate={handleSetUpdate}
-            handleRemoveSet={handleRemoveSet}
-            handleAddSet={handleAddSet}
-          />
-        ))}
-      </div>
+      {activeWorkout.exercises.length > 0 ? (
+        <div className="space-y-4">
+          {activeWorkout.exercises.map((exercise, exerciseIndex) => (
+            <ExerciseCard
+              key={exercise.id || exercise.exercise.id}
+              exercise={exercise}
+              exerciseIndex={exerciseIndex}
+              handleRemoveExercise={handleRemoveExercise}
+              handleSetCompletion={handleSetCompletion}
+              handleSetUpdate={handleSetUpdate}
+              handleRemoveSet={handleRemoveSet}
+              handleAddSet={handleAddSet}
+            />
+          ))}
+        </div>
+      ) : (
+        <Card className="border-dashed border-2 text-center">
+          <CardHeader>
+            <CardTitle className="text-xl">Add your first exercise</CardTitle>
+            <CardDescription>Get started by adding exercises to your workout</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              onClick={() => setShowAddExerciseDialog(true)}
+              className="bg-fitness-primary hover:bg-fitness-secondary"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Exercise
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
