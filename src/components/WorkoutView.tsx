@@ -26,7 +26,7 @@ const WorkoutView = () => {
 
   const handleSetCompletion = (setIndex: number, exerciseIndex: number, completed: boolean) => {
     if (activeWorkout) {
-      const exerciseId = activeWorkout.exercises[exerciseIndex].exercise.id;
+      const exerciseId = activeWorkout.exercises[exerciseIndex].id;
       const setId = activeWorkout.exercises[exerciseIndex].sets[setIndex].id;
       updateSet(exerciseId, setId, { completed });
     }
@@ -34,7 +34,7 @@ const WorkoutView = () => {
 
   const handleSetUpdate = (exerciseIndex: number, setIndex: number, field: 'weight' | 'reps', value: number) => {
     if (activeWorkout) {
-      const exerciseId = activeWorkout.exercises[exerciseIndex].exercise.id;
+      const exerciseId = activeWorkout.exercises[exerciseIndex].id;
       const setId = activeWorkout.exercises[exerciseIndex].sets[setIndex].id;
       updateSet(exerciseId, setId, { [field]: value });
     }
@@ -51,7 +51,7 @@ const WorkoutView = () => {
 
   const handleRemoveExercise = (exerciseIndex: number) => {
     if (activeWorkout) {
-      const exerciseId = activeWorkout.exercises[exerciseIndex].exercise.id;
+      const exerciseId = activeWorkout.exercises[exerciseIndex].id;
       removeExerciseFromWorkout(exerciseId);
       toast({
         title: "Exercise Removed",
@@ -62,7 +62,7 @@ const WorkoutView = () => {
 
   const handleRemoveSet = (exerciseIndex: number, setIndex: number) => {
     if (activeWorkout) {
-      const exerciseId = activeWorkout.exercises[exerciseIndex].exercise.id;
+      const exerciseId = activeWorkout.exercises[exerciseIndex].id;
       const setId = activeWorkout.exercises[exerciseIndex].sets[setIndex].id;
       removeSetFromExercise(exerciseId, setId);
       toast({
@@ -74,7 +74,7 @@ const WorkoutView = () => {
 
   const handleAddSet = (exerciseIndex: number) => {
     if (activeWorkout) {
-      const exerciseId = activeWorkout.exercises[exerciseIndex].exercise.id;
+      const exerciseId = activeWorkout.exercises[exerciseIndex].id;
       addSetToExercise(exerciseId);
       toast({
         title: "Set Added",
@@ -128,7 +128,7 @@ const WorkoutView = () => {
       <div className="space-y-4">
         {activeWorkout.exercises.map((exercise, exerciseIndex) => (
           <ExerciseCard
-            key={exercise.exercise.id}
+            key={exercise.id || exercise.exercise.id}
             exercise={exercise}
             exerciseIndex={exerciseIndex}
             handleRemoveExercise={handleRemoveExercise}

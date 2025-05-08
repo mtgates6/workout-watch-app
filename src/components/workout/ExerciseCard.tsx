@@ -80,7 +80,11 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 handleRemoveSet={handleRemoveSet}
               />
             ))}
-            <Button onClick={() => handleAddSet(exerciseIndex)} className="w-full">
+            <Button 
+              onClick={() => handleAddSet(exerciseIndex)} 
+              className="w-full"
+              type="button"
+            >
               <Plus className="mr-2 h-4 w-4" /> Add Set
             </Button>
           </CardContent>
