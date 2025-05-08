@@ -367,28 +367,31 @@ const PlannerPage = () => {
                       >
                         {plannedExercises.map((exercise, index) => (
                           <Draggable key={exercise.id} draggableId={exercise.id} index={index}>
-                            {(provided) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                style={{
-                                  ...provided.draggableProps.style, // VERY IMPORTANT
-                                }}
-                                className="flex justify-between items-center p-2 bg-muted rounded-md"
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              className="flex justify-between items-center p-2 bg-muted rounded-md"
+                              style={{
+                                userSelect: "none",
+                                margin: "0 0 8px 0",
+                                background: snapshot.isDragging ? "#e0f2fe" : "", // Optional: lighter color on drag
+                                ...provided.draggableProps.style, // 💥 MUST be last
+                              }}
+                            >
+                              <span>{exercise.name}</span>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleRemoveExerciseFromPlan(exercise.id)}
+                                className="text-red-500"
                               >
-                                <span>{exercise.name}</span>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => handleRemoveExerciseFromPlan(exercise.id)}
-                                  className="text-red-500"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            )}
-                          </Draggable>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          )}
+                        </Draggable>
                         ))}
                         {provided.placeholder}
                       </div>
