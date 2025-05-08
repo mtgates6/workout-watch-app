@@ -281,7 +281,16 @@ export const exercises: Exercise[] = [
     type: "strength",
     muscleGroups: ["quads", "hamstrings", "glutes"],
     instructions: "Stand with feet shoulder-width apart. Step forward with one leg, lowering your body until both knees are bent at 90 degrees. Push back to starting position and repeat on the other leg."  
-  }
+  },
+  {
+    id: "41",
+    name: " Dumbbell Squat",
+    type: "strength",
+    muscleGroups: ["quads", "hamstrings", "glutes"],  
+    instructions: "Stand with feet shoulder-width apart, holding a dumbbell in each hand. Lower your body by bending your knees and pushing your hips back, then return to standing."
+  },
+  
+
 ];
 
 export const getExerciseById = (id: string): Exercise | undefined => {
