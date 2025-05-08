@@ -245,15 +245,7 @@ const PlannerPage = () => {
                             variant="outline"
                             onClick={() => handleOpenPlanDialog(workout)}
                           >
-                            <Eye className="h-4 w-4 mr-1" />
                             Plan
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            className="py-0 h-7" 
-                            onClick={() => handleStartPlannedWorkout(workout)}
-                          >
-                            Start
                           </Button>
                           <Button 
                             size="sm" 
