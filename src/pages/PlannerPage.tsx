@@ -374,10 +374,8 @@ const PlannerPage = () => {
                               {...provided.dragHandleProps}
                               className="flex justify-between items-center p-2 bg-muted rounded-md"
                               style={{
-                                userSelect: "none",
-                                transform: "none",
-                                margin: "0 0 8px 0",
-                                background: snapshot.isDragging ? "#e0f2fe" : "", // Optional: lighter color on drag
+                                position: 'relative',
+                                zIndex: snapshot.isDragging ? 9999 : 'auto',
                                 ...provided.draggableProps.style, //  MUST be last
                               }}
                             >
