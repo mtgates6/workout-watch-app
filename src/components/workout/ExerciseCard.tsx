@@ -1,11 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2, Plus } from "lucide-react";
+import { Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import { WorkoutExercise } from "@/types/workout";
 import { SetRow } from "./SetRow";
-import { useToast } from "@/hooks/use-toast";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface ExerciseCardProps {
   exercise: WorkoutExercise;
@@ -26,39 +26,66 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   handleRemoveSet,
   handleAddSet
 }) => {
+  const [isOpen, setIsOpen] = useState(true);
+  
+  // Calculate completion status
+  const totalSets = exercise.sets.length;
+  const completedSets = exercise.sets.filter(set => set.completed).length;
+  const isCompleted = totalSets > 0 && completedSets === totalSets;
+  
   return (
-    <Card key={exercise.exercise.id}>
-      <CardHeader>
-        <CardTitle className="flex justify-between items-center">
-          {exercise.exercise.name}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => handleRemoveExercise(exerciseIndex)}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </CardTitle>
-        <CardDescription>
-          {exercise.exercise.muscleGroups.join(", ")}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        {exercise.sets.map((set, setIndex) => (
-          <SetRow 
-            key={set.id}
-            set={set}
-            setIndex={setIndex}
-            exerciseIndex={exerciseIndex}
-            handleSetCompletion={handleSetCompletion}
-            handleSetUpdate={handleSetUpdate}
-            handleRemoveSet={handleRemoveSet}
-          />
-        ))}
-        <Button onClick={() => handleAddSet(exerciseIndex)} className="w-full">
-          <Plus className="mr-2 h-4 w-4" /> Add Set
-        </Button>
-      </CardContent>
+    <Card key={exercise.exercise.id} className={isCompleted ? "border-green-500" : ""}>
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 mr-2">
+                  {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button>
+              </CollapsibleTrigger>
+              <div>
+                <CardTitle className="text-xl flex items-center">
+                  {exercise.exercise.name}
+                  {isCompleted && (
+                    <span className="ml-2 bg-green-500 text-white text-xs py-0.5 px-2 rounded-full">
+                      Complete
+                    </span>
+                  )}
+                </CardTitle>
+                <CardDescription>
+                  {exercise.exercise.muscleGroups.join(", ")} • {completedSets}/{totalSets} sets completed
+                </CardDescription>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleRemoveExercise(exerciseIndex)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardHeader>
+        <CollapsibleContent>
+          <CardContent className="space-y-2 pt-2">
+            {exercise.sets.map((set, setIndex) => (
+              <SetRow 
+                key={set.id}
+                set={set}
+                setIndex={setIndex}
+                exerciseIndex={exerciseIndex}
+                handleSetCompletion={handleSetCompletion}
+                handleSetUpdate={handleSetUpdate}
+                handleRemoveSet={handleRemoveSet}
+              />
+            ))}
+            <Button onClick={() => handleAddSet(exerciseIndex)} className="w-full">
+              <Plus className="mr-2 h-4 w-4" /> Add Set
+            </Button>
+          </CardContent>
+        </CollapsibleContent>
+      </Collapsible>
     </Card>
   );
 };

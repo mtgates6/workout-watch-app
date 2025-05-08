@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Exercise } from "@/types/workout";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -126,45 +125,20 @@ const WorkoutView = () => {
         </div>
       </div>
 
-      <Tabs defaultValue="incomplete" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
-          <TabsTrigger value="complete">Complete</TabsTrigger>
-        </TabsList>
-        <TabsContent value="incomplete" className="space-y-4">
-          {activeWorkout.exercises
-            .filter((exercise) => !exercise.sets.every((set) => set.completed))
-            .map((exercise, exerciseIndex) => (
-              <ExerciseCard
-                key={exercise.exercise.id}
-                exercise={exercise}
-                exerciseIndex={exerciseIndex}
-                handleRemoveExercise={handleRemoveExercise}
-                handleSetCompletion={handleSetCompletion}
-                handleSetUpdate={handleSetUpdate}
-                handleRemoveSet={handleRemoveSet}
-                handleAddSet={handleAddSet}
-              />
-            ))}
-        </TabsContent>
-
-        <TabsContent value="complete" className="space-y-4">
-          {activeWorkout.exercises
-            .filter((exercise) => exercise.sets.every((set) => set.completed))
-            .map((exercise, exerciseIndex) => (
-              <ExerciseCard
-                key={exercise.exercise.id}
-                exercise={exercise}
-                exerciseIndex={exerciseIndex}
-                handleRemoveExercise={handleRemoveExercise}
-                handleSetCompletion={handleSetCompletion}
-                handleSetUpdate={handleSetUpdate}
-                handleRemoveSet={handleRemoveSet}
-                handleAddSet={handleAddSet}
-              />
-            ))}
-        </TabsContent>
-      </Tabs>
+      <div className="space-y-4">
+        {activeWorkout.exercises.map((exercise, exerciseIndex) => (
+          <ExerciseCard
+            key={exercise.exercise.id}
+            exercise={exercise}
+            exerciseIndex={exerciseIndex}
+            handleRemoveExercise={handleRemoveExercise}
+            handleSetCompletion={handleSetCompletion}
+            handleSetUpdate={handleSetUpdate}
+            handleRemoveSet={handleRemoveSet}
+            handleAddSet={handleAddSet}
+          />
+        ))}
+      </div>
     </div>
   );
 };
