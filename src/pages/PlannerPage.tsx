@@ -374,6 +374,12 @@ const PlannerPage = () => {
                                 className={`flex justify-between items-center p-2 bg-muted rounded-md ${
                                   snapshot.isDragging ? "react-beautiful-dnd-dragging" : ""
                                 }`}
+                                style={{
+                                  ...provided.draggableProps.style,
+                                  transform: snapshot.isDragging
+                                    ? provided.draggableProps.style?.transform
+                                    : "none",
+                                }}
                               >
                                 <span>{exercise.name}</span>
                                 <Button
