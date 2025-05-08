@@ -116,7 +116,7 @@ const WorkoutView = () => {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button onClick={handleEndWorkout} variant="outline">
+          <Button onClick={handleEndWorkout} variant="outline" className="bg-green-500 hover:bg-green-600 text-white">
             End Workout
           </Button>
           <AddExerciseDialog 
