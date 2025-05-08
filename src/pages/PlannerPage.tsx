@@ -353,7 +353,7 @@ const PlannerPage = () => {
               )}
             </div>
             
-            <div>
+            <div style={{ position: 'relative', transform: 'none' }}>
               <label className="text-sm font-medium mb-2 block">Planned Exercises</label>
               {plannedExercises.length > 0 ? (
                 <DragDropContext onDragEnd={handleDragEnd} disableInteractiveElementBlocking={true}>
