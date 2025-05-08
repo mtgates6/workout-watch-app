@@ -362,7 +362,6 @@ const PlannerPage = () => {
                       <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className="space-y-2 max-h-40 overflow-y-auto"
                         style={{ padding: 8 }}
                       >
                         {plannedExercises.map((exercise, index) => (
@@ -372,9 +371,6 @@ const PlannerPage = () => {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className={`flex justify-between items-center p-2 bg-muted rounded-md ${
-                                  snapshot.isDragging ? "react-beautiful-dnd-dragging" : ""
-                                }`}
                                 style={{
                                   userSelect: 'none',
                                   padding: 16,
