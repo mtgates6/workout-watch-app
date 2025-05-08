@@ -47,6 +47,7 @@ export interface Workout {
   notes?: string;
   completed: boolean;
   planned?: boolean;
+  plannedExercises?: Exercise[]; // Added for planning exercises
 }
 
 export interface WorkoutSummary {

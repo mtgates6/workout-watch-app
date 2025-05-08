@@ -6,20 +6,27 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
-import { CalendarDays, Plus, Calendar as CalendarIcon, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
+import { CalendarDays, Plus, Calendar as CalendarIcon, ChevronLeft, ChevronRight, Trash2, Eye } from "lucide-react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { Workout } from "@/types/workout";
+import { Workout, Exercise } from "@/types/workout";
 import { exercises } from "@/data/exercises";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Textarea } from "@/components/ui/textarea";
 
 const PlannerPage = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [newWorkoutName, setNewWorkoutName] = useState("");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const { workouts, createPlannedWorkout, startPlannedWorkout, deletePlannedWorkout } = useWorkout();
+  const [planDialogOpen, setPlanDialogOpen] = useState(false);
+  const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
+  const [exerciseSearch, setExerciseSearch] = useState("");
+  const [plannedExercises, setPlannedExercises] = useState<Exercise[]>([]);
+  const [workoutNotes, setWorkoutNotes] = useState("");
+  const { workouts, createPlannedWorkout, startPlannedWorkout, deletePlannedWorkout, updatePlannedWorkout } = useWorkout();
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -83,6 +90,59 @@ const PlannerPage = () => {
       description: `"${workout.name}" has been removed from your plan`,
     });
   };
+
+  const handleOpenPlanDialog = (workout: Workout) => {
+    setSelectedWorkout(workout);
+    setPlannedExercises(workout.plannedExercises || []);
+    setWorkoutNotes(workout.notes || "");
+    setPlanDialogOpen(true);
+  };
+
+  const handleClosePlanDialog = () => {
+    setSelectedWorkout(null);
+    setPlannedExercises([]);
+    setWorkoutNotes("");
+    setPlanDialogOpen(false);
+  };
+
+  const handleSavePlan = () => {
+    if (!selectedWorkout) return;
+
+    updatePlannedWorkout(selectedWorkout.id, {
+      plannedExercises,
+      notes: workoutNotes
+    });
+
+    toast({
+      title: "Workout Plan Updated",
+      description: `Updated plan for "${selectedWorkout.name}"`,
+    });
+
+    handleClosePlanDialog();
+  };
+
+  const handleAddExerciseToPlan = (exercise: Exercise) => {
+    if (plannedExercises.some(e => e.id === exercise.id)) {
+      toast({
+        title: "Exercise already added",
+        description: `"${exercise.name}" is already in your plan`,
+      });
+      return;
+    }
+    
+    setPlannedExercises([...plannedExercises, exercise]);
+    setExerciseSearch("");
+  };
+
+  const handleRemoveExerciseFromPlan = (exerciseId: string) => {
+    setPlannedExercises(plannedExercises.filter(e => e.id !== exerciseId));
+  };
+
+  const filteredExercises = exercises
+    .filter(exercise => 
+      exercise.name.toLowerCase().includes(exerciseSearch.toLowerCase())
+    )
+    .slice(0, 5);
   
   return (
     <div className="space-y-6">
@@ -147,13 +207,50 @@ const PlannerPage = () => {
                     plannedWorkouts.map(workout => (
                       <Card key={workout.id} className="overflow-hidden">
                         <CardHeader className="p-2">
-                          <CardTitle className="text-sm">{workout.name}</CardTitle>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <CardTitle className="text-sm cursor-default">{workout.name}</CardTitle>
+                              </TooltipTrigger>
+                              <TooltipContent side="right" className="max-w-sm">
+                                <div className="p-1">
+                                  {workout.plannedExercises && workout.plannedExercises.length > 0 ? (
+                                    <>
+                                      <h4 className="font-semibold mb-1">Planned Exercises:</h4>
+                                      <ul className="list-disc pl-4 mb-2">
+                                        {workout.plannedExercises.map((exercise) => (
+                                          <li key={exercise.id}>{exercise.name}</li>
+                                        ))}
+                                      </ul>
+                                    </>
+                                  ) : (
+                                    <p className="text-muted-foreground">No exercises planned yet</p>
+                                  )}
+                                  
+                                  {workout.notes && (
+                                    <div className="mt-2 border-t pt-1">
+                                      <h4 className="font-semibold mb-1">Notes:</h4>
+                                      <p className="text-sm">{workout.notes}</p>
+                                    </div>
+                                  )}
+                                </div>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         </CardHeader>
                         <CardFooter className="p-2 pt-0 flex justify-between gap-1">
                           <Button 
                             size="sm" 
-                            className="w-full py-0 h-7" 
+                            className="py-0 h-7"
                             variant="outline"
+                            onClick={() => handleOpenPlanDialog(workout)}
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            Plan
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            className="py-0 h-7" 
                             onClick={() => handleStartPlannedWorkout(workout)}
                           >
                             Start
@@ -211,6 +308,93 @@ const PlannerPage = () => {
           );
         })}
       </div>
+
+      {/* Plan Exercises Dialog */}
+      <Dialog open={planDialogOpen} onOpenChange={setPlanDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Plan Workout: {selectedWorkout?.name}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Add Exercises</label>
+              <Input
+                placeholder="Search exercises..."
+                value={exerciseSearch}
+                onChange={(e) => setExerciseSearch(e.target.value)}
+              />
+              
+              {exerciseSearch && (
+                <div className="mt-2 border rounded-md max-h-40 overflow-y-auto">
+                  {filteredExercises.length > 0 ? (
+                    filteredExercises.map(exercise => (
+                      <div 
+                        key={exercise.id} 
+                        className="p-2 hover:bg-accent cursor-pointer flex justify-between items-center border-b last:border-b-0"
+                        onClick={() => handleAddExerciseToPlan(exercise)}
+                      >
+                        <span>{exercise.name}</span>
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-3 text-center text-muted-foreground">
+                      No exercises found
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-2 block">Planned Exercises</label>
+              {plannedExercises.length > 0 ? (
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {plannedExercises.map(exercise => (
+                    <div 
+                      key={exercise.id} 
+                      className="flex justify-between items-center p-2 bg-muted rounded-md"
+                    >
+                      <span>{exercise.name}</span>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        onClick={() => handleRemoveExerciseFromPlan(exercise.id)}
+                        className="text-red-500"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-4 border border-dashed rounded-md text-center text-muted-foreground">
+                  No exercises added yet. Search above to add exercises.
+                </div>
+              )}
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-2 block">Notes</label>
+              <Textarea
+                placeholder="Add notes for this workout plan..."
+                value={workoutNotes}
+                onChange={(e) => setWorkoutNotes(e.target.value)}
+                className="min-h-24"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleClosePlanDialog}>Cancel</Button>
+            <Button onClick={handleSavePlan}>Save Plan</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

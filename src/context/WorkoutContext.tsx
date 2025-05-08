@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Workout, WorkoutExercise, WorkoutSet, WorkoutSummary, Exercise } from "@/types/workout";
@@ -21,6 +20,7 @@ interface WorkoutContextType {
   getWorkoutsByDate: (date: string) => Workout[];
   startPlannedWorkout: (workoutId: string) => void;
   deletePlannedWorkout: (workoutId: string) => void;
+  updatePlannedWorkout: (workoutId: string, updates: Partial<Workout>) => void;
 }
 
 const initialSummary: WorkoutSummary = {
@@ -234,7 +234,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return workouts.find((workout) => workout.id === id);
   };
   
-  // New functions for planned workouts
+  // Functions for planned workouts
   const createPlannedWorkout = (name: string, date: string) => {
     const newWorkout: Workout = {
       id: uuidv4(),
@@ -243,6 +243,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
       date,
       completed: false,
       planned: true,
+      plannedExercises: [],
     };
     
     setWorkouts(prev => [...prev, newWorkout]);
@@ -276,11 +277,35 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
       planned: false, // No longer a planned workout
     };
     
+    // If there are planned exercises, add them to the workout
+    if (plannedWorkout.plannedExercises && plannedWorkout.plannedExercises.length > 0) {
+      newActiveWorkout.exercises = plannedWorkout.plannedExercises.map(exercise => ({
+        id: uuidv4(),
+        exercise,
+        sets: [{
+          id: uuidv4(),
+          exerciseId: exercise.id,
+          completed: false,
+        }],
+      }));
+    }
+    
     setActiveWorkout(newActiveWorkout);
   };
   
   const deletePlannedWorkout = (workoutId: string) => {
     setWorkouts(prev => prev.filter(workout => workout.id !== workoutId));
+  };
+  
+  // New function to update planned workout
+  const updatePlannedWorkout = (workoutId: string, updates: Partial<Workout>) => {
+    setWorkouts(prev => 
+      prev.map(workout => 
+        workout.id === workoutId 
+          ? { ...workout, ...updates }
+          : workout
+      )
+    );
   };
 
   return (
@@ -302,6 +327,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
         getWorkoutsByDate,
         startPlannedWorkout,
         deletePlannedWorkout,
+        updatePlannedWorkout,
       }}
     >
       {children}
