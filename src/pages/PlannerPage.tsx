@@ -363,6 +363,7 @@ const PlannerPage = () => {
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                         style={{ padding: 8 }}
+                        className="space-y-2 max-h-40 overflow-y-auto"
                       >
                         {plannedExercises.map((exercise, index) => (
                           <Draggable key={exercise.id} draggableId={exercise.id} index={index}>
@@ -374,6 +375,7 @@ const PlannerPage = () => {
                                 style={{
                                   ...provided.draggableProps.style, // VERY IMPORTANT
                                 }}
+                                className="flex justify-between items-center p-2 bg-muted rounded-md"
                               >
                                 <span>{exercise.name}</span>
                                 <Button
