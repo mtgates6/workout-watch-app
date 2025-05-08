@@ -356,7 +356,7 @@ const PlannerPage = () => {
             <div>
               <label className="text-sm font-medium mb-2 block">Planned Exercises</label>
               {plannedExercises.length > 0 ? (
-                <DragDropContext onDragEnd={handleDragEnd}>
+                <DragDropContext onDragEnd={handleDragEnd} disableInteractiveElementBlocking={true}>
                   <Droppable droppableId="plannedExercises">
                     {(provided) => (
                       <div
@@ -375,6 +375,7 @@ const PlannerPage = () => {
                               className="flex justify-between items-center p-2 bg-muted rounded-md"
                               style={{
                                 userSelect: "none",
+                                transform: "none",
                                 margin: "0 0 8px 0",
                                 background: snapshot.isDragging ? "#e0f2fe" : "", // Optional: lighter color on drag
                                 ...provided.draggableProps.style, //  MUST be last
