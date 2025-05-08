@@ -366,18 +366,12 @@ const PlannerPage = () => {
                       >
                         {plannedExercises.map((exercise, index) => (
                           <Draggable key={exercise.id} draggableId={exercise.id} index={index}>
-                            {(provided, snapshot) => (
+                            {(provided) => (
                               <div
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
                                 style={{
-                                  userSelect: 'none',
-                                  padding: 16,
-                                  margin: '0 0 8px 0',
-                                  backgroundColor: '#fff',
-                                  borderRadius: 4,
-                                  boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
                                   ...provided.draggableProps.style, // VERY IMPORTANT
                                 }}
                               >
