@@ -366,12 +366,14 @@ const PlannerPage = () => {
                       >
                         {plannedExercises.map((exercise, index) => (
                           <Draggable key={exercise.id} draggableId={exercise.id} index={index}>
-                            {(provided) => (
+                            {(provided, snapshot) => (
                               <div
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className="flex justify-between items-center p-2 bg-muted rounded-md"
+                                className={`flex justify-between items-center p-2 bg-muted rounded-md ${
+                                  snapshot.isDragging ? "opacity-50" : "opacity-100"
+                                }`}
                               >
                                 <span>{exercise.name}</span>
                                 <Button
