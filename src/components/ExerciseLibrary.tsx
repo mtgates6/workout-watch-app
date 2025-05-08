@@ -1,9 +1,9 @@
+
 import React, { useState } from "react";
 import { exercises } from "@/data/exercises";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Search, Plus } from "lucide-react";
@@ -11,13 +11,6 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Exercise, MuscleGroup } from "@/types/workout";
 import { useNavigate } from "react-router-dom";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 const muscleGroups: MuscleGroup[] = [
   'chest',
@@ -60,6 +53,10 @@ const ExerciseLibrary = () => {
     }
   };
 
+  const handleMuscleGroupSelect = (muscleGroup: MuscleGroup | "all") => {
+    setSelectedMuscleGroup(muscleGroup);
+  };
+
   const filteredExercises = exercises
     .filter(
       (exercise) =>
@@ -78,8 +75,8 @@ const ExerciseLibrary = () => {
         <p className="text-muted-foreground">Browse and add exercises to your workout</p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-1">
+      <div className="space-y-4">
+        <div className="relative">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search exercises..."
@@ -88,22 +85,26 @@ const ExerciseLibrary = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Select
-          value={selectedMuscleGroup}
-          onValueChange={(value) => setSelectedMuscleGroup(value as MuscleGroup | "all")}
-        >
-          <SelectTrigger className="w-full md:w-[180px]">
-            <SelectValue placeholder="Filter by muscle" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Muscles</SelectItem>
-            {muscleGroups.map(muscle => (
-              <SelectItem key={muscle} value={muscle} className="capitalize">
-                {muscle.charAt(0).toUpperCase() + muscle.slice(1)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        
+        <div className="flex flex-wrap gap-2">
+          <Badge 
+            variant={selectedMuscleGroup === "all" ? "default" : "outline"}
+            className="cursor-pointer text-sm py-1 px-3"
+            onClick={() => handleMuscleGroupSelect("all")}
+          >
+            All
+          </Badge>
+          {muscleGroups.map(muscle => (
+            <Badge 
+              key={muscle} 
+              variant={selectedMuscleGroup === muscle ? "default" : "outline"} 
+              className="cursor-pointer text-sm py-1 px-3 capitalize"
+              onClick={() => handleMuscleGroupSelect(muscle)}
+            >
+              {muscle.charAt(0).toUpperCase() + muscle.slice(1)}
+            </Badge>
+          ))}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
