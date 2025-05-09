@@ -353,7 +353,7 @@ const PlannerPage = () => {
               )}
             </div>
             
-            <div style={{ position: 'relative', transform: 'none' }}>
+            <div>
               <label className="text-sm font-medium mb-2 block">Planned Exercises</label>
               {plannedExercises.length > 0 ? (
                 <DragDropContext onDragEnd={handleDragEnd} disableInteractiveElementBlocking={true}>
@@ -362,7 +362,7 @@ const PlannerPage = () => {
                       <div
                       {...provided.droppableProps}
                         ref={provided.innerRef}
-                        style={{ background: "#f0f0f0", padding: 8 }}
+                        className="space-y-2 max-h-40 overflow-y-auto"
                       >
                         {plannedExercises.map((exercise, index) => (
                           <Draggable key={exercise.id} draggableId={exercise.id} index={index}>
@@ -371,14 +371,9 @@ const PlannerPage = () => {
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              
-                              style={{
-                                padding: 12,
-                                marginBottom: 8,
-                                background: snapshot.isDragging ? "#cce5ff" : "#fff",
-                                border: "1px solid #ccc",
-                                ...provided.draggableProps.style,
-                              }}
+                              className={`flex justify-between items-center p-2 bg-muted rounded-md ${
+                                snapshot.isDragging ? "opacity-50" : "opacity-100"
+                              }`}
                             >
                               <span>{exercise.name}</span>
                               <Button
