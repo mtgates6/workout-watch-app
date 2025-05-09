@@ -184,19 +184,35 @@ const PlannerPage = () => {
         </Popover>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0 mb-4">
-        <Button variant="outline" onClick={handlePrevWeek} className="w-full sm:w-auto">
+      <div className="flex items-center justify-between gap-2 mb-4">
+      {/* Mobile View: Chevrons next to the date */}
+      <div className="flex items-center sm:hidden">
+        <Button variant="ghost" onClick={handlePrevWeek} className="p-2">
+          <ChevronLeft className="h-5 w-5" />
+        </Button>
+        <h2 className="text-lg font-medium text-center mx-2">
+          {format(weekStart, 'MMM d')} - {format(addDays(weekStart, 6), 'MMM d, yyyy')}
+        </h2>
+        <Button variant="ghost" onClick={handleNextWeek} className="p-2">
+          <ChevronRight className="h-5 w-5" />
+        </Button>
+      </div>
+
+      {/* Desktop View: Full buttons */}
+      <div className="hidden sm:flex items-center justify-between w-full">
+        <Button variant="outline" onClick={handlePrevWeek} className="w-auto">
           <ChevronLeft className="h-4 w-4 mr-1" />
           Previous Week
         </Button>
         <h2 className="text-lg sm:text-xl font-medium text-center">
           {format(weekStart, 'MMM d')} - {format(addDays(weekStart, 6), 'MMM d, yyyy')}
         </h2>
-        <Button variant="outline" onClick={handleNextWeek} className="w-full sm:w-auto">
+        <Button variant="outline" onClick={handleNextWeek} className="w-auto">
           Next Week
           <ChevronRight className="h-4 w-4 ml-1" />
         </Button>
       </div>
+    </div>
       
       {/* Desktop View: 7-column grid */}
       <div className="hidden sm:grid grid-cols-7 gap-3">
