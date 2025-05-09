@@ -22,19 +22,20 @@ export const SetRow: React.FC<SetRowProps> = ({
   handleRemoveSet
 }) => {
   return (
-    <div key={set.id} className="grid grid-cols-4 gap-3 items-center justify-center">
+    <div key={set.id} className="grid grid-cols-4 gap-2 items-center justify-center">
       <Input
         type="number"
         placeholder="Weight"
         defaultValue={set.weight}
         onChange={(e) => handleSetUpdate(exerciseIndex, setIndex, 'weight', Number(e.target.value))}
-        className="h-10"
+        className="w-10"
       />
       <Input
         type="number"
         placeholder="Reps"
         defaultValue={set.reps}
         onChange={(e) => handleSetUpdate(exerciseIndex, setIndex, 'reps', Number(e.target.value))}
+        className="w-10"
       />
       <Button
         variant="outline"
@@ -42,9 +43,9 @@ export const SetRow: React.FC<SetRowProps> = ({
         className="p-1"
       >
         {set.completed ? (
-          <CheckCircle2 className="h-3 w-3 text-green-500" />
+          <CheckCircle2 className="h-3 w-2 text-green-500" />
         ) : (
-          <Clock className="h-3 w-3" />
+          <Clock className="h-3 w-2" />
         )}
       </Button>
       <Button
