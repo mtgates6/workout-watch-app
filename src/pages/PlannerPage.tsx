@@ -353,40 +353,74 @@ const PlannerPage = () => {
               )}
             </div>
             
-            <div style={{ maxWidth: 400, margin: "2rem auto" }}>
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="debug-list">
-          {(provided) => (
-            <div
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              style={{ background: "#f0f0f0", padding: 8 }}
-            >
-              {items.map((item, index) => (
-                <Draggable key={item.id} draggableId={item.id} index={index}>
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      style={{
-                        padding: 12,
-                        marginBottom: 8,
-                        background: snapshot.isDragging ? "#cce5ff" : "#fff",
-                        border: "1px solid #ccc",
-                        ...provided.draggableProps.style,
-                      }}
-                    >
-                      {item.name}
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
+            <div style={{ position: 'relative', transform: 'none' }}>
+              <label className="text-sm font-medium mb-2 block">Planned Exercises</label>
+              {plannedExercises.length > 0 ? (
+                <DragDropContext onDragEnd={handleDragEnd} disableInteractiveElementBlocking={true}>
+                  <Droppable droppableId="plannedExercises">
+                    {(provided) => (
+                      <div
+                      {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        style={{ background: "#f0f0f0", padding: 8 }}
+                      >
+                        {plannedExercises.map((exercise, index) => (
+                          <Draggable key={exercise.id} draggableId={exercise.id} index={index}>
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              
+                              style={{
+                                padding: 12,
+                                marginBottom: 8,
+                                background: snapshot.isDragging ? "#cce5ff" : "#fff",
+                                border: "1px solid #ccc",
+                                ...provided.draggableProps.style,
+                              }}
+                            >
+                              <span>{exercise.name}</span>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleRemoveExerciseFromPlan(exercise.id)}
+                                className="text-red-500"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          )}
+                        </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+              ) : (
+                <div className="p-4 border border-dashed rounded-md text-center text-muted-foreground">
+                  No exercises added yet. Search above to add exercises.
+                </div>
+              )}
             </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+            
+            <div>
+              <label className="text-sm font-medium mb-2 block">Notes</label>
+              <Textarea
+                placeholder="Add notes for this workout plan..."
+                value={workoutNotes}
+                onChange={(e) => setWorkoutNotes(e.target.value)}
+                className="min-h-24"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleClosePlanDialog}>Cancel</Button>
+            <Button onClick={handleSavePlan}>Save Plan</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
