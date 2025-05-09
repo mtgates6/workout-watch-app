@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -39,11 +38,12 @@ export const SetRow: React.FC<SetRowProps> = ({
       <Button
         variant="outline"
         onClick={() => handleSetCompletion(setIndex, exerciseIndex, !set.completed)}
+        className="p-1"
       >
         {set.completed ? (
-          <CheckCircle2 className="h-4 w-4 text-green-500" />
+          <CheckCircle2 className="h-3 w-1 text-green-500" />
         ) : (
-          <Clock className="h-4 w-4" />
+          <Clock className="h-3 w-1" />
         )}
       </Button>
       <Button
