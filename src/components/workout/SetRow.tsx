@@ -22,7 +22,7 @@ export const SetRow: React.FC<SetRowProps> = ({
   handleRemoveSet
 }) => {
   return (
-    <div key={set.id} className="grid grid-cols-4 gap-2 items-center justify-center">
+    <div key={set.id} className="grid grid-cols-4 gap-2 items-center justify-between">
       <Input
         type="number"
         placeholder="Weight"
@@ -40,7 +40,7 @@ export const SetRow: React.FC<SetRowProps> = ({
       <Button
         variant="outline"
         onClick={() => handleSetCompletion(setIndex, exerciseIndex, !set.completed)}
-        className="p-1 w-4 h-8 flex items-center justify-center"
+        className="p-1 w-10 h-10 flex items-center justify-center"
       >
         {set.completed ? (
           <CheckCircle2 className="h-3 w-3 text-green-500" />
