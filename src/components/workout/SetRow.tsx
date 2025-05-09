@@ -28,19 +28,19 @@ export const SetRow: React.FC<SetRowProps> = ({
         placeholder="Weight"
         defaultValue={set.weight}
         onChange={(e) => handleSetUpdate(exerciseIndex, setIndex, 'weight', Number(e.target.value))}
-        className='w-full'
+        className='p-1 w-full'
       />
       <Input
         type="number"
         placeholder="Reps"
         defaultValue={set.reps}
         onChange={(e) => handleSetUpdate(exerciseIndex, setIndex, 'reps', Number(e.target.value))}
-        className='w-full'
+        className='p-1 w-full'
       />
       <Button
         variant="outline"
         onClick={() => handleSetCompletion(setIndex, exerciseIndex, !set.completed)}
-        className="p-1 w-10 h-10 flex items-center justify-center"
+        className="p-1 w-10 h-10 "
       >
         {set.completed ? (
           <CheckCircle2 className="h-3 w-3 text-green-500" />
@@ -52,6 +52,7 @@ export const SetRow: React.FC<SetRowProps> = ({
         variant="outline"
         size="icon"
         onClick={() => handleRemoveSet(exerciseIndex, setIndex)}
+        className="p-0"
       >
         <Trash2 className="h-4 w-4" />
       </Button>
