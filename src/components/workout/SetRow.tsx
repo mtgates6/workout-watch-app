@@ -23,7 +23,7 @@ export const SetRow: React.FC<SetRowProps> = ({
   handleRemoveSet
 }) => {
   return (
-    <div key={set.id} className="grid grid-cols-4 gap-2 items-center">
+    <div key={set.id} className="grid grid-cols-4 gap-2 items-center justify-between">
       <Input
         type="number"
         placeholder="Weight"

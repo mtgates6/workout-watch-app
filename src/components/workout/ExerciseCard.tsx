@@ -37,7 +37,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
     <Card key={exercise.exercise.id} className={isCompleted ? "border-green-500" : ""}>
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CardHeader className="pb-2">
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-between">
             <div className="flex items-center">
               <CollapsibleTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0 mr-2">
