@@ -28,12 +28,14 @@ export const SetRow: React.FC<SetRowProps> = ({
         placeholder="Weight"
         defaultValue={set.weight}
         onChange={(e) => handleSetUpdate(exerciseIndex, setIndex, 'weight', Number(e.target.value))}
+        className='w-full'
       />
       <Input
         type="number"
         placeholder="Reps"
         defaultValue={set.reps}
         onChange={(e) => handleSetUpdate(exerciseIndex, setIndex, 'reps', Number(e.target.value))}
+        className='w-full'
       />
       <Button
         variant="outline"
@@ -47,7 +49,7 @@ export const SetRow: React.FC<SetRowProps> = ({
         )}
       </Button>
       <Button
-        variant="ghost"
+        variant="outline"
         size="icon"
         onClick={() => handleRemoveSet(exerciseIndex, setIndex)}
       >
