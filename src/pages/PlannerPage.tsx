@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { format, addDays, startOfWeek } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -15,6 +16,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Textarea } from "@/components/ui/textarea";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from "@/components/ui/drawer";
 
 const PlannerPage = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -29,6 +32,7 @@ const PlannerPage = () => {
   const { workouts, createPlannedWorkout, startPlannedWorkout, deletePlannedWorkout, updatePlannedWorkout } = useWorkout();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   
   // Get the start of the current week (Sunday)
   const [weekStart, setWeekStart] = useState<Date>(() => {
@@ -153,15 +157,18 @@ const PlannerPage = () => {
       exercise.name.toLowerCase().includes(exerciseSearch.toLowerCase())
     )
     .slice(0, 5);
+
+  // In mobile view, we'll show just today and a few days forward
+  const visibleDays = isMobile ? weekDays.slice(0, 3) : weekDays;
   
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight">Workout Planner</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Workout Planner</h1>
         
         <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline" className="sm:ml-auto w-full sm:w-auto">
               <CalendarIcon className="mr-2 h-4 w-4" />
               Jump to Date
             </Button>
@@ -184,21 +191,22 @@ const PlannerPage = () => {
         </Popover>
       </div>
 
-      <div className="flex items-center justify-between mb-4">
-        <Button variant="outline" onClick={handlePrevWeek}>
-          <ChevronLeft className="h-4 w-4" />
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0 mb-4">
+        <Button variant="outline" onClick={handlePrevWeek} className="w-full sm:w-auto">
+          <ChevronLeft className="h-4 w-4 mr-1" />
           Previous Week
         </Button>
-        <h2 className="text-xl font-medium">
-          {format(weekStart, 'MMMM d')} - {format(addDays(weekStart, 6), 'MMMM d, yyyy')}
+        <h2 className="text-lg sm:text-xl font-medium text-center">
+          {format(weekStart, 'MMM d')} - {format(addDays(weekStart, 6), 'MMM d, yyyy')}
         </h2>
-        <Button variant="outline" onClick={handleNextWeek}>
+        <Button variant="outline" onClick={handleNextWeek} className="w-full sm:w-auto">
           Next Week
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4 ml-1" />
         </Button>
       </div>
       
-      <div className="grid grid-cols-7 gap-3">
+      {/* Desktop View: 7-column grid */}
+      <div className="hidden sm:grid grid-cols-7 gap-3">
         {weekDays.map((day) => {
           const plannedWorkouts = workouts.filter(
             w => w.planned && format(new Date(w.date), 'yyyy-MM-dd') === format(day.date, 'yyyy-MM-dd')
@@ -311,111 +319,312 @@ const PlannerPage = () => {
         })}
       </div>
 
-      {/* Plan Exercises Dialog */}
-      <Dialog open={planDialogOpen} onOpenChange={setPlanDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Plan Workout: {selectedWorkout?.name}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Add Exercises</label>
-              <Input
-                placeholder="Search exercises..."
-                value={exerciseSearch}
-                onChange={(e) => setExerciseSearch(e.target.value)}
-              />
-              
-              {exerciseSearch && (
-                <div className="mt-2 border rounded-md max-h-40 overflow-y-auto">
-                  {filteredExercises.length > 0 ? (
-                    filteredExercises.map(exercise => (
-                      <div 
-                        key={exercise.id} 
-                        className="p-2 hover:bg-accent cursor-pointer flex justify-between items-center border-b last:border-b-0"
-                        onClick={() => handleAddExerciseToPlan(exercise)}
-                      >
-                        <span>{exercise.name}</span>
+      {/* Mobile View: Card list for days */}
+      <div className="sm:hidden space-y-4">
+        {visibleDays.map((day) => {
+          const plannedWorkouts = workouts.filter(
+            w => w.planned && format(new Date(w.date), 'yyyy-MM-dd') === format(day.date, 'yyyy-MM-dd')
+          );
+          
+          return (
+            <Card key={day.dayName + day.dayNumber} className="overflow-hidden">
+              <CardHeader className={`py-2 px-4 ${day.isToday ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <div className="text-sm font-medium">{format(day.date, 'EEEE')}</div>
+                    <div className="text-lg font-bold">{format(day.date, 'MMMM d')}</div>
+                  </div>
+                  <Dialog open={createDialogOpen && format(selectedDate, 'yyyy-MM-dd') === format(day.date, 'yyyy-MM-dd')} 
+                    onOpenChange={(open) => {
+                      setCreateDialogOpen(open);
+                      if (open) setSelectedDate(day.date);
+                    }}>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Plan Workout for {format(selectedDate, 'EEEE, MMMM d')}</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <div>
+                          <Input
+                            placeholder="Workout Name"
+                            value={newWorkoutName}
+                            onChange={(e) => setNewWorkoutName(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>Cancel</Button>
+                        <Button onClick={handleCreateWorkout}>Create Workout</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </CardHeader>
+              <CardContent className="p-3 space-y-3">
+                {plannedWorkouts.length > 0 ? (
+                  plannedWorkouts.map(workout => (
+                    <Card key={workout.id} className="shadow-sm">
+                      <CardHeader className="p-2 pb-0">
+                        <CardTitle className="text-sm">{workout.name}</CardTitle>
+                      </CardHeader>
+                      <CardFooter className="p-2 flex justify-between gap-1">
                         <Button 
                           size="sm" 
-                          variant="ghost"
+                          className="py-0 h-7"
+                          variant="outline"
+                          onClick={() => handleOpenPlanDialog(workout)}
                         >
-                          <Plus className="h-4 w-4" />
+                          Plan
                         </Button>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="p-3 text-center text-muted-foreground">
-                      No exercises found
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-            
-            <div>
-              <label className="text-sm font-medium mb-2 block">Planned Exercises</label>
-              {plannedExercises.length > 0 ? (
-                <DragDropContext onDragEnd={handleDragEnd} disableInteractiveElementBlocking={true}>
-                  <Droppable droppableId="plannedExercises">
-                    {(provided) => (
-                      <div
-                      {...provided.droppableProps}
-                        ref={provided.innerRef}
-                        className="space-y-2 max-h-40 overflow-y-auto"
-                      >
-                        {plannedExercises.map((exercise, index) => (
-                          <Draggable key={exercise.id} draggableId={exercise.id} index={index}>
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              className={`flex justify-between items-center p-2 bg-muted rounded-md ${
-                                snapshot.isDragging ? "opacity-50" : "opacity-100"
-                              }`}
-                            >
-                              <span>{exercise.name}</span>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => handleRemoveExerciseFromPlan(exercise.id)}
-                                className="text-red-500"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          )}
-                        </Draggable>
-                        ))}
-                        {provided.placeholder}
+                        <Button 
+                          size="sm" 
+                          className="py-0 h-7 text-red-500" 
+                          variant="outline"
+                          onClick={() => handleDeletePlannedWorkout(workout)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  ))
+                ) : (
+                  <div className="py-4 text-center text-muted-foreground text-sm">
+                    No workouts planned
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
+        
+        <Button 
+          variant="outline" 
+          onClick={() => setCalendarOpen(true)} 
+          className="w-full flex items-center justify-center"
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          See More Days
+        </Button>
+      </div>
+
+      {/* Plan Exercises Dialog/Drawer */}
+      {isMobile ? (
+        <Drawer open={planDialogOpen} onOpenChange={setPlanDialogOpen}>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>Plan Workout: {selectedWorkout?.name}</DrawerTitle>
+            </DrawerHeader>
+            <div className="px-4 pb-4 space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Add Exercises</label>
+                <Input
+                  placeholder="Search exercises..."
+                  value={exerciseSearch}
+                  onChange={(e) => setExerciseSearch(e.target.value)}
+                />
+                
+                {exerciseSearch && (
+                  <div className="mt-2 border rounded-md max-h-40 overflow-y-auto">
+                    {filteredExercises.length > 0 ? (
+                      filteredExercises.map(exercise => (
+                        <div 
+                          key={exercise.id} 
+                          className="p-2 hover:bg-accent cursor-pointer flex justify-between items-center border-b last:border-b-0"
+                          onClick={() => handleAddExerciseToPlan(exercise)}
+                        >
+                          <span>{exercise.name}</span>
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-3 text-center text-muted-foreground">
+                        No exercises found
                       </div>
                     )}
-                  </Droppable>
-                </DragDropContext>
-              ) : (
-                <div className="p-4 border border-dashed rounded-md text-center text-muted-foreground">
-                  No exercises added yet. Search above to add exercises.
-                </div>
-              )}
+                  </div>
+                )}
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium mb-2 block">Planned Exercises</label>
+                {plannedExercises.length > 0 ? (
+                  <DragDropContext onDragEnd={handleDragEnd} disableInteractiveElementBlocking={true}>
+                    <Droppable droppableId="plannedExercises">
+                      {(provided) => (
+                        <div
+                          {...provided.droppableProps}
+                          ref={provided.innerRef}
+                          className="space-y-2 max-h-40 overflow-y-auto"
+                        >
+                          {plannedExercises.map((exercise, index) => (
+                            <Draggable key={exercise.id} draggableId={exercise.id} index={index}>
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className={`flex justify-between items-center p-2 bg-muted rounded-md ${
+                                    snapshot.isDragging ? "opacity-50" : "opacity-100"
+                                  }`}
+                                >
+                                  <span>{exercise.name}</span>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => handleRemoveExerciseFromPlan(exercise.id)}
+                                    className="text-red-500"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                  </DragDropContext>
+                ) : (
+                  <div className="p-4 border border-dashed rounded-md text-center text-muted-foreground">
+                    No exercises added yet. Search above to add exercises.
+                  </div>
+                )}
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium mb-2 block">Notes</label>
+                <Textarea
+                  placeholder="Add notes for this workout plan..."
+                  value={workoutNotes}
+                  onChange={(e) => setWorkoutNotes(e.target.value)}
+                  className="min-h-24"
+                />
+              </div>
+              
+              <DrawerFooter className="px-0">
+                <Button onClick={handleSavePlan}>Save Plan</Button>
+                <Button variant="outline" onClick={handleClosePlanDialog}>Cancel</Button>
+              </DrawerFooter>
             </div>
-            
-            <div>
-              <label className="text-sm font-medium mb-2 block">Notes</label>
-              <Textarea
-                placeholder="Add notes for this workout plan..."
-                value={workoutNotes}
-                onChange={(e) => setWorkoutNotes(e.target.value)}
-                className="min-h-24"
-              />
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Dialog open={planDialogOpen} onOpenChange={setPlanDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Plan Workout: {selectedWorkout?.name}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Add Exercises</label>
+                <Input
+                  placeholder="Search exercises..."
+                  value={exerciseSearch}
+                  onChange={(e) => setExerciseSearch(e.target.value)}
+                />
+                
+                {exerciseSearch && (
+                  <div className="mt-2 border rounded-md max-h-40 overflow-y-auto">
+                    {filteredExercises.length > 0 ? (
+                      filteredExercises.map(exercise => (
+                        <div 
+                          key={exercise.id} 
+                          className="p-2 hover:bg-accent cursor-pointer flex justify-between items-center border-b last:border-b-0"
+                          onClick={() => handleAddExerciseToPlan(exercise)}
+                        >
+                          <span>{exercise.name}</span>
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-3 text-center text-muted-foreground">
+                        No exercises found
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium mb-2 block">Planned Exercises</label>
+                {plannedExercises.length > 0 ? (
+                  <DragDropContext onDragEnd={handleDragEnd} disableInteractiveElementBlocking={true}>
+                    <Droppable droppableId="plannedExercises">
+                      {(provided) => (
+                        <div
+                          {...provided.droppableProps}
+                          ref={provided.innerRef}
+                          className="space-y-2 max-h-40 overflow-y-auto"
+                        >
+                          {plannedExercises.map((exercise, index) => (
+                            <Draggable key={exercise.id} draggableId={exercise.id} index={index}>
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className={`flex justify-between items-center p-2 bg-muted rounded-md ${
+                                    snapshot.isDragging ? "opacity-50" : "opacity-100"
+                                  }`}
+                                >
+                                  <span>{exercise.name}</span>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => handleRemoveExerciseFromPlan(exercise.id)}
+                                    className="text-red-500"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                  </DragDropContext>
+                ) : (
+                  <div className="p-4 border border-dashed rounded-md text-center text-muted-foreground">
+                    No exercises added yet. Search above to add exercises.
+                  </div>
+                )}
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium mb-2 block">Notes</label>
+                <Textarea
+                  placeholder="Add notes for this workout plan..."
+                  value={workoutNotes}
+                  onChange={(e) => setWorkoutNotes(e.target.value)}
+                  className="min-h-24"
+                />
+              </div>
             </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={handleClosePlanDialog}>Cancel</Button>
-            <Button onClick={handleSavePlan}>Save Plan</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <DialogFooter>
+              <Button variant="outline" onClick={handleClosePlanDialog}>Cancel</Button>
+              <Button onClick={handleSavePlan}>Save Plan</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
