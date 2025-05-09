@@ -41,9 +41,9 @@ export const SetRow: React.FC<SetRowProps> = ({
         className="p-1 w-8 h-8 flex items-center justify-center"
       >
         {set.completed ? (
-          <CheckCircle2 className="h-3 w-1 text-green-500" />
+          <CheckCircle2 className="h-3 w-3 text-green-500" />
         ) : (
-          <Clock className="h-3 w-1" />
+          <Clock className="h-3 w-3" />
         )}
       </Button>
       <Button
