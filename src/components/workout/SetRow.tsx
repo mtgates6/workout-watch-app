@@ -46,7 +46,7 @@ export const SetRow: React.FC<SetRowProps> = ({
           {set.completed ? (
             <CheckCircle2 className="h-3 w-3 text-green-500" />
           ) : (
-            <Clock className="h-3 w-3" />
+            <Clock className="h-3 w-3 hover:text-green-500" />
           )}
         </Button>
         <Button
@@ -55,7 +55,7 @@ export const SetRow: React.FC<SetRowProps> = ({
           onClick={() => handleRemoveSet(exerciseIndex, setIndex)}
           className="p-0"
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-4 w-4 hover:text-red-500" />
         </Button>
       </div>
     </div>
