@@ -360,10 +360,9 @@ const PlannerPage = () => {
                   <Droppable droppableId="plannedExercises">
                     {(provided) => (
                       <div
+                      {...provided.droppableProps}
                         ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        style={{ padding: 8 }}
-                        className="space-y-2"
+                        style={{ background: "#f0f0f0", padding: 8 }}
                       >
                         {plannedExercises.map((exercise, index) => (
                           <Draggable key={exercise.id} draggableId={exercise.id} index={index}>
@@ -372,11 +371,13 @@ const PlannerPage = () => {
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              className="flex justify-between items-center p-2 bg-muted rounded-md"
+                              
                               style={{
-                                position: 'relative',
-                                zIndex: snapshot.isDragging ? 9999 : 'auto',
-                                ...provided.draggableProps.style, //  MUST be last
+                                padding: 12,
+                                marginBottom: 8,
+                                background: snapshot.isDragging ? "#cce5ff" : "#fff",
+                                border: "1px solid #ccc",
+                                ...provided.draggableProps.style,
                               }}
                             >
                               <span>{exercise.name}</span>
