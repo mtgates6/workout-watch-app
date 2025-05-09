@@ -222,7 +222,7 @@ const PlannerPage = () => {
       </div>
 
       {/* Mobile View: Card list for days */}
-      <div className="sm:hidden space-y-2">
+      <div className="sm:hidden space-y-4">
         {weekDays.map((day) => {
           const plannedWorkouts = workouts.filter(
             w => w.planned && format(new Date(w.date), 'yyyy-MM-dd') === format(day.date, 'yyyy-MM-dd')
