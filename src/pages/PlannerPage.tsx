@@ -159,7 +159,7 @@ const PlannerPage = () => {
     .slice(0, 5);
 
   // In mobile view, we'll show just today and a few days forward
-  const visibleDays = isMobile ? weekDays.slice(0, 3) : weekDays;
+  const visibleDays = weekDays;
   
   return (
     <div className="space-y-6">
@@ -401,15 +401,6 @@ const PlannerPage = () => {
             </Card>
           );
         })}
-        
-        <Button 
-          variant="outline" 
-          onClick={() => setCalendarOpen(true)} 
-          className="w-full flex items-center justify-center"
-        >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          See More Days
-        </Button>
       </div>
 
       {/* Plan Exercises Dialog/Drawer */}
