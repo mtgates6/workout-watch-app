@@ -38,7 +38,7 @@ export const SetRow: React.FC<SetRowProps> = ({
       <Button
         variant="outline"
         onClick={() => handleSetCompletion(setIndex, exerciseIndex, !set.completed)}
-        className="p-1"
+        className="p-1 w-8 h-8 flex items-center justify-center"
       >
         {set.completed ? (
           <CheckCircle2 className="h-3 w-1 text-green-500" />
