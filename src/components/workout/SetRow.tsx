@@ -28,14 +28,14 @@ export const SetRow: React.FC<SetRowProps> = ({
         placeholder="Weight"
         defaultValue={set.weight}
         onChange={(e) => handleSetUpdate(exerciseIndex, setIndex, 'weight', Number(e.target.value))}
-        className="w-10"
+        className="w-30"
       />
       <Input
         type="number"
         placeholder="Reps"
         defaultValue={set.reps}
         onChange={(e) => handleSetUpdate(exerciseIndex, setIndex, 'reps', Number(e.target.value))}
-        className="w-10"
+        className="w-30"
       />
       <Button
         variant="outline"
