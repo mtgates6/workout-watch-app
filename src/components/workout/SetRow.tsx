@@ -55,7 +55,7 @@ export const SetRow: React.FC<SetRowProps> = ({
           onClick={() => handleRemoveSet(exerciseIndex, setIndex)}
           className="p-0"
         >
-          <Trash2 className="h-4 w-4 hover:text-red-500" />
+          <Trash2 className="h-4 w-4 text-red-500" />
         </Button>
       </div>
     </div>
