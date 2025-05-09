@@ -22,7 +22,6 @@ interface DayCardProps {
   setSelectedDate: (date: Date) => void;
   handleOpenPlanDialog: (workout: Workout) => void;
   handleDeletePlannedWorkout: (workout: Workout) => void;
-  handleStartPlannedWorkout: (workout: Workout) => void;
 }
 
 export const DayCard: React.FC<DayCardProps> = ({
@@ -34,7 +33,6 @@ export const DayCard: React.FC<DayCardProps> = ({
   setSelectedDate,
   handleOpenPlanDialog,
   handleDeletePlannedWorkout,
-  handleStartPlannedWorkout,
 }) => {
   return (
     <div className="flex flex-col">
@@ -52,7 +50,6 @@ export const DayCard: React.FC<DayCardProps> = ({
                 workout={workout}
                 handleOpenPlanDialog={handleOpenPlanDialog}
                 handleDeletePlannedWorkout={handleDeletePlannedWorkout}
-                handleStartPlannedWorkout={handleStartPlannedWorkout}
               />
             ))
           ) : (

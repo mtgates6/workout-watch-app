@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { format, addDays, startOfWeek } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -217,7 +216,6 @@ const PlannerPage = () => {
               setSelectedDate={setSelectedDate}
               handleOpenPlanDialog={handleOpenPlanDialog}
               handleDeletePlannedWorkout={handleDeletePlannedWorkout}
-              handleStartPlannedWorkout={handleStartPlannedWorkout}
             />
           );
         })}
@@ -241,7 +239,6 @@ const PlannerPage = () => {
               setSelectedDate={setSelectedDate}
               handleOpenPlanDialog={handleOpenPlanDialog}
               handleDeletePlannedWorkout={handleDeletePlannedWorkout}
-              handleStartPlannedWorkout={handleStartPlannedWorkout}
             />
           );
         })}
@@ -275,6 +272,7 @@ const PlannerPage = () => {
         handleDragEnd={handleDragEnd}
         handleClosePlanDialog={handleClosePlanDialog}
         handleSavePlan={handleSavePlan}
+        handleStartPlannedWorkout={handleStartPlannedWorkout}
       />
     </div>
   );

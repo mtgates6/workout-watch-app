@@ -5,7 +5,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Play } from "lucide-react";
 import { Workout, Exercise } from "@/types/workout";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
@@ -25,6 +25,7 @@ interface PlanExercisesDialogProps {
   handleDragEnd: (result: any) => void;
   handleClosePlanDialog: () => void;
   handleSavePlan: () => void;
+  handleStartPlannedWorkout: (workout: Workout) => void;
 }
 
 export const PlanExercisesDialog: React.FC<PlanExercisesDialogProps> = ({
@@ -43,6 +44,7 @@ export const PlanExercisesDialog: React.FC<PlanExercisesDialogProps> = ({
   handleDragEnd,
   handleClosePlanDialog,
   handleSavePlan,
+  handleStartPlannedWorkout,
 }) => {
   const renderExerciseContent = () => (
     <div className="space-y-4">
@@ -151,6 +153,15 @@ export const PlanExercisesDialog: React.FC<PlanExercisesDialogProps> = ({
             {renderExerciseContent()}
           </div>
           <DrawerFooter className="px-4">
+            {selectedWorkout && (
+              <Button 
+                onClick={() => selectedWorkout && handleStartPlannedWorkout(selectedWorkout)}
+                className="bg-green-500 hover:bg-green-600 text-white"
+              >
+                <Play className="h-4 w-4 mr-1" />
+                Start Workout
+              </Button>
+            )}
             <Button onClick={handleSavePlan}>Save Plan</Button>
             <Button variant="outline" onClick={handleClosePlanDialog}>Cancel</Button>
           </DrawerFooter>
@@ -166,9 +177,18 @@ export const PlanExercisesDialog: React.FC<PlanExercisesDialogProps> = ({
           <DialogTitle>Plan Workout: {selectedWorkout?.name}</DialogTitle>
         </DialogHeader>
         {renderExerciseContent()}
-        <DialogFooter>
+        <DialogFooter className="flex flex-wrap gap-2">
           <Button variant="outline" onClick={handleClosePlanDialog}>Cancel</Button>
           <Button onClick={handleSavePlan}>Save Plan</Button>
+          {selectedWorkout && (
+            <Button 
+              onClick={() => selectedWorkout && handleStartPlannedWorkout(selectedWorkout)}
+              className="bg-green-500 hover:bg-green-600 text-white ml-auto"
+            >
+              <Play className="h-4 w-4 mr-1" />
+              Start Workout
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

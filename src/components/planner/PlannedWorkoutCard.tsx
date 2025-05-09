@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2, Play } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { Workout } from "@/types/workout";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -10,14 +10,12 @@ interface PlannedWorkoutCardProps {
   workout: Workout;
   handleOpenPlanDialog: (workout: Workout) => void;
   handleDeletePlannedWorkout: (workout: Workout) => void;
-  handleStartPlannedWorkout: (workout: Workout) => void;
 }
 
 export const PlannedWorkoutCard: React.FC<PlannedWorkoutCardProps> = ({
   workout,
   handleOpenPlanDialog,
   handleDeletePlannedWorkout,
-  handleStartPlannedWorkout,
 }) => {
   return (
     <Card className="overflow-hidden">
@@ -56,15 +54,7 @@ export const PlannedWorkoutCard: React.FC<PlannedWorkoutCardProps> = ({
       <CardFooter className="p-2 pt-0 flex justify-between gap-1">
         <Button 
           size="sm" 
-          className="py-0 h-7 bg-green-500 hover:bg-green-600 text-white"
-          onClick={() => handleStartPlannedWorkout(workout)}
-        >
-          <Play className="h-4 w-4 mr-1" />
-          Start
-        </Button>
-        <Button 
-          size="sm" 
-          className="py-0 h-7"
+          className="py-0 h-7 w-full"
           variant="outline"
           onClick={() => handleOpenPlanDialog(workout)}
         >
