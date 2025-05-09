@@ -68,7 +68,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           </div>
         </CardHeader>
         <CollapsibleContent>
-          <CardContent className="space-y-2 pt-2">
+          <CardContent className="space-y-2 pt-3">
             {exercise.sets.map((set, setIndex) => (
               <SetRow 
                 key={set.id}

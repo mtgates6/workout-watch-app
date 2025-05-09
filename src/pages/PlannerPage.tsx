@@ -187,14 +187,14 @@ const PlannerPage = () => {
       <div className="flex items-center justify-center gap-2 mb-4">
       {/* Mobile View: Chevrons next to the date */}
       <div className="flex items-center sm:hidden">
-        <Button variant="ghost" onClick={handlePrevWeek} className="p-2">
-          <ChevronLeft className="h-5 w-5" />
+        <Button variant="ghost" onClick={handlePrevWeek} className="p-3">
+          <ChevronLeft className="h-5 w-8" />
         </Button>
-        <h2 className="text-lg font-medium text-center mx-2">
+        <h2 className="text-lg font-medium text-center mx-auto px-4">
           {format(weekStart, 'MMM d')} - {format(addDays(weekStart, 6), 'MMM d, yyyy')}
         </h2>
-        <Button variant="ghost" onClick={handleNextWeek} className="p-2">
-          <ChevronRight className="h-5 w-5" />
+        <Button variant="ghost" onClick={handleNextWeek} className="p-3">
+          <ChevronRight className="h-5 w-8" />
         </Button>
       </div>
 
