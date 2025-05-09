@@ -42,7 +42,7 @@ export const DayCard: React.FC<DayCardProps> = ({
       </div>
       
       <Card className="flex-1 border-t-0 rounded-t-none">
-        <CardContent className="p-3 space-y-3 min-h-[100px] max-h-[150px] overflow-y-auto">
+        <CardContent className="p-3 space-y-3 min-h-[150px] max-h-[2000px] overflow-y-auto">
           {plannedWorkouts.length > 0 ? (
             plannedWorkouts.map(workout => (
               <PlannedWorkoutCard 
