@@ -289,8 +289,48 @@ export const exercises: Exercise[] = [
     muscleGroups: ["quads", "hamstrings", "glutes"],  
     instructions: "Stand with feet shoulder-width apart, holding a dumbbell in each hand. Lower your body by bending your knees and pushing your hips back, then return to standing."
   },
-  
-
+  {
+    id: "42",
+    name: "Hammer Curl",
+    type: "strength",
+    muscleGroups: ["biceps"],
+    instructions: "Stand with feet shoulder-width apart, holding dumbbells at your sides with palms facing each other. Curl the weights up toward your shoulders, keeping elbows close to your body, then lower with control."
+  },
+  {
+    id: "43",
+    name: "Step Ups",
+    type: "strength",
+    muscleGroups: ["quads", "hamstrings", "glutes"],
+    instructions: "Stand in front of a bench or step. Step up with one foot, pressing through your heel to lift your body up. Step back down and repeat on the other leg."
+  },
+  {
+    id: "44",
+    name: "Dumbbell Curl",
+    type: "strength",
+    muscleGroups: ["biceps"],
+    instructions: "Stand with feet shoulder-width apart, holding a dumbbell in each hand. Curl the weights up toward your shoulders, keeping elbows close to your body, then lower with control."
+  },
+  {
+    id: "45",
+    name: "Standing Machine Lateral Raise",
+    type: "strength",
+    muscleGroups: ["shoulders"],
+    instructions: "Stand in a lateral raise machine with your arms at your sides. Raise the weights out to the sides until your arms are parallel to the floor, then lower with control."
+  },
+  {
+    id: "46",
+    name: "Rear Delt Fly Machine",
+    type: "strength",
+    muscleGroups: ["shoulders", "back"],
+    instructions: "Sit in a rear delt fly machine with your chest against the pad. Grasp the handles and pull them out to the sides, squeezing your shoulder blades together, then return to start."
+  },
+  {
+    id: "47",
+    name: "Dumbbell Bench Press",
+    type: "strength",
+    muscleGroups: ["chest", "triceps", "shoulders"],
+    instructions: "Lie on a bench holding dumbbells at chest level. Press the weights overhead until arms are fully extended, then lower back to starting position."
+  }
 ];
 
 export const getExerciseById = (id: string): Exercise | undefined => {
