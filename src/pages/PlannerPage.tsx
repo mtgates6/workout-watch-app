@@ -184,7 +184,7 @@ const PlannerPage = () => {
         </Popover>
       </div>
 
-      <div className="flex items-center justify-between gap-2 mb-4">
+      <div className="flex items-center justify-center gap-2 mb-4">
       {/* Mobile View: Chevrons next to the date */}
       <div className="flex items-center sm:hidden">
         <Button variant="ghost" onClick={handlePrevWeek} className="p-2">
