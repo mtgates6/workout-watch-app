@@ -3,13 +3,43 @@ import React from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
-import { CalendarIcon, Clock } from "lucide-react";
+import { CalendarIcon, Clock, Repeat } from "lucide-react";
 import { formatDuration } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const WorkoutHistory = () => {
-  const { workouts } = useWorkout();
+  const { workouts, createPlannedWorkout, updatePlannedWorkout } = useWorkout();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const completedWorkouts = workouts.filter((workout) => workout.completed);
+
+  const handleRepeatWorkout = (workout) => {
+    // Create a new planned workout with the same name
+    const newWorkout = createPlannedWorkout(
+      `${workout.name} (Repeat)`, 
+      new Date().toISOString()
+    );
+    
+    // Add all exercises from the completed workout to the planned workout
+    const plannedExercises = workout.exercises.map(exerciseItem => exerciseItem.exercise);
+    
+    // Update the planned workout with the exercises
+    updatePlannedWorkout(newWorkout.id, {
+      plannedExercises
+    });
+    
+    // Show success toast
+    toast({
+      title: "Workout Copied to Plan",
+      description: `Added "${workout.name}" to today's plan`,
+    });
+    
+    // Navigate to the planner page
+    navigate("/planner");
+  };
 
   return (
     <div className="space-y-6">
@@ -47,6 +77,15 @@ const WorkoutHistory = () => {
                         <span>{workout.duration ? formatDuration(workout.duration) : "N/A"}</span>
                       </div>
                     </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => handleRepeatWorkout(workout)}
+                      className="flex items-center gap-1"
+                    >
+                      <Repeat className="h-3 w-3" />
+                      <span>Repeat</span>
+                    </Button>
                   </div>
                 </CardHeader>
                 <CardContent>
