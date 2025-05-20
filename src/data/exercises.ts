@@ -312,14 +312,14 @@ export const exercises: Exercise[] = [
   },
   {
     id: "45",
-    name: "Standing Machine Lateral Raise",
+    name: "Standing Lateral Raise Machine",
     type: "strength",
     muscleGroups: ["shoulders"],
     instructions: "Stand in a lateral raise machine with your arms at your sides. Raise the weights out to the sides until your arms are parallel to the floor, then lower with control."
   },
   {
     id: "46",
-    name: "Rear Delt Fly Machine",
+    name: "Rear Delt Fly",
     type: "strength",
     muscleGroups: ["shoulders", "back"],
     instructions: "Sit in a rear delt fly machine with your chest against the pad. Grasp the handles and pull them out to the sides, squeezing your shoulder blades together, then return to start."
@@ -365,13 +365,6 @@ export const exercises: Exercise[] = [
     type: "strength",
     muscleGroups: ["chest", "triceps", "shoulders"],
     instructions: "Lie on a decline bench with feet on the ground. Grip the barbell with hands wider than shoulder-width. Lower the bar to your lower chest, then press back up."
-  },
-  {
-    id: "53",
-    name: "Dips",
-    type: "strength",
-    muscleGroups: ["triceps", "chest", "shoulders"],
-    instructions: "Use parallel bars or a dip station. Lower your body by bending your elbows, keeping your body upright. Push back up to starting position."
   }
    
 ];
