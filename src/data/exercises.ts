@@ -242,7 +242,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "35",
-    name: "Dumbbell Chest Press",
+    name: "Dumbbell Bench Press",
     type: "strength",
     muscleGroups: ["chest", "triceps", "shoulders"],
     instructions: "Lie on a bench holding dumbbells at chest level. Press the weights overhead until arms are fully extended, then lower back to starting position."
@@ -326,11 +326,54 @@ export const exercises: Exercise[] = [
   },
   {
     id: "47",
-    name: "Dumbbell Bench Press",
+    name: "Machine Chest Press",
     type: "strength",
     muscleGroups: ["chest", "triceps", "shoulders"],
-    instructions: "Lie on a bench holding dumbbells at chest level. Press the weights overhead until arms are fully extended, then lower back to starting position."
+    instructions: "Sit in a chest press machine with your back against the pad. Grasp the handles and press them forward until arms are fully extended, then return to start."
+  },
+  {
+    id: "48",
+    name: "Hip Abduction",
+    type: "strength",
+    muscleGroups: ["glutes"],
+    instructions: "Sit in a hip abduction machine with your back against the pad. Push the pads away from each other, then return to start."
+  },
+  {
+    id: "49",
+    name: "Hip Adduction",
+    type: "strength",
+    muscleGroups: ["glutes"],
+    instructions: "Sit in a hip adduction machine with your back against the pad. Push the pads together, then return to start."
+  },
+  {
+    id: "50",
+    name: "Close Grip Bench Press",
+    type: "strength",
+    muscleGroups: ["triceps", "chest"],
+    instructions: "Lie on a bench with feet on the ground. Grip the barbell with hands closer than shoulder-width apart. Lower the barbell to your chest, then press it back up."
+  },
+  {
+    id: "51",
+    name: "Incline Machine Press",
+    type: "strength",
+    muscleGroups: ["chest", "shoulders", "triceps"],
+    instructions: "Sit in an incline machine press with your back against the pad. Grasp the handles and press them forward until arms are fully extended, then return to start."
+  },
+  {
+    id: "52",
+    name: "Decline Bench Press",
+    type: "strength",
+    muscleGroups: ["chest", "triceps", "shoulders"],
+    instructions: "Lie on a decline bench with feet on the ground. Grip the barbell with hands wider than shoulder-width. Lower the bar to your lower chest, then press back up."
+  },
+  {
+    id: "53",
+    name: "Dips",
+    type: "strength",
+    muscleGroups: ["triceps", "chest", "shoulders"],
+    instructions: "Use parallel bars or a dip station. Lower your body by bending your elbows, keeping your body upright. Push back up to starting position."
   }
+   
 ];
 
 export const getExerciseById = (id: string): Exercise | undefined => {
