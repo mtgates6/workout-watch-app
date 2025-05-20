@@ -7,6 +7,7 @@ import { WorkoutExercise } from "@/types/workout";
 import { SetRow } from "./SetRow";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
+
 interface ExerciseCardProps {
   exercise: WorkoutExercise;
   exerciseIndex: number;
@@ -35,7 +36,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   
   return (
     <Card key={exercise.exercise.id} className={isCompleted ? "border-green-500" : ""}>
-      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <Collapsible open={!isOpen} onOpenChange={setIsOpen}>
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center">

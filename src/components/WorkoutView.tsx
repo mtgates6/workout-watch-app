@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import { AddExerciseDialog } from "./workout/AddExerciseDialog";
 import { NoActiveWorkout } from "./workout/NoActiveWorkout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus } from "lucide-react";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const WorkoutView = () => {
   const {
@@ -100,6 +100,13 @@ const WorkoutView = () => {
     const diff = now.getTime() - workoutDate.getTime();
     return Math.floor(diff / 60000);
   };
+
+  const handleDragEnd = (result) => {
+  if (!result.destination) return;
+  const reordered = Array.from(activeWorkout.exercises);
+  const [removed] = reordered.splice(result.source.index, 1);
+  reordered.splice(result.destination.index, 0, removed);
+  };
   
   if (!activeWorkout) {
     return <NoActiveWorkout />;
@@ -128,20 +135,44 @@ const WorkoutView = () => {
       </div>
 
       {activeWorkout.exercises.length > 0 ? (
-        <div className="space-y-4">
-          {activeWorkout.exercises.map((exercise, exerciseIndex) => (
-            <ExerciseCard
-              key={exercise.id || exercise.exercise.id}
-              exercise={exercise}
-              exerciseIndex={exerciseIndex}
-              handleRemoveExercise={handleRemoveExercise}
-              handleSetCompletion={handleSetCompletion}
-              handleSetUpdate={handleSetUpdate}
-              handleRemoveSet={handleRemoveSet}
-              handleAddSet={handleAddSet}
-            />
-          ))}
-        </div>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId="exercise-list">
+            {(provided) => (
+              <div
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                className="space-y-4"
+              >
+                {activeWorkout.exercises.map((exercise, exerciseIndex) => (
+                  <Draggable
+                    key={exercise.id || exercise.exercise.id}
+                    draggableId={String(exercise.id || exercise.exercise.id)}
+                    index={exerciseIndex}
+                  >
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <ExerciseCard
+                          exercise={exercise}
+                          exerciseIndex={exerciseIndex}
+                          handleRemoveExercise={handleRemoveExercise}
+                          handleSetCompletion={handleSetCompletion}
+                          handleSetUpdate={handleSetUpdate}
+                          handleRemoveSet={handleRemoveSet}
+                          handleAddSet={handleAddSet}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       ) : (
         <Card className="border-dashed border-2 text-center">
           <CardHeader>
