@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const WorkoutHistory = () => {
   const { workouts, createPlannedWorkout, updatePlannedWorkout } = useWorkout();
@@ -22,6 +22,8 @@ const WorkoutHistory = () => {
   const completedWorkouts = workouts.filter((workout) => workout.completed);
   const [editWorkoutName, setEditWorkoutName] = useState("");
   const [editingWorkout, setEditingWorkout] = useState(null);
+  const isMobile = useIsMobile();
+  const [mobileExerciseModal, setMobileExerciseModal] = useState<{open: boolean, exerciseItem?: any}>({open: false});
 
   const handleRepeatWorkout = (workout) => {
     // Create a new planned workout with the same name
@@ -145,49 +147,101 @@ const WorkoutHistory = () => {
                     <h4 className="text-sm font-medium">Exercises</h4>
                     <div className="flex flex-wrap gap-2">
                       {workout.exercises.map((exerciseItem) => (
-                        <HoverCard key={exerciseItem.id}>
-                          <HoverCardTrigger asChild>
-                            <div className="inline-block">
-                              <Badge variant="secondary" className="cursor-help">
-                                {exerciseItem.exercise.name}
-                              </Badge>
-                            </div>
-                          </HoverCardTrigger>
-                          <HoverCardContent className="w-auto z-50">
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-2">
-                                <BarChart className="h-4 w-4" />
-                                <h4 className="font-medium">{exerciseItem.exercise.name}</h4>
+                        isMobile ? (
+                          <>
+                            <Badge
+                              key={exerciseItem.id}
+                              variant="secondary"
+                              className="cursor-pointer"
+                              onClick={() => setMobileExerciseModal({open: true, exerciseItem})}
+                            >
+                              {exerciseItem.exercise.name}
+                            </Badge>
+                            {/* Modal for mobile */}
+                            {mobileExerciseModal.open && mobileExerciseModal.exerciseItem?.id === exerciseItem.id && (
+                              <Dialog open={true} onOpenChange={() => setMobileExerciseModal({open: false})}>
+                                <DialogContent className="max-w-xs">
+                                  <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                      <BarChart className="h-4 w-4" />
+                                      <h4 className="font-medium">{exerciseItem.exercise.name}</h4>
+                                    </div>
+                                    <div className="text-sm">
+                                      {exerciseItem.sets.length > 0 ? (
+                                        <Table>
+                                          <TableHeader>
+                                            <TableRow>
+                                              <TableHead>Set</TableHead>
+                                              <TableHead>Weight</TableHead>
+                                              <TableHead>Reps</TableHead>
+                                            </TableRow>
+                                          </TableHeader>
+                                          <TableBody>
+                                            {exerciseItem.sets
+                                              .filter(set => set.completed)
+                                              .map((set, index) => (
+                                                <TableRow key={set.id}>
+                                                  <TableCell>{index + 1}</TableCell>
+                                                  <TableCell>{set.weight || "—"}</TableCell>
+                                                  <TableCell>{set.reps || "—"}</TableCell>
+                                                </TableRow>
+                                              ))}
+                                          </TableBody>
+                                        </Table>
+                                      ) : (
+                                        <p className="text-muted-foreground">No sets completed</p>
+                                      )}
+                                    </div>
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
+                            )}
+                          </>
+                        ) : (
+                          <HoverCard key={exerciseItem.id}>
+                            <HoverCardTrigger asChild>
+                              <div className="inline-block">
+                                <Badge variant="secondary" className="cursor-help">
+                                  {exerciseItem.exercise.name}
+                                </Badge>
                               </div>
-                              <div className="text-sm">
-                                {exerciseItem.sets.length > 0 ? (
-                                  <Table>
-                                    <TableHeader>
-                                      <TableRow>
-                                        <TableHead>Set</TableHead>
-                                        <TableHead>Weight</TableHead>
-                                        <TableHead>Reps</TableHead>
-                                      </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                      {exerciseItem.sets
-                                        .filter(set => set.completed)
-                                        .map((set, index) => (
-                                          <TableRow key={set.id}>
-                                            <TableCell>{index + 1}</TableCell>
-                                            <TableCell>{set.weight || "—"}</TableCell>
-                                            <TableCell>{set.reps || "—"}</TableCell>
-                                          </TableRow>
-                                        ))}
-                                    </TableBody>
-                                  </Table>
-                                ) : (
-                                  <p className="text-muted-foreground">No sets completed</p>
-                                )}
+                            </HoverCardTrigger>
+                            <HoverCardContent className="w-auto z-50">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <BarChart className="h-4 w-4" />
+                                  <h4 className="font-medium">{exerciseItem.exercise.name}</h4>
+                                </div>
+                                <div className="text-sm">
+                                  {exerciseItem.sets.length > 0 ? (
+                                    <Table>
+                                      <TableHeader>
+                                        <TableRow>
+                                          <TableHead>Set</TableHead>
+                                          <TableHead>Weight</TableHead>
+                                          <TableHead>Reps</TableHead>
+                                        </TableRow>
+                                      </TableHeader>
+                                      <TableBody>
+                                        {exerciseItem.sets
+                                          .filter(set => set.completed)
+                                          .map((set, index) => (
+                                            <TableRow key={set.id}>
+                                              <TableCell>{index + 1}</TableCell>
+                                              <TableCell>{set.weight || "—"}</TableCell>
+                                              <TableCell>{set.reps || "—"}</TableCell>
+                                            </TableRow>
+                                          ))}
+                                      </TableBody>
+                                    </Table>
+                                  ) : (
+                                    <p className="text-muted-foreground">No sets completed</p>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          </HoverCardContent>
-                        </HoverCard>
+                            </HoverCardContent>
+                          </HoverCard>
+                        )
                       ))}
                     </div>
                     {workout.exercises.length > 0 && (
