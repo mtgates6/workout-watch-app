@@ -148,6 +148,15 @@ const PlannerPage = () => {
     setPlannedExercises(reorderedExercises);
   };
 
+  const handleUpdateWorkoutName = (workoutId: string, newName: string) => {
+    updatePlannedWorkout(workoutId, { name: newName });
+    
+    toast({
+      title: "Workout Updated",
+      description: `Workout name changed to "${newName}"`,
+    });
+  };
+
   const filteredExercises = exercises
     .filter(exercise => 
       exercise.name.toLowerCase().includes(exerciseSearch.toLowerCase())
@@ -232,6 +241,7 @@ const PlannerPage = () => {
               setSelectedDate={setSelectedDate}
               handleOpenPlanDialog={handleOpenPlanDialog}
               handleDeletePlannedWorkout={handleDeletePlannedWorkout}
+              handleUpdateWorkoutName={handleUpdateWorkoutName}
             />
           );
         })}
@@ -255,6 +265,7 @@ const PlannerPage = () => {
               setSelectedDate={setSelectedDate}
               handleOpenPlanDialog={handleOpenPlanDialog}
               handleDeletePlannedWorkout={handleDeletePlannedWorkout}
+              handleUpdateWorkoutName={handleUpdateWorkoutName}
             />
           );
         })}
