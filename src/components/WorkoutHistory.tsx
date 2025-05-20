@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -148,13 +147,13 @@ const WorkoutHistory = () => {
                       {workout.exercises.map((exerciseItem) => (
                         <HoverCard key={exerciseItem.id}>
                           <HoverCardTrigger asChild>
-                            <div>
+                            <div className="inline-block">
                               <Badge variant="secondary" className="cursor-help">
                                 {exerciseItem.exercise.name}
                               </Badge>
                             </div>
                           </HoverCardTrigger>
-                          <HoverCardContent className="w-auto">
+                          <HoverCardContent className="w-auto z-50">
                             <div className="space-y-2">
                               <div className="flex items-center gap-2">
                                 <BarChart className="h-4 w-4" />
