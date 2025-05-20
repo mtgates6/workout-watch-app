@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,7 +26,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   handleRemoveSet,
   handleAddSet
 }) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false); // Start collapsed
   
   // Calculate completion status
   const totalSets = exercise.sets.length;
@@ -36,7 +35,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   
   return (
     <Card key={exercise.exercise.id} className={isCompleted ? "border-green-500" : ""}>
-      <Collapsible open={!isOpen} onOpenChange={setIsOpen}>
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
