@@ -27,7 +27,7 @@ const WorkoutHistory = () => {
   const handleRepeatWorkout = (workout) => {
     // Create a new planned workout with the same name
     const newWorkout = createPlannedWorkout(
-      `${workout.name} (Repeat)`, 
+      `${workout.name}`, 
       new Date().toISOString()
     );
     
