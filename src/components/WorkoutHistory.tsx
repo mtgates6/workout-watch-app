@@ -3,7 +3,7 @@ import React from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
-import { CalendarIcon, Clock, Repeat, BarChart } from "lucide-react";
+import { CalendarIcon, Clock, Repeat, BarChart, Edit } from "lucide-react";
 import { formatDuration } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,12 +11,18 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 const WorkoutHistory = () => {
   const { workouts, createPlannedWorkout, updatePlannedWorkout } = useWorkout();
   const navigate = useNavigate();
   const { toast } = useToast();
   const completedWorkouts = workouts.filter((workout) => workout.completed);
+  const [editWorkoutName, setEditWorkoutName] = useState("");
+  const [editingWorkout, setEditingWorkout] = useState(null);
 
   const handleRepeatWorkout = (workout) => {
     // Create a new planned workout with the same name
@@ -41,6 +47,32 @@ const WorkoutHistory = () => {
     
     // Navigate to the planner page
     navigate("/planner");
+  };
+
+  const handleEditWorkout = (workout) => {
+    setEditingWorkout(workout);
+    setEditWorkoutName(workout.name);
+  };
+
+  const handleSaveWorkoutName = () => {
+    if (!editWorkoutName.trim()) {
+      toast({
+        title: "Name Required",
+        description: "Please enter a name for the workout",
+      });
+      return;
+    }
+
+    updatePlannedWorkout(editingWorkout.id, {
+      name: editWorkoutName.trim()
+    });
+
+    toast({
+      title: "Workout Updated",
+      description: "Workout name has been updated",
+    });
+
+    setEditingWorkout(null);
   };
 
   return (
@@ -79,15 +111,34 @@ const WorkoutHistory = () => {
                         <span>{workout.duration ? formatDuration(workout.duration) : "N/A"}</span>
                       </div>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => handleRepeatWorkout(workout)}
-                      className="flex items-center gap-1"
-                    >
-                      <Repeat className="h-3 w-3" />
-                      <span>Repeat</span>
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              variant="outline" 
+                              size="icon" 
+                              onClick={() => handleEditWorkout(workout)}
+                              className="h-8 w-8"
+                            >
+                              <Edit className="h-3.5 w-3.5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Edit name</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => handleRepeatWorkout(workout)}
+                        className="flex items-center gap-1"
+                      >
+                        <Repeat className="h-3 w-3" />
+                        <span>Repeat</span>
+                      </Button>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -153,6 +204,31 @@ const WorkoutHistory = () => {
             ))}
         </div>
       )}
+
+      {/* Edit Workout Name Dialog */}
+      <Dialog open={editingWorkout !== null} onOpenChange={(open) => !open && setEditingWorkout(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Workout Name</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <Input
+              value={editWorkoutName}
+              onChange={(e) => setEditWorkoutName(e.target.value)}
+              placeholder="Workout name"
+              className="w-full"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingWorkout(null)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveWorkoutName}>
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
