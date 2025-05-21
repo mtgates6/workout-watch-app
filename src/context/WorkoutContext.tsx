@@ -21,6 +21,7 @@ interface WorkoutContextType {
   startPlannedWorkout: (workoutId: string) => void;
   deletePlannedWorkout: (workoutId: string) => void;
   updatePlannedWorkout: (workoutId: string, updates: Partial<Workout>) => void;
+  reorderExercises: (newExercises: WorkoutExercise[]) => void;
 }
 
 const initialSummary: WorkoutSummary = {
@@ -308,6 +309,14 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     );
   };
 
+  const reorderExercises = (newExercises: WorkoutExercise[]) => {
+    if (!activeWorkout) return;
+    setActiveWorkout({
+      ...activeWorkout,
+      exercises: newExercises,
+    });
+  };
+
   return (
     <WorkoutContext.Provider
       value={{
@@ -328,6 +337,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
         startPlannedWorkout,
         deletePlannedWorkout,
         updatePlannedWorkout,
+        reorderExercises
       }}
     >
       {children}

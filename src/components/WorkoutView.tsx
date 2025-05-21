@@ -18,6 +18,7 @@ const WorkoutView = () => {
     updateSet,
     removeExerciseFromWorkout,
     removeSetFromExercise,
+    reorderExercises,
     addSetToExercise,
     addExerciseToWorkout,
   } = useWorkout();
@@ -102,10 +103,11 @@ const WorkoutView = () => {
   };
 
   const handleDragEnd = (result) => {
-  if (!result.destination) return;
-  const reordered = Array.from(activeWorkout.exercises);
-  const [removed] = reordered.splice(result.source.index, 1);
-  reordered.splice(result.destination.index, 0, removed);
+    if (!result.destination) return;
+    const reordered = Array.from(activeWorkout.exercises);
+    const [removed] = reordered.splice(result.source.index, 1);
+    reordered.splice(result.destination.index, 0, removed);
+    reorderExercises(reordered);
   };
   
   if (!activeWorkout) {
