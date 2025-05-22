@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Button } from "@/components/ui/button";
@@ -170,6 +171,7 @@ const WorkoutView = () => {
                           handleSetUpdate={handleSetUpdate}
                           handleRemoveSet={handleRemoveSet}
                           handleAddSet={handleAddSet}
+                          handleExerciseNotes={handleExerciseNotes}
                         />
                       </div>
                     )}

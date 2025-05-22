@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,7 @@ import { Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import { WorkoutExercise } from "@/types/workout";
 import { SetRow } from "./SetRow";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-
+import ExerciseNotes from "./ExerciseNotes";
 
 interface ExerciseCardProps {
   exercise: WorkoutExercise;
@@ -15,6 +16,7 @@ interface ExerciseCardProps {
   handleSetUpdate: (exerciseIndex: number, setIndex: number, field: 'weight' | 'reps', value: number) => void;
   handleRemoveSet: (exerciseIndex: number, setIndex: number) => void;
   handleAddSet: (exerciseIndex: number) => void;
+  handleExerciseNotes?: (exerciseId: string, notes: string) => void;
 }
 
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({
@@ -24,7 +26,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   handleSetCompletion,
   handleSetUpdate,
   handleRemoveSet,
-  handleAddSet
+  handleAddSet,
+  handleExerciseNotes
 }) => {
   const [isOpen, setIsOpen] = useState(false); // Start collapsed
   
@@ -58,13 +61,21 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 </CardDescription>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => handleRemoveExercise(exerciseIndex)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center">
+              {handleExerciseNotes && (
+                <ExerciseNotes 
+                  exerciseItem={exercise}
+                  onSaveNotes={handleExerciseNotes}
+                />
+              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleRemoveExercise(exerciseIndex)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CollapsibleContent>
