@@ -150,19 +150,6 @@ const WorkoutHistory = () => {
                       {workout.exercises.map((exerciseItem) => (
                         isMobile ? (
                           <React.Fragment key={exerciseItem.id}>
-                            <div className="inline-flex items-center">
-                              <Badge
-                                variant="secondary"
-                                className="cursor-pointer"
-                                onClick={() => setMobileExerciseModal({open: true, exerciseItem})}
-                              >
-                                {exerciseItem.exercise.name}
-                              </Badge>
-                              <ExerciseNotes 
-                                exerciseItem={exerciseItem} 
-                                onSaveNotes={handleSaveNotes} 
-                              />
-                            </div>
                             {/* Modal for mobile */}
                             {mobileExerciseModal.open && mobileExerciseModal.exerciseItem?.id === exerciseItem.id && (
                               <Dialog open={true} onOpenChange={() => setMobileExerciseModal({open: false})}>
@@ -198,6 +185,19 @@ const WorkoutHistory = () => {
                                         <p className="text-muted-foreground">No sets completed</p>
                                       )}
                                       {renderExerciseNotes(exerciseItem)}
+                                      <div className="inline-flex items-center">
+                                        <Badge
+                                          variant="secondary"
+                                          className="cursor-pointer"
+                                          onClick={() => setMobileExerciseModal({open: true, exerciseItem})}
+                                        >
+                                          {exerciseItem.exercise.name}
+                                        </Badge>
+                                        <ExerciseNotes 
+                                          exerciseItem={exerciseItem} 
+                                          onSaveNotes={handleSaveNotes} 
+                                        />
+                                      </div>
                                     </div>
                                   </div>
                                 </DialogContent>
@@ -271,31 +271,6 @@ const WorkoutHistory = () => {
             ))}
         </div>
       )}
-
-      {/* Edit Workout Name Dialog */}
-      <Dialog open={editingWorkout !== null} onOpenChange={(open) => !open && setEditingWorkout(null)}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Edit Workout Name</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <Input
-              value={editWorkoutName}
-              onChange={(e) => setEditWorkoutName(e.target.value)}
-              placeholder="Workout name"
-              className="w-full"
-            />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditingWorkout(null)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSaveWorkoutName}>
-              Save
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
