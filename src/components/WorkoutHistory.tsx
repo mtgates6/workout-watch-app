@@ -131,23 +131,6 @@ const WorkoutHistory = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button 
-                              variant="outline" 
-                              size="icon" 
-                              onClick={() => handleEditWorkout(workout)}
-                              className="h-8 w-8"
-                            >
-                              <Edit className="h-3.5 w-3.5" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Edit name</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
                       <Button 
                         variant="outline" 
                         size="sm" 
