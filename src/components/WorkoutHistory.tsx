@@ -158,6 +158,7 @@ const WorkoutHistory = () => {
                               >
                                 {exerciseItem.exercise.name}
                               </Badge>
+                              
                             </div>
                             {/* Modal for mobile */}
                             {mobileExerciseModal.open && mobileExerciseModal.exerciseItem?.id === exerciseItem.id && (
@@ -245,13 +246,6 @@ const WorkoutHistory = () => {
                                     ) : (
                                       <p className="text-muted-foreground">No sets completed</p>
                                     )}
-                                    <div className="mt-2 text-sm flex items-center gap-2">
-                                      <ExerciseNotes 
-                                        exerciseItem={exerciseItem} 
-                                        onSaveNotes={handleSaveNotes} 
-                                      />
-                                      {renderExerciseNotes(exerciseItem)}
-                                    </div>
                                   </div>
                                 </div>
                               </HoverCardContent>
