@@ -194,11 +194,11 @@ const WorkoutHistory = () => {
                                       ) : (
                                         <p className="text-muted-foreground">No sets completed</p>
                                       )}
-                                      {renderExerciseNotes(exerciseItem)}
                                       <ExerciseNotes 
                                         exerciseItem={exerciseItem} 
                                         onSaveNotes={handleSaveNotes} 
                                       />
+                                      {renderExerciseNotes(exerciseItem)}
                                     </div>
                                   </div>
                                 </DialogContent>
