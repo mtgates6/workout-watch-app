@@ -194,11 +194,13 @@ const WorkoutHistory = () => {
                                       ) : (
                                         <p className="text-muted-foreground">No sets completed</p>
                                       )}
-                                      <ExerciseNotes 
-                                        exerciseItem={exerciseItem} 
-                                        onSaveNotes={handleSaveNotes} 
-                                      />
-                                      {renderExerciseNotes(exerciseItem)}
+                                      <div className="mt-2 text-sm">
+                                        <ExerciseNotes 
+                                          exerciseItem={exerciseItem} 
+                                          onSaveNotes={handleSaveNotes} 
+                                        />
+                                        {renderExerciseNotes(exerciseItem)}
+                                      </div>
                                     </div>
                                   </div>
                                 </DialogContent>
