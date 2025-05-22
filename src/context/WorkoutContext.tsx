@@ -344,7 +344,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
           if (ex.id === exerciseId) {
             return {
               ...ex,
-              notes
+              notes: notes,
             };
           }
           return ex;
