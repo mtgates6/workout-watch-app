@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ const WorkoutView = () => {
     reorderExercises,
     addSetToExercise,
     addExerciseToWorkout,
+    updateExerciseNotes,
   } = useWorkout();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -93,6 +95,13 @@ const WorkoutView = () => {
       title: "Exercise Added",
       description: `${exercise.name} added to your workout`,
     });
+  };
+
+  const handleExerciseNotes = (exerciseIndex: number, notes: string) => {
+    if (activeWorkout) {
+      const exerciseId = activeWorkout.exercises[exerciseIndex].id;
+      updateExerciseNotes(exerciseId, notes);
+    }
   };
 
   const calculateWorkoutTime = (workout: any) => {

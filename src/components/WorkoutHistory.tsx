@@ -1,8 +1,9 @@
+
 import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
-import { CalendarIcon, Clock, Repeat, BarChart, Edit } from "lucide-react";
+import { CalendarIcon, Clock, Repeat, BarChart, Edit, Pencil } from "lucide-react";
 import { formatDuration } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,9 +15,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useIsMobile } from "@/hooks/use-mobile";
+import ExerciseNotes from "./workout/ExerciseNotes";
 
 const WorkoutHistory = () => {
-  const { workouts, createPlannedWorkout, updatePlannedWorkout } = useWorkout();
+  const { workouts, createPlannedWorkout, updatePlannedWorkout, updateExerciseNotes } = useWorkout();
   const navigate = useNavigate();
   const { toast } = useToast();
   const completedWorkouts = workouts.filter((workout) => workout.completed);
@@ -74,6 +76,22 @@ const WorkoutHistory = () => {
     });
 
     setEditingWorkout(null);
+  };
+
+  const handleSaveNotes = (exerciseId, notes) => {
+    updateExerciseNotes(exerciseId, notes);
+  };
+
+  const renderExerciseNotes = (exerciseItem) => {
+    if (exerciseItem.notes) {
+      return (
+        <div className="mt-2 text-sm">
+          <div className="font-medium">Notes:</div>
+          <div className="text-muted-foreground whitespace-pre-wrap">{exerciseItem.notes}</div>
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
@@ -148,15 +166,20 @@ const WorkoutHistory = () => {
                     <div className="flex flex-wrap gap-2">
                       {workout.exercises.map((exerciseItem) => (
                         isMobile ? (
-                          <>
-                            <Badge
-                              key={exerciseItem.id}
-                              variant="secondary"
-                              className="cursor-pointer"
-                              onClick={() => setMobileExerciseModal({open: true, exerciseItem})}
-                            >
-                              {exerciseItem.exercise.name}
-                            </Badge>
+                          <React.Fragment key={exerciseItem.id}>
+                            <div className="inline-flex items-center">
+                              <Badge
+                                variant="secondary"
+                                className="cursor-pointer"
+                                onClick={() => setMobileExerciseModal({open: true, exerciseItem})}
+                              >
+                                {exerciseItem.exercise.name}
+                              </Badge>
+                              <ExerciseNotes 
+                                exerciseItem={exerciseItem} 
+                                onSaveNotes={handleSaveNotes} 
+                              />
+                            </div>
                             {/* Modal for mobile */}
                             {mobileExerciseModal.open && mobileExerciseModal.exerciseItem?.id === exerciseItem.id && (
                               <Dialog open={true} onOpenChange={() => setMobileExerciseModal({open: false})}>
@@ -191,56 +214,62 @@ const WorkoutHistory = () => {
                                       ) : (
                                         <p className="text-muted-foreground">No sets completed</p>
                                       )}
+                                      {renderExerciseNotes(exerciseItem)}
                                     </div>
                                   </div>
                                 </DialogContent>
                               </Dialog>
                             )}
-                          </>
+                          </React.Fragment>
                         ) : (
-                          <HoverCard key={exerciseItem.id}>
-                            <HoverCardTrigger asChild>
-                              <div className="inline-block">
+                          <div className="inline-flex items-center" key={exerciseItem.id}>
+                            <HoverCard>
+                              <HoverCardTrigger asChild>
                                 <Badge variant="secondary" className="cursor-help">
                                   {exerciseItem.exercise.name}
                                 </Badge>
-                              </div>
-                            </HoverCardTrigger>
-                            <HoverCardContent className="w-auto z-50">
-                              <div className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <BarChart className="h-4 w-4" />
-                                  <h4 className="font-medium">{exerciseItem.exercise.name}</h4>
+                              </HoverCardTrigger>
+                              <HoverCardContent className="w-auto">
+                                <div className="space-y-2">
+                                  <div className="flex items-center gap-2">
+                                    <BarChart className="h-4 w-4" />
+                                    <h4 className="font-medium">{exerciseItem.exercise.name}</h4>
+                                  </div>
+                                  <div className="text-sm">
+                                    {exerciseItem.sets.length > 0 ? (
+                                      <Table>
+                                        <TableHeader>
+                                          <TableRow>
+                                            <TableHead>Set</TableHead>
+                                            <TableHead>Weight</TableHead>
+                                            <TableHead>Reps</TableHead>
+                                          </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                          {exerciseItem.sets
+                                            .filter(set => set.completed)
+                                            .map((set, index) => (
+                                              <TableRow key={set.id}>
+                                                <TableCell>{index + 1}</TableCell>
+                                                <TableCell>{set.weight || "—"}</TableCell>
+                                                <TableCell>{set.reps || "—"}</TableCell>
+                                              </TableRow>
+                                            ))}
+                                        </TableBody>
+                                      </Table>
+                                    ) : (
+                                      <p className="text-muted-foreground">No sets completed</p>
+                                    )}
+                                    {renderExerciseNotes(exerciseItem)}
+                                  </div>
                                 </div>
-                                <div className="text-sm">
-                                  {exerciseItem.sets.length > 0 ? (
-                                    <Table>
-                                      <TableHeader>
-                                        <TableRow>
-                                          <TableHead>Set</TableHead>
-                                          <TableHead>Weight</TableHead>
-                                          <TableHead>Reps</TableHead>
-                                        </TableRow>
-                                      </TableHeader>
-                                      <TableBody>
-                                        {exerciseItem.sets
-                                          .filter(set => set.completed)
-                                          .map((set, index) => (
-                                            <TableRow key={set.id}>
-                                              <TableCell>{index + 1}</TableCell>
-                                              <TableCell>{set.weight || "—"}</TableCell>
-                                              <TableCell>{set.reps || "—"}</TableCell>
-                                            </TableRow>
-                                          ))}
-                                      </TableBody>
-                                    </Table>
-                                  ) : (
-                                    <p className="text-muted-foreground">No sets completed</p>
-                                  )}
-                                </div>
-                              </div>
-                            </HoverCardContent>
-                          </HoverCard>
+                              </HoverCardContent>
+                            </HoverCard>
+                            <ExerciseNotes 
+                              exerciseItem={exerciseItem} 
+                              onSaveNotes={handleSaveNotes} 
+                            />
+                          </div>
                         )
                       ))}
                     </div>
