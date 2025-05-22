@@ -210,9 +210,11 @@ const WorkoutHistory = () => {
                         ) : (
                             <HoverCard key={exerciseItem.id}>
                               <HoverCardTrigger asChild>
-                                <Badge variant="secondary" className="cursor-help">
-                                  {exerciseItem.exercise.name}
-                                </Badge>
+                                <div className="inline-block">
+                                  <Badge variant="secondary" className="cursor-help">
+                                    {exerciseItem.exercise.name}
+                                  </Badge>
+                                </div>
                               </HoverCardTrigger>
                               <HoverCardContent className="w-auto">
                                 <div className="space-y-2">
