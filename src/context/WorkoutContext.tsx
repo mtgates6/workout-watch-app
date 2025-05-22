@@ -22,6 +22,7 @@ interface WorkoutContextType {
   deletePlannedWorkout: (workoutId: string) => void;
   updatePlannedWorkout: (workoutId: string, updates: Partial<Workout>) => void;
   reorderExercises: (newExercises: WorkoutExercise[]) => void;
+  updateExerciseNotes: (exerciseId: string, notes: string) => void;
 }
 
 const initialSummary: WorkoutSummary = {
@@ -317,6 +318,41 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   };
 
+  // Add the new updateExerciseNotes function
+  const updateExerciseNotes = (exerciseId: string, notes: string) => {
+    if (!activeWorkout) return;
+
+    // Update notes for an exercise in the active workout
+    setActiveWorkout({
+      ...activeWorkout,
+      exercises: activeWorkout.exercises.map(ex => {
+        if (ex.id === exerciseId) {
+          return {
+            ...ex,
+            notes: notes,
+          };
+        }
+        return ex;
+      }),
+    });
+
+    // If the exercise is in a completed workout in history, update it there too
+    setWorkouts(prevWorkouts => 
+      prevWorkouts.map(workout => ({
+        ...workout,
+        exercises: workout.exercises.map(ex => {
+          if (ex.id === exerciseId) {
+            return {
+              ...ex,
+              notes: notes,
+            };
+          }
+          return ex;
+        }),
+      }))
+    );
+  };
+
   return (
     <WorkoutContext.Provider
       value={{
@@ -337,7 +373,8 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
         startPlannedWorkout,
         deletePlannedWorkout,
         updatePlannedWorkout,
-        reorderExercises
+        reorderExercises,
+        updateExerciseNotes
       }}
     >
       {children}

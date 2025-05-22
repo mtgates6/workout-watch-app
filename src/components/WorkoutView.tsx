@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Button } from "@/components/ui/button";
@@ -97,11 +96,8 @@ const WorkoutView = () => {
     });
   };
 
-  const handleExerciseNotes = (exerciseIndex: number, notes: string) => {
-    if (activeWorkout) {
-      const exerciseId = activeWorkout.exercises[exerciseIndex].id;
-      updateExerciseNotes(exerciseId, notes);
-    }
+  const handleExerciseNotes = (exerciseId: string, notes: string) => {
+    updateExerciseNotes(exerciseId, notes);
   };
 
   const calculateWorkoutTime = (workout: any) => {
