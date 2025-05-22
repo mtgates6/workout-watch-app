@@ -197,7 +197,7 @@ const WorkoutHistory = () => {
                                       <div className="mt-2 text-sm flex items-center gap-2">
                                         <ExerciseNotes 
                                           exerciseItem={exerciseItem} 
-                                          onSaveNotes={handleSaveNotes} 
+                                          onSaveNotes={(notes) => handleSaveNotes(exerciseItem.id, notes)}
                                         />
                                         {renderExerciseNotes(exerciseItem)}
                                       </div>
@@ -248,11 +248,11 @@ const WorkoutHistory = () => {
                                       <p className="text-muted-foreground">No sets completed</p>
                                     )}
                                     <div className="mt-2 text-sm flex items-center gap-2">
-                                        <ExerciseNotes 
-                                          exerciseItem={exerciseItem} 
-                                          onSaveNotes={handleSaveNotes} 
-                                        />
-                                        {renderExerciseNotes(exerciseItem)}
+                                      <ExerciseNotes 
+                                        exerciseItem={exerciseItem} 
+                                        onSaveNotes={(notes) => handleSaveNotes(exerciseItem.id, notes)}
+                                      />
+                                      {renderExerciseNotes(exerciseItem)}
                                     </div>
                                   </div>
                                 </div>
