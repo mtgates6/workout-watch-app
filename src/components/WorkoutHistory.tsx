@@ -208,8 +208,7 @@ const WorkoutHistory = () => {
                             )}
                           </React.Fragment>
                         ) : (
-                          <div className="inline-flex items-center" key={exerciseItem.id}>
-                            <HoverCard>
+                            <HoverCard key={exerciseItem.id}>
                               <HoverCardTrigger asChild>
                                 <Badge variant="secondary" className="cursor-help">
                                   {exerciseItem.exercise.name}
@@ -246,11 +245,11 @@ const WorkoutHistory = () => {
                                     ) : (
                                       <p className="text-muted-foreground">No sets completed</p>
                                     )}
+                                    {renderExerciseNotes(exerciseItem)}
                                   </div>
                                 </div>
                               </HoverCardContent>
                             </HoverCard>
-                          </div>
                         )
                       ))}
                     </div>
