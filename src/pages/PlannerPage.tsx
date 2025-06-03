@@ -84,7 +84,7 @@ const PlannerPage = () => {
     });
     
     // Then start the workout
-    startPlannedWorkout(workout.id);
+    startPlannedWorkout(workout);
     navigate("/workout");
     toast({
       title: "Starting Workout",
