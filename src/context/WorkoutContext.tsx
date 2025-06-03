@@ -18,7 +18,7 @@ interface WorkoutContextType {
   getWorkout: (id: string) => Workout | undefined;
   createPlannedWorkout: (name: string, date: string) => Workout;
   getWorkoutsByDate: (date: string) => Workout[];
-  startPlannedWorkout: (workoutId: string) => void;
+  startPlannedWorkout: (plannedWorkout: Workout) => void;
   deletePlannedWorkout: (workoutId: string) => void;
   updatePlannedWorkout: (workoutId: string, updates: Partial<Workout>) => void;
   reorderExercises: (newExercises: WorkoutExercise[]) => void;
@@ -274,10 +274,9 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   };
   
-  const startPlannedWorkout = (workoutId: string) => {
-    console.log('Starting planned workout with ID:', workoutId);
+  const startPlannedWorkout = (plannedWorkout: Workout) => {
+    console.log('Starting planned workout:', plannedWorkout);
     
-    const plannedWorkout = workouts.find(w => w.id === workoutId && w.planned);
     
     if (!plannedWorkout) {
       console.log('Planned workout not found');
