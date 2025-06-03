@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -26,15 +27,35 @@ export const SetRow: React.FC<SetRowProps> = ({
       <Input
         type="number"
         placeholder="Weight"
-        defaultValue={set.weight}
-        onChange={(e) => handleSetUpdate(exerciseIndex, setIndex, 'weight', Number(e.target.value))}
+        value={set.weight || ''}
+        onChange={(e) => {
+          const value = e.target.value;
+          if (value === '') {
+            handleSetUpdate(exerciseIndex, setIndex, 'weight', 0);
+          } else {
+            const numValue = Number(value);
+            if (!isNaN(numValue)) {
+              handleSetUpdate(exerciseIndex, setIndex, 'weight', numValue);
+            }
+          }
+        }}
         className='p-2 w-full'
       />
       <Input
         type="number"
         placeholder="Reps"
-        defaultValue={set.reps}
-        onChange={(e) => handleSetUpdate(exerciseIndex, setIndex, 'reps', Number(e.target.value))}
+        value={set.reps || ''}
+        onChange={(e) => {
+          const value = e.target.value;
+          if (value === '') {
+            handleSetUpdate(exerciseIndex, setIndex, 'reps', 0);
+          } else {
+            const numValue = Number(value);
+            if (!isNaN(numValue)) {
+              handleSetUpdate(exerciseIndex, setIndex, 'reps', numValue);
+            }
+          }
+        }}
         className='p-2 w-full'
       />
       <div className="flex items-center gap-2">

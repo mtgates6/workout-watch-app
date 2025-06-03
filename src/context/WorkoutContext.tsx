@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Workout, WorkoutExercise, WorkoutSet, WorkoutSummary, Exercise, PlannedExercise } from "@/types/workout";
@@ -196,6 +197,8 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const updateSet = (exerciseId: string, setId: string, updates: Partial<WorkoutSet>) => {
     if (!activeWorkout) return;
 
+    console.log('Updating set:', { exerciseId, setId, updates });
+
     setActiveWorkout({
       ...activeWorkout,
       exercises: activeWorkout.exercises.map(ex => {
@@ -204,7 +207,9 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
             ...ex,
             sets: ex.sets.map(set => {
               if (set.id === setId) {
-                return { ...set, ...updates };
+                const updatedSet = { ...set, ...updates };
+                console.log('Updated set:', updatedSet);
+                return updatedSet;
               }
               return set;
             }),
@@ -218,11 +223,15 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const completeWorkout = () => {
     if (!activeWorkout) return;
 
+    console.log('Completing workout with exercises:', activeWorkout.exercises);
+
     const completedWorkout: Workout = {
       ...activeWorkout,
       completed: true,
       duration: 1800, // Example: 30 minutes
     };
+
+    console.log('Completed workout:', completedWorkout);
 
     setWorkouts([...workouts, completedWorkout]);
     setActiveWorkout(null);
