@@ -105,7 +105,7 @@ const PlannerPage = () => {
     setPlanDialogOpen(false);
   };
 
-  const handleSavePlan = () => {
+  const handleSavePlan = async () => {
     if (!selectedWorkout) return;
 
     updatePlannedWorkout(selectedWorkout.id, {
