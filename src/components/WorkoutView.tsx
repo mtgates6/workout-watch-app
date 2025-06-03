@@ -209,11 +209,6 @@ const WorkoutView = () => {
           </CardContent>
         </Card>
       )}
-      {!allExercisesComplete && (
-        <p className="text-sm text-red-500 mt-2">
-          Complete all sets to end the workout.
-        </p>
-      )}
     </div>
   );
 };
