@@ -105,7 +105,7 @@ const PlannerPage = () => {
     setPlanDialogOpen(false);
   };
 
-  const handleSavePlan = async () => {
+  const handleSavePlan = (callback?: () => void) => {
     if (!selectedWorkout) return;
 
     updatePlannedWorkout(selectedWorkout.id, {
@@ -117,8 +117,8 @@ const PlannerPage = () => {
       title: "Workout Plan Updated",
       description: `Updated plan for "${selectedWorkout.name}"`,
     });
-
     handleClosePlanDialog();
+    if (callback) callback();
   };
 
   const handleAddExerciseToPlan = (exercise: Exercise) => {

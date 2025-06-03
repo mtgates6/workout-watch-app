@@ -24,7 +24,7 @@ interface PlanExercisesDialogProps {
   handleRemoveExerciseFromPlan: (exerciseId: string) => void;
   handleDragEnd: (result: any) => void;
   handleClosePlanDialog: () => void;
-  handleSavePlan: () => void;
+  handleSavePlan: (callback?: () => void) => void;
   handleStartPlannedWorkout: (workout: Workout) => void;
 }
 
@@ -155,9 +155,8 @@ export const PlanExercisesDialog: React.FC<PlanExercisesDialogProps> = ({
           <DrawerFooter className="px-4">
             {selectedWorkout && (
               <Button 
-                onClick={async () => {
-                  await handleSavePlan();
-                  handleStartPlannedWorkout(selectedWorkout);
+                onClick={() => {
+                  handleSavePlan(() => handleStartPlannedWorkout(selectedWorkout));
                 }}
                 className="bg-green-500 hover:bg-green-600 text-white"
               >
@@ -165,7 +164,7 @@ export const PlanExercisesDialog: React.FC<PlanExercisesDialogProps> = ({
                 Start Workout
               </Button>
             )}
-            <Button onClick={handleSavePlan}>Save Plan</Button>
+            <Button onClick={() => handleSavePlan()}>Save Plan</Button>
             <Button variant="outline" onClick={handleClosePlanDialog}>Cancel</Button>
           </DrawerFooter>
         </DrawerContent>
