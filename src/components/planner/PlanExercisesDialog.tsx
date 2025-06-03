@@ -181,13 +181,12 @@ export const PlanExercisesDialog: React.FC<PlanExercisesDialogProps> = ({
         {renderExerciseContent()}
         <DialogFooter className="flex flex-wrap gap-2">
           <Button variant="outline" onClick={handleClosePlanDialog}>Cancel</Button>
-          <Button onClick={handleSavePlan}>Save Plan</Button>
+          <Button onClick={() => handleSavePlan()}>Save Plan</Button>
           {selectedWorkout && (
             <Button 
               onClick={() => {
-                handleSavePlan();
-                handleStartPlannedWorkout(selectedWorkout);
-              }}
+                  handleSavePlan(() => handleStartPlannedWorkout(selectedWorkout));
+                }}
               className="bg-green-500 hover:bg-green-600 text-white ml-auto"
             >
               <Play className="h-4 w-4 mr-1" />
