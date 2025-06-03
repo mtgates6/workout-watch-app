@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Button } from "@/components/ui/button";
@@ -116,6 +115,12 @@ const WorkoutView = () => {
     reorderExercises(reordered);
   };
   
+  const allExercisesComplete = activeWorkout.exercises.every(
+    (exercise) =>
+      exercise.sets.length > 0 &&
+      exercise.sets.every((set) => set.completed)
+  );
+
   if (!activeWorkout) {
     return <NoActiveWorkout />;
   }
@@ -131,7 +136,12 @@ const WorkoutView = () => {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button onClick={handleEndWorkout} variant="outline" className="bg-green-500 hover:bg-green-600 text-white hover:text-white">
+          <Button
+            onClick={handleEndWorkout}
+            variant="outline"
+            className="bg-green-500 hover:bg-green-600 text-white hover:text-white"
+            disabled={!allExercisesComplete}
+          >
             End Workout
           </Button>
           <AddExerciseDialog 
@@ -198,6 +208,11 @@ const WorkoutView = () => {
             </Button>
           </CardContent>
         </Card>
+      )}
+      {!allExercisesComplete && (
+        <p className="text-sm text-red-500 mt-2">
+          Complete all sets to end the workout.
+        </p>
       )}
     </div>
   );
