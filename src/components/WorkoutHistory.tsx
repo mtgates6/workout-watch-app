@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ExerciseNotes from "./workout/ExerciseNotes";
+import { PlannedExercise } from "@/types/workout";
 
 const WorkoutHistory = () => {
   const { workouts, createPlannedWorkout, updatePlannedWorkout, updateExerciseNotes } = useWorkout();
@@ -34,10 +35,25 @@ const WorkoutHistory = () => {
       new Date().toISOString()
     );
     
-    // Add all exercises from the completed workout to the planned workout
-    const plannedExercises = workout.exercises.map(exerciseItem => exerciseItem.exercise);
+    // Add all exercises from the completed workout to the planned workout with their weight/reps history
+    const plannedExercises: PlannedExercise[] = workout.exercises.map(exerciseItem => {
+      // Get the most recent completed set's weight and reps for reference
+      const completedSets = exerciseItem.sets.filter(set => set.completed);
+      const lastCompletedSet = completedSets[completedSets.length - 1];
+      
+      return {
+        ...exerciseItem.exercise,
+        // Add reference data for the planner to use
+        referenceWeight: lastCompletedSet?.weight,
+        referenceReps: lastCompletedSet?.reps,
+        previousSets: completedSets.map(set => ({
+          weight: set.weight,
+          reps: set.reps
+        }))
+      };
+    });
     
-    // Update the planned workout with the exercises
+    // Update the planned workout with the exercises including their reference data
     updatePlannedWorkout(newWorkout.id, {
       plannedExercises
     });
@@ -45,7 +61,7 @@ const WorkoutHistory = () => {
     // Show success toast
     toast({
       title: "Workout Copied to Plan",
-      description: `Added "${workout.name}" to today's plan`,
+      description: `Added "${workout.name}" to today's plan with previous weights and reps`,
     });
     
     // Navigate to the planner page
@@ -149,17 +165,15 @@ const WorkoutHistory = () => {
                     <div className="flex flex-wrap gap-2">
                       {workout.exercises.map((exerciseItem) => (
                         isMobile ? (
-                          <React.Fragment key={exerciseItem.id}>
-                            <div className="inline-flex items-center">
-                              <Badge
-                                variant="secondary"
-                                className="cursor-pointer"
-                                onClick={() => setMobileExerciseModal({open: true, exerciseItem})}
-                              >
-                                {exerciseItem.exercise.name}
-                              </Badge>
-                              
-                            </div>
+                          <div key={exerciseItem.id} className="inline-flex items-center">
+                            <Badge
+                              variant="secondary"
+                              className="cursor-pointer"
+                              onClick={() => setMobileExerciseModal({open: true, exerciseItem})}
+                            >
+                              {exerciseItem.exercise.name}
+                            </Badge>
+                            
                             {/* Modal for mobile */}
                             {mobileExerciseModal.open && mobileExerciseModal.exerciseItem?.id === exerciseItem.id && (
                               <Dialog open={true} onOpenChange={() => setMobileExerciseModal({open: false})}>
@@ -206,7 +220,7 @@ const WorkoutHistory = () => {
                                 </DialogContent>
                               </Dialog>
                             )}
-                          </React.Fragment>
+                          </div>
                         ) : (
                             <HoverCard key={exerciseItem.id}>
                               <HoverCardTrigger asChild>

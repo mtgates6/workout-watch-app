@@ -21,6 +21,15 @@ export interface Exercise {
   instructions?: string;
 }
 
+export interface PlannedExercise extends Exercise {
+  referenceWeight?: number;
+  referenceReps?: number;
+  previousSets?: {
+    weight?: number;
+    reps?: number;
+  }[];
+}
+
 export interface WorkoutSet {
   id: string;
   exerciseId: string;
@@ -47,7 +56,7 @@ export interface Workout {
   notes?: string;
   completed: boolean;
   planned?: boolean;
-  plannedExercises?: Exercise[]; // Added for planning exercises
+  plannedExercises?: PlannedExercise[]; // Updated to use PlannedExercise type
 }
 
 export interface WorkoutSummary {

@@ -1,6 +1,7 @@
+
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Workout, WorkoutExercise, WorkoutSet, WorkoutSummary, Exercise } from "@/types/workout";
+import { Workout, WorkoutExercise, WorkoutSet, WorkoutSummary, Exercise, PlannedExercise } from "@/types/workout";
 import { exercises } from "@/data/exercises";
 
 interface WorkoutContextType {
@@ -196,6 +197,8 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const updateSet = (exerciseId: string, setId: string, updates: Partial<WorkoutSet>) => {
     if (!activeWorkout) return;
 
+    console.log('Updating set:', { exerciseId, setId, updates });
+
     setActiveWorkout({
       ...activeWorkout,
       exercises: activeWorkout.exercises.map(ex => {
@@ -204,7 +207,9 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
             ...ex,
             sets: ex.sets.map(set => {
               if (set.id === setId) {
-                return { ...set, ...updates };
+                const updatedSet = { ...set, ...updates };
+                console.log('Updated set:', updatedSet);
+                return updatedSet;
               }
               return set;
             }),
@@ -218,11 +223,15 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const completeWorkout = () => {
     if (!activeWorkout) return;
 
+    console.log('Completing workout with exercises:', activeWorkout.exercises);
+
     const completedWorkout: Workout = {
       ...activeWorkout,
       completed: true,
       duration: 1800, // Example: 30 minutes
     };
+
+    console.log('Completed workout:', completedWorkout);
 
     setWorkouts([...workouts, completedWorkout]);
     setActiveWorkout(null);
@@ -281,15 +290,42 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     
     // If there are planned exercises, add them to the workout
     if (plannedWorkout.plannedExercises && plannedWorkout.plannedExercises.length > 0) {
-      newActiveWorkout.exercises = plannedWorkout.plannedExercises.map(exercise => ({
-        id: uuidv4(),
-        exercise,
-        sets: [{
+      newActiveWorkout.exercises = plannedWorkout.plannedExercises.map((exercise: PlannedExercise) => {
+        // Check if this exercise has reference data from a repeated workout
+        const hasReferenceData = exercise.referenceWeight !== undefined || exercise.referenceReps !== undefined;
+        
+        let initialSets;
+        
+        if (hasReferenceData && exercise.previousSets && exercise.previousSets.length > 0) {
+          // Create sets based on the previous workout's completed sets
+          initialSets = exercise.previousSets.map(prevSet => ({
+            id: uuidv4(),
+            exerciseId: exercise.id,
+            weight: prevSet.weight,
+            reps: prevSet.reps,
+            completed: false,
+          }));
+        } else {
+          // Create a single empty set
+          initialSets = [{
+            id: uuidv4(),
+            exerciseId: exercise.id,
+            completed: false,
+          }];
+        }
+
+        return {
           id: uuidv4(),
-          exerciseId: exercise.id,
-          completed: false,
-        }],
-      }));
+          exercise: {
+            id: exercise.id,
+            name: exercise.name,
+            type: exercise.type,
+            muscleGroups: exercise.muscleGroups,
+            instructions: exercise.instructions
+          },
+          sets: initialSets,
+        };
+      });
     }
     
     setActiveWorkout(newActiveWorkout);
