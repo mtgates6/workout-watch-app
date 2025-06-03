@@ -165,17 +165,15 @@ const WorkoutHistory = () => {
                     <div className="flex flex-wrap gap-2">
                       {workout.exercises.map((exerciseItem) => (
                         isMobile ? (
-                          <React.Fragment key={exerciseItem.id}>
-                            <div className="inline-flex items-center">
-                              <Badge
-                                variant="secondary"
-                                className="cursor-pointer"
-                                onClick={() => setMobileExerciseModal({open: true, exerciseItem})}
-                              >
-                                {exerciseItem.exercise.name}
-                              </Badge>
-                              
-                            </div>
+                          <div key={exerciseItem.id} className="inline-flex items-center">
+                            <Badge
+                              variant="secondary"
+                              className="cursor-pointer"
+                              onClick={() => setMobileExerciseModal({open: true, exerciseItem})}
+                            >
+                              {exerciseItem.exercise.name}
+                            </Badge>
+                            
                             {/* Modal for mobile */}
                             {mobileExerciseModal.open && mobileExerciseModal.exerciseItem?.id === exerciseItem.id && (
                               <Dialog open={true} onOpenChange={() => setMobileExerciseModal({open: false})}>
@@ -222,7 +220,7 @@ const WorkoutHistory = () => {
                                 </DialogContent>
                               </Dialog>
                             )}
-                          </React.Fragment>
+                          </div>
                         ) : (
                             <HoverCard key={exerciseItem.id}>
                               <HoverCardTrigger asChild>
