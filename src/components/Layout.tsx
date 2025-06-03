@@ -4,6 +4,8 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { BarChart3, Dumbbell, Home, Library, MenuIcon, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useWorkout } from "@/context/WorkoutContext";
+
 
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -36,6 +38,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
   const isMobile = useIsMobile();
   const [menuOpen, setMenuOpen] = useState(false);
+ const { activeWorkout } = useWorkout(); // Add this line
 
   const navigation = [
     {
@@ -80,10 +83,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <div className="flex-1">
             <h1 className="text-lg font-bold">WorkoutWatch</h1>
           </div>
-          <Link to="/workout" className="relative">
-            <Dumbbell className="h-6 w-6 text-green-500" />
-            <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-green-500"></span>
-          </Link>
+          {activeWorkout && ( // Only show if there is an active workout
+            <Link to="/workout" className="relative">
+              <Dumbbell className="h-6 w-6 text-green-500" />
+              <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-green-500"></span>
+            </Link>
+          )}
         </header>
       )}
 
