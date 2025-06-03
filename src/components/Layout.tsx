@@ -38,7 +38,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
   const isMobile = useIsMobile();
   const [menuOpen, setMenuOpen] = useState(false);
- const { activeWorkout } = useWorkout(); // Add this line
+  const { activeWorkout } = useWorkout(); // Add this line
 
   const navigation = [
     {

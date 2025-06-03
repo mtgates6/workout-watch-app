@@ -115,15 +115,16 @@ const WorkoutView = () => {
     reorderExercises(reordered);
   };
   
+  if (!activeWorkout) {
+    return <NoActiveWorkout />;
+  }
+  
   const allExercisesComplete = activeWorkout.exercises.every(
     (exercise) =>
       exercise.sets.length > 0 &&
       exercise.sets.every((set) => set.completed)
   );
 
-  if (!activeWorkout) {
-    return <NoActiveWorkout />;
-  }
 
   return (
     <div className="space-y-6 pb-8">
