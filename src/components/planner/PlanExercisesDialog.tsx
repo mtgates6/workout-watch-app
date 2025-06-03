@@ -156,11 +156,9 @@ export const PlanExercisesDialog: React.FC<PlanExercisesDialogProps> = ({
             {selectedWorkout && (
               <Button 
                 onClick={() => {
-                handleSavePlan();
-                if (selectedWorkout) {
+                  handleSavePlan();
                   handleStartPlannedWorkout(selectedWorkout);
-                }
-              }}
+                }}
                 className="bg-green-500 hover:bg-green-600 text-white"
               >
                 <Play className="h-4 w-4 mr-1" />
