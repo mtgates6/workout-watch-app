@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Workout, WorkoutExercise, WorkoutSet, WorkoutSummary, Exercise } from "@/types/workout";
+import { Workout, WorkoutExercise, WorkoutSet, WorkoutSummary, Exercise, PlannedExercise } from "@/types/workout";
 import { exercises } from "@/data/exercises";
 
 interface WorkoutContextType {
@@ -281,7 +281,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     
     // If there are planned exercises, add them to the workout
     if (plannedWorkout.plannedExercises && plannedWorkout.plannedExercises.length > 0) {
-      newActiveWorkout.exercises = plannedWorkout.plannedExercises.map(exercise => {
+      newActiveWorkout.exercises = plannedWorkout.plannedExercises.map((exercise: PlannedExercise) => {
         // Check if this exercise has reference data from a repeated workout
         const hasReferenceData = exercise.referenceWeight !== undefined || exercise.referenceReps !== undefined;
         

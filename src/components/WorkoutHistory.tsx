@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ExerciseNotes from "./workout/ExerciseNotes";
+import { PlannedExercise } from "@/types/workout";
 
 const WorkoutHistory = () => {
   const { workouts, createPlannedWorkout, updatePlannedWorkout, updateExerciseNotes } = useWorkout();
@@ -35,7 +36,7 @@ const WorkoutHistory = () => {
     );
     
     // Add all exercises from the completed workout to the planned workout with their weight/reps history
-    const plannedExercises = workout.exercises.map(exerciseItem => {
+    const plannedExercises: PlannedExercise[] = workout.exercises.map(exerciseItem => {
       // Get the most recent completed set's weight and reps for reference
       const completedSets = exerciseItem.sets.filter(set => set.completed);
       const lastCompletedSet = completedSets[completedSets.length - 1];
