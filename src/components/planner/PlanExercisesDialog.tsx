@@ -157,8 +157,8 @@ export const PlanExercisesDialog: React.FC<PlanExercisesDialogProps> = ({
               <Button 
                 onClick={() => {
                 if (selectedWorkout) {
-                  handleStartPlannedWorkout(selectedWorkout);
                   handleSavePlan();
+                  handleStartPlannedWorkout(selectedWorkout);
                 }
               }}
                 className="bg-green-500 hover:bg-green-600 text-white"
