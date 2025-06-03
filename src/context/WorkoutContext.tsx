@@ -281,15 +281,42 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     
     // If there are planned exercises, add them to the workout
     if (plannedWorkout.plannedExercises && plannedWorkout.plannedExercises.length > 0) {
-      newActiveWorkout.exercises = plannedWorkout.plannedExercises.map(exercise => ({
-        id: uuidv4(),
-        exercise,
-        sets: [{
+      newActiveWorkout.exercises = plannedWorkout.plannedExercises.map(exercise => {
+        // Check if this exercise has reference data from a repeated workout
+        const hasReferenceData = exercise.referenceWeight !== undefined || exercise.referenceReps !== undefined;
+        
+        let initialSets;
+        
+        if (hasReferenceData && exercise.previousSets && exercise.previousSets.length > 0) {
+          // Create sets based on the previous workout's completed sets
+          initialSets = exercise.previousSets.map(prevSet => ({
+            id: uuidv4(),
+            exerciseId: exercise.id,
+            weight: prevSet.weight,
+            reps: prevSet.reps,
+            completed: false,
+          }));
+        } else {
+          // Create a single empty set
+          initialSets = [{
+            id: uuidv4(),
+            exerciseId: exercise.id,
+            completed: false,
+          }];
+        }
+
+        return {
           id: uuidv4(),
-          exerciseId: exercise.id,
-          completed: false,
-        }],
-      }));
+          exercise: {
+            id: exercise.id,
+            name: exercise.name,
+            type: exercise.type,
+            muscleGroups: exercise.muscleGroups,
+            instructions: exercise.instructions
+          },
+          sets: initialSets,
+        };
+      });
     }
     
     setActiveWorkout(newActiveWorkout);

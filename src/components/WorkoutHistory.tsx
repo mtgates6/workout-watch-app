@@ -34,10 +34,25 @@ const WorkoutHistory = () => {
       new Date().toISOString()
     );
     
-    // Add all exercises from the completed workout to the planned workout
-    const plannedExercises = workout.exercises.map(exerciseItem => exerciseItem.exercise);
+    // Add all exercises from the completed workout to the planned workout with their weight/reps history
+    const plannedExercises = workout.exercises.map(exerciseItem => {
+      // Get the most recent completed set's weight and reps for reference
+      const completedSets = exerciseItem.sets.filter(set => set.completed);
+      const lastCompletedSet = completedSets[completedSets.length - 1];
+      
+      return {
+        ...exerciseItem.exercise,
+        // Add reference data for the planner to use
+        referenceWeight: lastCompletedSet?.weight,
+        referenceReps: lastCompletedSet?.reps,
+        previousSets: completedSets.map(set => ({
+          weight: set.weight,
+          reps: set.reps
+        }))
+      };
+    });
     
-    // Update the planned workout with the exercises
+    // Update the planned workout with the exercises including their reference data
     updatePlannedWorkout(newWorkout.id, {
       plannedExercises
     });
@@ -45,7 +60,7 @@ const WorkoutHistory = () => {
     // Show success toast
     toast({
       title: "Workout Copied to Plan",
-      description: `Added "${workout.name}" to today's plan`,
+      description: `Added "${workout.name}" to today's plan with previous weights and reps`,
     });
     
     // Navigate to the planner page
