@@ -46,6 +46,21 @@ export const PlanExercisesDialog: React.FC<PlanExercisesDialogProps> = ({
   handleSavePlan,
   handleStartPlannedWorkout,
 }) => {
+  const handleSaveAndStartWorkout = () => {
+    if (!selectedWorkout) return;
+    
+    // First save the current plan state
+    handleSavePlan(() => {
+      // Then start the workout with the updated plan
+      const updatedWorkout = {
+        ...selectedWorkout,
+        plannedExercises,
+        notes: workoutNotes
+      };
+      handleStartPlannedWorkout(updatedWorkout);
+    });
+  };
+
   const renderExerciseContent = () => (
     <div className="space-y-4">
       <div>
@@ -155,9 +170,7 @@ export const PlanExercisesDialog: React.FC<PlanExercisesDialogProps> = ({
           <DrawerFooter className="px-4">
             {selectedWorkout && (
               <Button 
-                onClick={() => {
-                  handleSavePlan(() => handleStartPlannedWorkout(selectedWorkout));
-                }}
+                onClick={handleSaveAndStartWorkout}
                 className="bg-green-500 hover:bg-green-600 text-white"
               >
                 <Play className="h-4 w-4 mr-1" />
@@ -184,9 +197,7 @@ export const PlanExercisesDialog: React.FC<PlanExercisesDialogProps> = ({
           <Button onClick={() => handleSavePlan()}>Save Plan</Button>
           {selectedWorkout && (
             <Button 
-              onClick={() => {
-                  handleSavePlan(() => handleStartPlannedWorkout(selectedWorkout));
-                }}
+              onClick={handleSaveAndStartWorkout}
               className="bg-green-500 hover:bg-green-600 text-white ml-auto"
             >
               <Play className="h-4 w-4 mr-1" />
