@@ -75,6 +75,15 @@ const PlannerPage = () => {
   };
   
   const handleStartPlannedWorkout = (workout: Workout) => {
+    console.log('PlannerPage: Starting planned workout:', workout);
+    
+    // Update the workout in context first with the latest data
+    updatePlannedWorkout(workout.id, {
+      plannedExercises: workout.plannedExercises,
+      notes: workout.notes
+    });
+    
+    // Then start the workout
     startPlannedWorkout(workout.id);
     navigate("/workout");
     toast({

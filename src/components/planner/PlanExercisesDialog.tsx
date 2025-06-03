@@ -49,14 +49,22 @@ export const PlanExercisesDialog: React.FC<PlanExercisesDialogProps> = ({
   const handleSaveAndStartWorkout = () => {
     if (!selectedWorkout) return;
     
-    // First save the current plan state
+    console.log('Saving and starting workout with planned exercises:', plannedExercises);
+    console.log('Workout notes:', workoutNotes);
+    
+    // Create the updated workout object with current state
+    const updatedWorkout = {
+      ...selectedWorkout,
+      plannedExercises,
+      notes: workoutNotes
+    };
+    
+    console.log('Updated workout object:', updatedWorkout);
+    
+    // First save the current plan state, then start with the updated workout
     handleSavePlan(() => {
-      // Then start the workout with the updated plan
-      const updatedWorkout = {
-        ...selectedWorkout,
-        plannedExercises,
-        notes: workoutNotes
-      };
+      console.log('Save completed, now starting workout');
+      // Use the updated workout object instead of the stale selectedWorkout
       handleStartPlannedWorkout(updatedWorkout);
     });
   };

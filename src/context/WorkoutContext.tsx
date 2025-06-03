@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Workout, WorkoutExercise, WorkoutSet, WorkoutSummary, Exercise, PlannedExercise } from "@/types/workout";
@@ -276,9 +275,17 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
   
   const startPlannedWorkout = (workoutId: string) => {
+    console.log('Starting planned workout with ID:', workoutId);
+    
     const plannedWorkout = workouts.find(w => w.id === workoutId && w.planned);
     
-    if (!plannedWorkout) return;
+    if (!plannedWorkout) {
+      console.log('Planned workout not found');
+      return;
+    }
+    
+    console.log('Found planned workout:', plannedWorkout);
+    console.log('Planned exercises:', plannedWorkout.plannedExercises);
     
     // Create a new active workout based on the planned workout
     const newActiveWorkout: Workout = {
@@ -290,6 +297,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     
     // If there are planned exercises, add them to the workout
     if (plannedWorkout.plannedExercises && plannedWorkout.plannedExercises.length > 0) {
+      console.log('Converting planned exercises to workout exercises');
       newActiveWorkout.exercises = plannedWorkout.plannedExercises.map((exercise: PlannedExercise) => {
         // Check if this exercise has reference data from a repeated workout
         const hasReferenceData = exercise.referenceWeight !== undefined || exercise.referenceReps !== undefined;
@@ -328,6 +336,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
       });
     }
     
+    console.log('New active workout created:', newActiveWorkout);
     setActiveWorkout(newActiveWorkout);
   };
   
