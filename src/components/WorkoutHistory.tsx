@@ -127,18 +127,16 @@ const WorkoutHistory = () => {
   };
 
   const handleShareWorkout = async (workout) => {
-    // Generate a text summary with muscle group emojis
+    // Generate a text summary with only the first muscle group emoji per exercise
     const summary = [
       `🏋️ Workout: ${workout.name}`,
       "",
       "Exercises:",
       ...workout.exercises.map(ex => {
         const muscleGroups = ex.exercise.muscleGroups || [];
-        const muscleGroupsWithEmojis = muscleGroups.map(mg => {
-          const emoji = muscleGroupEmojis[mg] || "";
-          return emoji ? `${mg} ${emoji}` : mg;
-        }).join(", ");
-        return `- ${ex.exercise.name}${muscleGroupsWithEmojis ? ` (${muscleGroupsWithEmojis})` : ""}`;
+        const firstMuscleGroup = muscleGroups[0];
+        const emoji = firstMuscleGroup ? (muscleGroupEmojis[firstMuscleGroup] || "") : "";
+        return `- ${ex.exercise.name}${emoji ? ` ${emoji}` : ""}`;
       }),
     ].join("\n");
 
