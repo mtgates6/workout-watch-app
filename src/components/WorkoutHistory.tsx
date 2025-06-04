@@ -144,10 +144,19 @@ const WorkoutHistory = () => {
 
     // Try Web Share API first (mobile-friendly)
     if (navigator.share) {
-      navigator.share({
-        title: `Workout: ${workout.name}`,
-        text: summary,
-      });
+      try {
+        navigator.share({
+          title: `Workout: ${workout.name}`,
+          text: summary,
+        });
+      } catch (err) {
+        // Fallback: copy to clipboard if share fails (e.g., permission denied)
+        navigator.clipboard.writeText(summary);
+        toast({
+          title: "Workout copied!",
+          description: "You can now paste your workout summary anywhere.",
+        });
+      }
     } else {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(summary);
