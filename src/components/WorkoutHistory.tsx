@@ -28,19 +28,19 @@ const WorkoutHistory = () => {
   const isMobile = useIsMobile();
   const [mobileExerciseModal, setMobileExerciseModal] = useState<{open: boolean, exerciseItem?: any}>({open: false});
 
-  // Map muscle groups to emojis
+  // Map muscle groups to emojis (all lowercase keys)
   const muscleGroupEmojis: Record<string, string> = {
-    Chest: "🏋️",
-    Back: "🦾",
-    Legs: "🦵",
-    Shoulders: "🏋️‍♂️",
-    Biceps: "💪",
-    Triceps: "💪",
-    Core: "🧘",
-    Glutes: "🍑",
-    Calves: "🐮",
-    Forearms: "🤲",
-    Cardio: "🏃",
+    chest: "🏋️",
+    back: "🦾",
+    legs: "🦵",
+    shoulders: "🏋️‍♂️",
+    biceps: "💪",
+    triceps: "💪",
+    core: "🧘",
+    glutes: "🍑",
+    calves: "🐮",
+    forearms: "🤲",
+    cardio: "🏃",
     // Add more as needed
   };
 
@@ -135,7 +135,7 @@ const WorkoutHistory = () => {
       ...workout.exercises.map(ex => {
         const muscleGroups = ex.exercise.muscleGroups || [];
         const firstMuscleGroup = muscleGroups[0];
-        const emoji = firstMuscleGroup && muscleGroupEmojis[firstMuscleGroup] ? muscleGroupEmojis[firstMuscleGroup] : "";
+        const emoji = firstMuscleGroup ? (muscleGroupEmojis[firstMuscleGroup.toLowerCase()] || "") : "";
         return `- ${ex.exercise.name}${emoji ? ` ${emoji}` : ""}`;
       }),
     ].join("\n");
