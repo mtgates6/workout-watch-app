@@ -201,7 +201,7 @@ const WorkoutHistory = () => {
                         <span>{workout.duration ? formatDuration(workout.duration) : "N/A"}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
                       <Button
                         variant="outline"
                         size="sm"
@@ -209,7 +209,6 @@ const WorkoutHistory = () => {
                         className="flex items-center gap-1"
                       >
                         <Share2 className="h-3 w-3" />
-                        <span>Share</span>
                       </Button>
                       <Button 
                         variant="outline" 
@@ -218,7 +217,6 @@ const WorkoutHistory = () => {
                         className="flex items-center gap-1"
                       >
                         <Repeat className="h-3 w-3" />
-                        <span>Repeat</span>
                       </Button>
                     </div>
                   </div>
