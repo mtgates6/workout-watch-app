@@ -126,7 +126,7 @@ const WorkoutHistory = () => {
     return null;
   };
 
-  const handleShareWorkout = (workout) => {
+  const handleShareWorkout = async (workout) => {
     // Generate a text summary with muscle group emojis
     const summary = [
       `🏋️ Workout: ${workout.name}`,
@@ -145,13 +145,13 @@ const WorkoutHistory = () => {
     // Try Web Share API first (mobile-friendly)
     if (navigator.share) {
       try {
-        navigator.share({
+        await navigator.share({
           title: `Workout: ${workout.name}`,
           text: summary,
         });
       } catch (err) {
         // Fallback: copy to clipboard if share fails (e.g., permission denied)
-        navigator.clipboard.writeText(summary);
+        await navigator.clipboard.writeText(summary);
         toast({
           title: "Workout copied!",
           description: "You can now paste your workout summary anywhere.",
@@ -159,7 +159,7 @@ const WorkoutHistory = () => {
       }
     } else {
       // Fallback: copy to clipboard
-      navigator.clipboard.writeText(summary);
+      await navigator.clipboard.writeText(summary);
       toast({
         title: "Workout copied!",
         description: "You can now paste your workout summary anywhere.",
