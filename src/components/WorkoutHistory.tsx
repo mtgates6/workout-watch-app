@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ExerciseNotes from "./workout/ExerciseNotes";
 import { PlannedExercise } from "@/types/workout";
+import { Share2 } from "lucide-react";
 
 const WorkoutHistory = () => {
   const { workouts, createPlannedWorkout, updatePlannedWorkout, updateExerciseNotes } = useWorkout();
@@ -27,6 +27,22 @@ const WorkoutHistory = () => {
   const [editingWorkout, setEditingWorkout] = useState(null);
   const isMobile = useIsMobile();
   const [mobileExerciseModal, setMobileExerciseModal] = useState<{open: boolean, exerciseItem?: any}>({open: false});
+
+  // Map muscle groups to emojis
+  const muscleGroupEmojis: Record<string, string> = {
+    Chest: "🏋️",
+    Back: "🦾",
+    Legs: "🦵",
+    Shoulders: "🏋️‍♂️",
+    Biceps: "💪",
+    Triceps: "💪",
+    Core: "🧘",
+    Glutes: "🍑",
+    Calves: "🐮",
+    Forearms: "🤲",
+    Cardio: "🏃",
+    // Add more as needed
+  };
 
   const handleRepeatWorkout = (workout) => {
     // Create a new planned workout with the same name
@@ -110,6 +126,38 @@ const WorkoutHistory = () => {
     return null;
   };
 
+  const handleShareWorkout = (workout) => {
+    // Generate a text summary with muscle group emojis
+    const summary = [
+      `🏋️ Workout: ${workout.name}`,
+      "",
+      "Exercises:",
+      ...workout.exercises.map(ex => {
+        const muscleGroups = ex.exercise.muscleGroups || [];
+        const muscleGroupsWithEmojis = muscleGroups.map(mg => {
+          const emoji = muscleGroupEmojis[mg] || "";
+          return emoji ? `${mg} ${emoji}` : mg;
+        }).join(", ");
+        return `- ${ex.exercise.name}${muscleGroupsWithEmojis ? ` (${muscleGroupsWithEmojis})` : ""}`;
+      }),
+    ].join("\n");
+
+    // Try Web Share API first (mobile-friendly)
+    if (navigator.share) {
+      navigator.share({
+        title: `Workout: ${workout.name}`,
+        text: summary,
+      });
+    } else {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(summary);
+      toast({
+        title: "Workout copied!",
+        description: "You can now paste your workout summary anywhere.",
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -147,6 +195,15 @@ const WorkoutHistory = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleShareWorkout(workout)}
+                        className="flex items-center gap-1"
+                      >
+                        <Share2 className="h-3 w-3" />
+                        <span>Share</span>
+                      </Button>
                       <Button 
                         variant="outline" 
                         size="sm" 
