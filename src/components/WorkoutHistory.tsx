@@ -136,7 +136,7 @@ const WorkoutHistory = () => {
         const muscleGroups = ex.exercise.muscleGroups || [];
         const firstMuscleGroup = muscleGroups[0];
         const emoji = firstMuscleGroup && muscleGroupEmojis[firstMuscleGroup] ? muscleGroupEmojis[firstMuscleGroup] : "";
-        return `- ${ex.exercise.name}${emoji}`;
+        return `- ${ex.exercise.name}${emoji ? ` ${emoji}` : ""}`;
       }),
     ].join("\n");
 
