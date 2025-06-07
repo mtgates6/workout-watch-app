@@ -33,8 +33,8 @@ export interface PlannedExercise extends Exercise {
 export interface WorkoutSet {
   id: string;
   exerciseId: string;
-  weight?: number;
-  reps?: number;
+  weight?: string | number;
+  reps?: string | number;
   duration?: number; // in seconds
   distance?: number; // in meters
   completed: boolean;

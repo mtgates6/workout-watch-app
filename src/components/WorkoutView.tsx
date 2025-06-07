@@ -36,7 +36,7 @@ const WorkoutView = () => {
     }
   };
 
-  const handleSetUpdate = (exerciseIndex: number, setIndex: number, field: 'weight' | 'reps', value: number) => {
+  const handleSetUpdate = (exerciseIndex: number, setIndex: number, field: 'weight' | 'reps', value: string | number) => {
     if (activeWorkout) {
       const exerciseId = activeWorkout.exercises[exerciseIndex].id;
       const setId = activeWorkout.exercises[exerciseIndex].sets[setIndex].id;

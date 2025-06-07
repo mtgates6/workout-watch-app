@@ -10,7 +10,7 @@ interface SetRowProps {
   setIndex: number;
   exerciseIndex: number;
   handleSetCompletion: (setIndex: number, exerciseIndex: number, completed: boolean) => void;
-  handleSetUpdate: (exerciseIndex: number, setIndex: number, field: 'weight' | 'reps', value: number) => void;
+  handleSetUpdate: (exerciseIndex: number, setIndex: number, field: 'weight' | 'reps', value: string | number) => void;
   handleRemoveSet: (exerciseIndex: number, setIndex: number) => void;
 }
 
@@ -25,37 +25,23 @@ export const SetRow: React.FC<SetRowProps> = ({
   return (
     <div key={set.id} className="grid grid-cols-3 gap-2 items-center justify-between">
       <Input
-        type="number"
+        type="text"
         placeholder="Weight"
         value={set.weight || ''}
         onChange={(e) => {
-          const value = e.target.value;
-          if (value === '') {
-            handleSetUpdate(exerciseIndex, setIndex, 'weight', 0);
-          } else {
-            const numValue = Number(value);
-            if (!isNaN(numValue)) {
-              handleSetUpdate(exerciseIndex, setIndex, 'weight', numValue);
-            }
+            handleSetUpdate(exerciseIndex, setIndex, 'weight', e.target.value);
           }
-        }}
+        }
         className='p-2 w-full'
       />
       <Input
-        type="number"
+        type="text"
         placeholder="Reps"
         value={set.reps || ''}
         onChange={(e) => {
-          const value = e.target.value;
-          if (value === '') {
-            handleSetUpdate(exerciseIndex, setIndex, 'reps', 0);
-          } else {
-            const numValue = Number(value);
-            if (!isNaN(numValue)) {
-              handleSetUpdate(exerciseIndex, setIndex, 'reps', numValue);
-            }
+          handleSetUpdate(exerciseIndex, setIndex, 'reps', e.target.value);
           }
-        }}
+        }
         className='p-2 w-full'
       />
       <div className="flex items-center gap-2">
