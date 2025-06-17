@@ -50,7 +50,7 @@ const WorkoutView = () => {
       title: "Workout Ended",
       description: "Your workout has been saved to history.",
     });
-    navigate("/");
+    navigate("/history");
   };
 
   const handleRemoveExercise = (exerciseIndex: number) => {
