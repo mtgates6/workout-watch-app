@@ -27,7 +27,6 @@ export const SetRow: React.FC<SetRowProps> = ({
       <Input
         type="text"
         placeholder="Weight"
-        inputMode="numeric"
         value={set.weight ?? ''}
         onChange={(e) => {
             handleSetUpdate(exerciseIndex, setIndex, 'weight', e.target.value);
@@ -38,7 +37,6 @@ export const SetRow: React.FC<SetRowProps> = ({
       <Input
         type="text"
         placeholder="Reps"
-        inputMode="numeric"
         value={set.reps ?? ''}
         onChange={(e) => {
           handleSetUpdate(exerciseIndex, setIndex, 'reps', e.target.value);
