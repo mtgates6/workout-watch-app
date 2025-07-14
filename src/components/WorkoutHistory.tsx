@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
-import { CalendarIcon, Clock, Repeat, BarChart, Edit, Pencil } from "lucide-react";
+import { CalendarIcon, Clock, Repeat, BarChart, Edit, Pencil, Search } from "lucide-react";
 import { formatDuration } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ const WorkoutHistory = () => {
   const [editingWorkout, setEditingWorkout] = useState(null);
   const isMobile = useIsMobile();
   const [mobileExerciseModal, setMobileExerciseModal] = useState<{open: boolean, exerciseItem?: any}>({open: false});
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Map muscle groups to emojis (all lowercase keys)
   const muscleGroupEmojis: Record<string, string> = {
@@ -165,11 +166,35 @@ const WorkoutHistory = () => {
     }
   };
 
+  // Filter workouts based on search query
+  const filteredWorkouts = completedWorkouts.filter((workout) => {
+    if (!searchQuery.trim()) return true;
+    
+    const query = searchQuery.toLowerCase().trim();
+    return workout.exercises.some((exerciseItem) =>
+      exerciseItem.exercise.name.toLowerCase().includes(query)
+    );
+  });
+
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Workout History</h1>
-        <p className="text-muted-foreground">Track your previous workouts and progress</p>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight">Workout History</h1>
+          <p className="text-muted-foreground">Track your previous workouts and progress</p>
+        </div>
+        
+        {completedWorkouts.length > 0 && (
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Search by exercise name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        )}
       </div>
 
       {completedWorkouts.length === 0 ? (
@@ -184,9 +209,21 @@ const WorkoutHistory = () => {
             </p>
           </CardContent>
         </Card>
+      ) : filteredWorkouts.length === 0 && searchQuery.trim() ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <div className="rounded-full bg-muted p-4 mb-4">
+              <Search className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-medium">No workouts found</h3>
+            <p className="text-sm text-muted-foreground text-center max-w-sm mt-2">
+              No workouts contain exercises matching "{searchQuery}". Try a different search term.
+            </p>
+          </CardContent>
+        </Card>
       ) : (
         <div className="space-y-4">
-          {completedWorkouts
+          {filteredWorkouts
             .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
             .map((workout) => (
               <Card key={workout.id}>
