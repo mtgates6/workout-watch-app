@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Dumbbell, Home, Library, MenuIcon, X } from "lucide-react";
+import { BarChart3, Dumbbell, Home, Library, MenuIcon, X, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useWorkout } from "@/context/WorkoutContext";
 
@@ -60,6 +60,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       to: "/history",
       label: "History",
       icon: <BarChart3 size={20} />,
+    },
+    {
+      to: "/health",
+      label: "Health",
+      icon: <Heart size={20} />,
     },
   ];
 
