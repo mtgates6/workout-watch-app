@@ -6,11 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, History } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Exercise, MuscleGroup } from "@/types/workout";
 import { useNavigate } from "react-router-dom";
+import ExerciseHistoryDialog from "./ExerciseHistoryDialog";
 
 const muscleGroups: MuscleGroup[] = [
   'chest',
@@ -29,9 +30,36 @@ const ExerciseLibrary = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<MuscleGroup | "all">("all");
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
-  const { activeWorkout, addExerciseToWorkout, startWorkout } = useWorkout();
+  const [historyExercise, setHistoryExercise] = useState<Exercise | null>(null);
+  const { activeWorkout, addExerciseToWorkout, startWorkout, workouts } = useWorkout();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const getExerciseHistory = (exercise: Exercise) => {
+    return workouts
+      .filter(workout => workout.completed)
+      .map(workout => {
+        const exerciseData = workout.exercises.find(
+          ex => ex.exercise.id === exercise.id
+        );
+        if (exerciseData) {
+          return {
+            workout: {
+              id: workout.id,
+              name: workout.name,
+              date: workout.date
+            },
+            exerciseData
+          };
+        }
+        return null;
+      })
+      .filter(Boolean)
+      .sort((a, b) => new Date(b!.workout.date).getTime() - new Date(a!.workout.date).getTime()) as Array<{
+        workout: { id: string; name: string; date: string };
+        exerciseData: any;
+      }>;
+  };
 
   const handleAddToWorkout = (exercise: Exercise) => {
     if (!activeWorkout) {
@@ -114,6 +142,7 @@ const ExerciseLibrary = () => {
             exercise={exercise}
             onSelect={setSelectedExercise}
             onAdd={handleAddToWorkout}
+            onShowHistory={setHistoryExercise}
           />
         ))}
         {filteredExercises.length === 0 && (
@@ -167,6 +196,15 @@ const ExerciseLibrary = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {historyExercise && (
+        <ExerciseHistoryDialog
+          exercise={historyExercise}
+          workoutHistory={getExerciseHistory(historyExercise)}
+          open={!!historyExercise}
+          onOpenChange={(open) => !open && setHistoryExercise(null)}
+        />
+      )}
     </div>
   );
 };
@@ -175,9 +213,10 @@ interface ExerciseCardProps {
   exercise: Exercise;
   onSelect: (exercise: Exercise) => void;
   onAdd: (exercise: Exercise) => void;
+  onShowHistory: (exercise: Exercise) => void;
 }
 
-const ExerciseCard = ({ exercise, onSelect, onAdd }: ExerciseCardProps) => {
+const ExerciseCard = ({ exercise, onSelect, onAdd, onShowHistory }: ExerciseCardProps) => {
   return (
     <Card className="overflow-hidden">
       <CardHeader className="cursor-pointer" onClick={() => onSelect(exercise)}>
@@ -198,9 +237,12 @@ const ExerciseCard = ({ exercise, onSelect, onAdd }: ExerciseCardProps) => {
             </Badge>
           ))}
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between gap-2">
           <Button variant="outline" size="sm" onClick={() => onSelect(exercise)}>
             Details
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => onShowHistory(exercise)}>
+            <History className="h-4 w-4" />
           </Button>
           <Button
             size="sm"
