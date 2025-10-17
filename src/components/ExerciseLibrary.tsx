@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { Search, Plus, History } from "lucide-react";
+import { Search, Plus, History, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Exercise, MuscleGroup } from "@/types/workout";
@@ -219,16 +219,14 @@ interface ExerciseCardProps {
 const ExerciseCard = ({ exercise, onSelect, onAdd, onShowHistory }: ExerciseCardProps) => {
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="cursor-pointer" onClick={() => onSelect(exercise)}>
-        <CardTitle>{exercise.name}</CardTitle>
-        <CardDescription>
-          <div className="flex items-center justify-between">
-            <Badge variant="outline">
-              {exercise.type.charAt(0).toUpperCase() + exercise.type.slice(1)}
-            </Badge>
-          </div>
-        </CardDescription>
-      </CardHeader>
+        <div className="flex flex-row justify-between items-center">
+            <CardHeader className="cursor-pointer" onClick={() => onSelect(exercise)}>
+                <CardTitle>{exercise.name}</CardTitle>
+            </CardHeader>
+            <Button variant="outline" size="sm" className="mr-6" onClick={() => onShowHistory(exercise)}>
+              <Clock className="h-4 w-4" />
+            </Button>
+        </div>
       <CardContent>
         <div className="flex flex-wrap gap-1 mb-4">
           {exercise.muscleGroups.map((group) => (
@@ -240,9 +238,6 @@ const ExerciseCard = ({ exercise, onSelect, onAdd, onShowHistory }: ExerciseCard
         <div className="flex justify-between gap-2">
           <Button variant="outline" size="sm" onClick={() => onSelect(exercise)}>
             Details
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => onShowHistory(exercise)}>
-            <History className="h-4 w-4" />
           </Button>
           <Button
             size="sm"
