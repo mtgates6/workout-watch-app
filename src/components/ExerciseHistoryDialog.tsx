@@ -7,6 +7,7 @@ import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 import { Exercise, WorkoutExercise } from "@/types/workout";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface ExerciseHistoryDialogProps {
   exercise: Exercise;
@@ -71,11 +72,27 @@ const ExerciseHistoryDialog = ({ exercise, workoutHistory, open, onOpenChange }:
             </Button>
             
             <div className="flex-1 text-center">
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center gap-2 mb-1">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">
-                  {format(new Date(currentEntry.workout.date), "MMM dd, yyyy")}
-                </span>
+                  <Select onValueChange={(value) =>setSelectedIndex(parseInt(value))}
+                    value={selectedIndex.toString()}
+                  >
+                  <SelectTrigger className="w-[160px] text-center">
+                    <SelectValue>
+                      {format(
+                        new Date(workoutHistory[selectedIndex].workout.date),
+                        "MMM dd, yyyy"  
+                      )}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[200px] overflow-y-auto">
+                    {workoutHistory.map((entry, index) => (
+                      <SelectItem key={index} value={index.toString()}>
+                        {format(new Date(entry.workout.date), "MMM dd, yyyy")}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <p className="text-xs text-muted-foreground mt-1">
                 {currentEntry.workout.name}
