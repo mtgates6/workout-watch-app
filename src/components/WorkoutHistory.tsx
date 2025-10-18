@@ -35,7 +35,7 @@ const WorkoutHistory = () => {
     back: "🎒",
     legs: "🦵",
     quads:"🦵",
-    hamstring:"🐹",
+    hamstrings:"🐹",
     shoulders: "🏋️‍♂️",
     biceps: "💪",
     triceps: "🔱",
