@@ -31,18 +31,19 @@ const WorkoutHistory = () => {
 
   // Map muscle groups to emojis (all lowercase keys)
   const muscleGroupEmojis: Record<string, string> = {
-    chest: "🏋️",
-    back: "🦾",
+    chest: "💗",
+    back: "🎒",
     legs: "🦵",
+    quads:"🦵",
+    hamstrings:"🐹",
     shoulders: "🏋️‍♂️",
     biceps: "💪",
-    triceps: "💪",
+    triceps: "🔱",
     core: "🧘",
     glutes: "🍑",
     calves: "🐮",
     forearms: "🤲",
     cardio: "🏃",
-    // Add more as needed
   };
 
   const handleRepeatWorkout = (workout) => {
