@@ -109,7 +109,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "16",
-    name: "Romanian Deadlift",
+    name: "Romanian Deadlift (RDL)",
     type: "strength",
     muscleGroups: ["hamstrings", "glutes", "back"],
     instructions: "Stand holding a barbell in front of your thighs. Keeping your back straight and knees slightly bent, hinge at the hips to lower the bar toward the floor, then return to standing."
