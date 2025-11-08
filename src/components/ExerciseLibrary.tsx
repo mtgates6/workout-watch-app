@@ -182,7 +182,7 @@ const ExerciseLibrary = () => {
                   </div>
                 )}
                 <Button
-                  className="w-full bg-fitness-primary hover:bg-fitness-secondary"
+                  className="w-full"
                   onClick={() => {
                     handleAddToWorkout(selectedExercise);
                     setSelectedExercise(null);
@@ -241,7 +241,6 @@ const ExerciseCard = ({ exercise, onSelect, onAdd, onShowHistory }: ExerciseCard
           </Button>
           <Button
             size="sm"
-            className="bg-fitness-primary hover:bg-fitness-secondary"
             onClick={() => onAdd(exercise)}
           >
             <Plus className="h-4 w-4" />
