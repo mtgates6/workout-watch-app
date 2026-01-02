@@ -2,11 +2,12 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { Trash2, Plus, ChevronDown, ChevronUp, Clock } from "lucide-react";
 import { WorkoutExercise } from "@/types/workout";
 import { SetRow } from "./SetRow";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import ExerciseNotes from "./ExerciseNotes";
+import ExerciseHistoryDialog from '../ExerciseHistoryDialog';
 
 interface ExerciseCardProps {
   exercise: WorkoutExercise;
@@ -17,6 +18,7 @@ interface ExerciseCardProps {
   handleRemoveSet: (exerciseIndex: number, setIndex: number) => void;
   handleAddSet: (exerciseIndex: number) => void;
   handleExerciseNotes?: (exerciseId: string, notes: string) => void;
+  onShowHistory: (exercise: WorkoutExercise) => void;
 }
 
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({
@@ -27,7 +29,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   handleSetUpdate,
   handleRemoveSet,
   handleAddSet,
-  handleExerciseNotes
+  handleExerciseNotes,
+  onShowHistory
 }) => {
   const [isOpen, setIsOpen] = useState(false); // Start collapsed
   
@@ -42,6 +45,9 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
+            <Button variant="outline" size="sm" className="mr-6" onClick={() => onShowHistory(exercise)}>
+              <Clock className="h-4 w-4" />
+            </Button>
               <CollapsibleTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0 mr-2">
                   {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
