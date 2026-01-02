@@ -10,10 +10,12 @@ import { NoActiveWorkout } from "./workout/NoActiveWorkout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import ExerciseHistoryDialog from "./ExerciseHistoryDialog";
 
 const WorkoutView = () => {
   const {
     activeWorkout,
+    workouts,
     completeWorkout,
     updateSet,
     removeExerciseFromWorkout,
@@ -27,6 +29,7 @@ const WorkoutView = () => {
   const navigate = useNavigate();
   
   const [showAddExerciseDialog, setShowAddExerciseDialog] = useState(false);
+  const [historyExercise, setHistoryExercise] = useState<Exercise | null>(null);
 
   const handleSetCompletion = (setIndex: number, exerciseIndex: number, completed: boolean) => {
     if (activeWorkout) {
@@ -115,6 +118,33 @@ const WorkoutView = () => {
     reorderExercises(reordered);
   };
   
+  const getExerciseHistory = (exercise: Exercise) => {
+    return workouts
+      .filter(workout => workout.completed)
+      .map(workout => {
+        const exerciseData = workout.exercises.find(
+          ex => ex.exercise.id === exercise.id
+        );
+        if (exerciseData) {
+          return {
+            workout: {
+              id: workout.id,
+              name: workout.name,
+              date: workout.date
+            },
+            exerciseData
+          };
+        }
+        return null;
+      })
+      .filter(Boolean)
+      .sort((a, b) => new Date(b!.workout.date).getTime() - new Date(a!.workout.date).getTime()) as Array<{
+        workout: { id: string; name: string; date: string };
+        exerciseData: any;
+      }>;
+  };
+
+  
   if (!activeWorkout) {
     return <NoActiveWorkout />;
   }
@@ -152,7 +182,16 @@ const WorkoutView = () => {
           />
         </div>
       </div>
-
+      <div>
+            {historyExercise && (
+        <ExerciseHistoryDialog
+          exercise={historyExercise}
+          workoutHistory={getExerciseHistory(historyExercise)}
+          open={!!historyExercise}
+          onOpenChange={(open) => !open && setHistoryExercise(null)}
+        />
+      )}
+      </div>
       {activeWorkout.exercises.length > 0 ? (
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="exercise-list">
@@ -183,6 +222,7 @@ const WorkoutView = () => {
                           handleRemoveSet={handleRemoveSet}
                           handleAddSet={handleAddSet}
                           handleExerciseNotes={handleExerciseNotes}
+                          onShowHistory={setHistoryExercise}
                         />
                       </div>
                     )}

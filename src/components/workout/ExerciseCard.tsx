@@ -44,10 +44,10 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <div className="flex items-center">
             <Button variant="outline" size="sm" className="mr-6" onClick={() => onShowHistory(exercise)}>
               <Clock className="h-4 w-4" />
             </Button>
+            <div className="flex items-center">
               <CollapsibleTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0 mr-2">
                   {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
