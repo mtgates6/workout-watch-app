@@ -123,7 +123,7 @@ const ExerciseHistoryDialog = ({ exercise, workoutHistory, open, onOpenChange }:
                 <LineChart data={getChartData()}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
-                  <YAxis />
+                  <YAxis domain={['auto', 'auto']}/>
                   <Line 
                     type="monotone" 
                     dataKey="maxWeight" 
