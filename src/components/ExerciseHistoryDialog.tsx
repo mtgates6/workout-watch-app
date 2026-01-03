@@ -127,7 +127,7 @@ const ExerciseHistoryDialog = ({ exercise, workoutHistory, open, onOpenChange }:
                   <Line 
                     type="monotone" 
                     dataKey="maxWeight" 
-                    stroke="var(--color-maxWeight)" 
+                    stroke="#3b82f6" 
                     strokeWidth={2}
                     dot={{ r: 4 }}
                   />
