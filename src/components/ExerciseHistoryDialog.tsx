@@ -3,13 +3,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Calendar, ChevronLeft, ChevronRight, ChartLine, Table2 } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, ChartLine, Table2, Table2Icon, ChartAreaIcon, LineChartIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Exercise, WorkoutExercise } from "@/types/workout";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { LineChart, XAxis,YAxis, Line, CartesianGrid, ResponsiveContainer } from "recharts";
 import { ChartContainer,ChartTooltip, ChartTooltipContent } from "./ui/chart";
+import { useSidebar } from "./ui/sidebar";
 
 interface ExerciseHistoryDialogProps {
   exercise: Exercise;
@@ -27,7 +28,8 @@ interface ExerciseHistoryDialogProps {
 
 const ExerciseHistoryDialog = ({ exercise, workoutHistory, open, onOpenChange }: ExerciseHistoryDialogProps) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [showChart, setShowChart] = useState(false);
+  const [mode, setMode] = useState<"table" | "chart">("table");
+  const [data, setData] = useState<"max" | "volume"> ("max");
   const [dateRange, setDateRange] = useState<"30d" | "90d" | "all" >("30d");
 
   if (workoutHistory.length === 0) {
@@ -57,8 +59,8 @@ const ExerciseHistoryDialog = ({ exercise, workoutHistory, open, onOpenChange }:
   };
  
   const handleChart = () =>{
-    setShowChart(!showChart);
-    console.log(showChart)
+    setMode((prevMode) => (prevMode === 'chart' ? 'table' : 'chart'));
+
   };
 
   const getChartData = () => {
@@ -69,14 +71,36 @@ const ExerciseHistoryDialog = ({ exercise, workoutHistory, open, onOpenChange }:
         const daysAgo = (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24);
         return daysAgo <= parseInt(dateRange);
       });
-      return filteredHistory
-        .map(entry => ({
-          date: format(new Date(entry.workout.date), "MMM dd"),
-          maxWeight: Math.max(...entry.exerciseData.sets
-            .filter(s => s.completed)
-            .map(s => Number(s.weight) || 0))
-        }))
-        .reverse(); // Show oldest to newest for chart
+      if(data === "max"){
+        return filteredHistory
+          .map(entry => ({
+            date: format(new Date(entry.workout.date), "MMM dd"),
+            value: Math.max(...entry.exerciseData.sets
+              .filter(s => s.completed)
+              .map(s => Number(s.weight) || 0))
+          }))
+          .reverse(); // Show oldest to newest for chart
+      }
+      else if (data ==="volume"){
+        return filteredHistory
+          .map(entry => ({
+            date: format(new Date(entry.workout.date), "MMM dd"),
+            value: entry.exerciseData.sets
+              .filter(s => s.completed)
+              .reduce((total, set) => {
+                const weight = Number(set.weight) || 0;
+                const reps = Number(set.reps) || 0;
+                return total + (weight * reps);
+              }, 0)
+          }))
+          .reverse(); // Show oldest to newest for chart
+      }
+      else return null;
+  };
+
+    const handleData = () =>{
+    setData((prevData) => (prevData === 'max' ? 'volume' : 'max'));
+
   };
 
   const chartConfig = {
@@ -91,22 +115,50 @@ const ExerciseHistoryDialog = ({ exercise, workoutHistory, open, onOpenChange }:
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <div className="flex ">
+          <div className="flex gap-2 items-center">
           <DialogTitle>{exercise.name}</DialogTitle>
-           <Badge variant="secondary">
+          <Badge variant="secondary">
+           <Badge variant={mode==="table" ? "default" : "secondary"}>
               <Button
               className="h-7 w-7"
               variant="ghost"
               onClick={handleChart}>
-              {showChart ? <Table2/> : <ChartLine/>}
+                <LineChartIcon />
               </Button>
-            </Badge>
+              </Badge>
+              <Badge variant={mode==="chart" ? "default" : "secondary"}>
+                <Button
+                className="h-7 w-7"
+                variant="ghost"
+                onClick={handleChart}>
+                 <Table2Icon/>
+                </Button>
+                </Badge>
+                  </Badge>
           </div>
         </DialogHeader>
 
-          {showChart ? ( 
+          {mode === 'table' ? ( 
             <div className="space-y-4">
-                <div className="flex justify-end">
+              <div className="flex gap-2 items-center justify-between">
+                <Badge variant="secondary">
+                <Badge variant={data==="max" ? "default" : "secondary"}>
+                    <Button
+                    className="h-7 w-7"
+                    variant="ghost"
+                    onClick={handleData}>
+                      Max
+                    </Button>
+                    </Badge>
+                    <Badge variant={data==="volume" ? "default" : "secondary"}>
+                      <Button
+                      className="h-7 w-7"
+                      variant="ghost"
+                      onClick={handleData}>
+                        Volume
+                      </Button>
+                      </Badge>
+                     </Badge>
                 <Select value={dateRange} onValueChange={(v) => setDateRange(v as typeof dateRange)}>
                   <SelectTrigger className="w-[140px]">
                     <SelectValue placeholder="Date range" />
@@ -126,7 +178,7 @@ const ExerciseHistoryDialog = ({ exercise, workoutHistory, open, onOpenChange }:
                   <YAxis domain={['auto', 'auto']}/>
                   <Line 
                     type="monotone" 
-                    dataKey="maxWeight" 
+                    dataKey="value" 
                     stroke="#3b82f6" 
                     strokeWidth={2}
                     dot={{ r: 4 }}
