@@ -3,11 +3,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, ChartLine, Table2 } from "lucide-react";
 import { format } from "date-fns";
 import { Exercise, WorkoutExercise } from "@/types/workout";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { LineChart, XAxis,YAxis, Line, CartesianGrid, ResponsiveContainer } from "recharts";
+import { ChartContainer,ChartTooltip, ChartTooltipContent } from "./ui/chart";
 
 interface ExerciseHistoryDialogProps {
   exercise: Exercise;
@@ -25,6 +27,8 @@ interface ExerciseHistoryDialogProps {
 
 const ExerciseHistoryDialog = ({ exercise, workoutHistory, open, onOpenChange }: ExerciseHistoryDialogProps) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [showChart, setShowChart] = useState(false);
+  const [dateRange, setDateRange] = useState<"30d" | "90d" | "all" >("30d");
 
   if (workoutHistory.length === 0) {
     return (
@@ -51,16 +55,89 @@ const ExerciseHistoryDialog = ({ exercise, workoutHistory, open, onOpenChange }:
   const handleNext = () => {
     setSelectedIndex((prev) => (prev < workoutHistory.length - 1 ? prev + 1 : 0));
   };
+ 
+  const handleChart = () =>{
+    setShowChart(!showChart);
+    console.log(showChart)
+  };
+
+  const getChartData = () => {
+      const now = new Date();
+      const filteredHistory = workoutHistory.filter(entry => {
+        if (dateRange === "all") return true;
+        const date = new Date(entry.workout.date);
+        const daysAgo = (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24);
+        return daysAgo <= parseInt(dateRange);
+      });
+      return filteredHistory
+        .map(entry => ({
+          date: format(new Date(entry.workout.date), "MMM dd"),
+          maxWeight: Math.max(...entry.exerciseData.sets
+            .filter(s => s.completed)
+            .map(s => Number(s.weight) || 0))
+        }))
+        .reverse(); // Show oldest to newest for chart
+  };
+
+  const chartConfig = {
+      maxWeight: {
+        label: "Max Weight (lbs)",
+        color: "hsl(var(--primary))",
+      },
+    };
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
+          <div className="flex ">
           <DialogTitle>{exercise.name}</DialogTitle>
+           <Badge variant="secondary">
+              <Button
+              className="h-7 w-7"
+              variant="ghost"
+              onClick={handleChart}>
+              {showChart ? <Table2/> : <ChartLine/>}
+              </Button>
+            </Badge>
+          </div>
         </DialogHeader>
-        
-        <div className="space-y-4">
-          {/* Date Navigator */}
+
+          {showChart ? ( 
+            <div className="space-y-4">
+                <div className="flex justify-end">
+                <Select value={dateRange} onValueChange={(v) => setDateRange(v as typeof dateRange)}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="Date range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="30d">Last 30 days</SelectItem>
+                    <SelectItem value="90d">Last 90 days</SelectItem>
+                    <SelectItem value="all">All time</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height={"100%"}>
+                <LineChart data={getChartData()}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Line 
+                    type="monotone" 
+                    dataKey="maxWeight" 
+                    stroke="var(--color-maxWeight)" 
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+              </div>
+            </div>
+          ) : (
+          <div className="space-y-4">
+            {/* Date Navigator */}
           <div className="flex items-center justify-between gap-2">
             <Button
               variant="outline"
@@ -169,6 +246,7 @@ const ExerciseHistoryDialog = ({ exercise, workoutHistory, open, onOpenChange }:
             )}
           </div>
         </div>
+        )}
       </DialogContent>
     </Dialog>
   );
