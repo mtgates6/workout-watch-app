@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2, Plus, ChevronDown, ChevronUp, Clock } from "lucide-react";
-import { WorkoutExercise } from "@/types/workout";
+import { Exercise, WorkoutExercise } from "@/types/workout";
 import { SetRow } from "./SetRow";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import ExerciseNotes from "./ExerciseNotes";
@@ -44,15 +44,17 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <Button variant="outline" size="sm" className="mr-6" onClick={() => onShowHistory(exercise)}>
-              <Clock className="h-4 w-4" />
-            </Button>
             <div className="flex items-center">
-              <CollapsibleTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 mr-2">
-                  {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              <div className="flex flex-col">
+                <Button variant="ghost" size="sm" className="mr-6" onClick={() => onShowHistory(exercise)}>
+                  <Clock className="h-3 w-3" />
                 </Button>
-              </CollapsibleTrigger>
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 mr-2">
+                    {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  </Button>
+                </CollapsibleTrigger>
+              </div>
               <div>
                 <CardTitle className="text-xl flex items-center">
                   {exercise.exercise.name}

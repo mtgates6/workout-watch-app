@@ -196,7 +196,6 @@ const ExerciseLibrary = () => {
           )}
         </DialogContent>
       </Dialog>
-
       {historyExercise && (
         <ExerciseHistoryDialog
           exercise={historyExercise}
@@ -206,6 +205,7 @@ const ExerciseLibrary = () => {
         />
       )}
     </div>
+    
   );
 };
 

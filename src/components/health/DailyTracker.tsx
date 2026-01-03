@@ -5,10 +5,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, CheckCircle2, Circle, Plus, Minus } from "lucide-react";
+import { Calendar, CheckCircle2, Circle, Plus, Minus, Edit, Trash2} from "lucide-react";
 import { useHealth } from "@/context/HealthContext";
 import { HealthGoal } from "@/types/health";
-import { format } from "date-fns";
+import { add, format, set } from "date-fns";
+import AddHealthGoalDialog from "./AddHealthGoalDialog";
+
 
 const DailyTracker = () => {
   const { 
@@ -16,7 +18,8 @@ const DailyTracker = () => {
     getDailyHealthSummary, 
     markGoalComplete, 
     markGoalIncomplete,
-    getEntryForGoalAndDate 
+    getEntryForGoalAndDate,
+    deleteHealthGoal,
   } = useHealth();
 
   const [selectedDate, setSelectedDate] = useState(() => {
@@ -27,6 +30,7 @@ const DailyTracker = () => {
 
   const dailyGoals = getActiveGoalsByFrequency('daily');
   const dailySummary = getDailyHealthSummary(selectedDate);
+  const [addGoalDialogOpen, setAddGoalDialogOpen] = useState(false);
 
   const handleGoalToggle = (goal: HealthGoal, checked: boolean) => {
     if (checked) {
@@ -131,6 +135,14 @@ const DailyTracker = () => {
                         <Badge variant={isCompleted ? "default" : "outline"} className="ml-auto">
                           {goal.type}
                         </Badge>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => deleteHealthGoal(goal.id)}
+                          className="h-8 w-8 text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
 
                       {goal.description && (

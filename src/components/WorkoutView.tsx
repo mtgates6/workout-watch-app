@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Button } from "@/components/ui/button";
-import { Exercise } from "@/types/workout";
+import { Exercise, WorkoutExercise } from "@/types/workout";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { ExerciseCard } from "./workout/ExerciseCard";
@@ -29,7 +29,7 @@ const WorkoutView = () => {
   const navigate = useNavigate();
   
   const [showAddExerciseDialog, setShowAddExerciseDialog] = useState(false);
-  const [historyExercise, setHistoryExercise] = useState<Exercise | null>(null);
+  const [historyExercise, setHistoryExercise] = useState<WorkoutExercise | null>(null);
 
   const handleSetCompletion = (setIndex: number, exerciseIndex: number, completed: boolean) => {
     if (activeWorkout) {
@@ -117,8 +117,9 @@ const WorkoutView = () => {
     reordered.splice(result.destination.index, 0, removed);
     reorderExercises(reordered);
   };
-  
+
   const getExerciseHistory = (exercise: Exercise) => {
+    console.log(exercise.name);
     return workouts
       .filter(workout => workout.completed)
       .map(workout => {
@@ -182,8 +183,7 @@ const WorkoutView = () => {
           />
         </div>
       </div>
-      <div>
-            {historyExercise && (
+      {historyExercise && (
         <ExerciseHistoryDialog
           exercise={historyExercise}
           workoutHistory={getExerciseHistory(historyExercise)}
@@ -191,7 +191,6 @@ const WorkoutView = () => {
           onOpenChange={(open) => !open && setHistoryExercise(null)}
         />
       )}
-      </div>
       {activeWorkout.exercises.length > 0 ? (
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="exercise-list">
