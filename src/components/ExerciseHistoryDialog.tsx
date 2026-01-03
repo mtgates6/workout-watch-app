@@ -145,7 +145,7 @@ const ExerciseHistoryDialog = ({ exercise, workoutHistory, open, onOpenChange }:
                 <Badge variant={data==="max" ? "default" : "secondary"}>
                     <Button
                     className="h-7 w-7"
-                    variant="ghost"
+                    variant={data==="max" ? "default" : "ghost"}
                     onClick={handleData}>
                       Max
                     </Button>
@@ -153,7 +153,7 @@ const ExerciseHistoryDialog = ({ exercise, workoutHistory, open, onOpenChange }:
                     <Badge variant={data==="volume" ? "default" : "secondary"}>
                       <Button
                       className="h-7 w-7"
-                      variant="ghost"
+                      variant={data==="volume" ? "default" : "ghost"}
                       onClick={handleData}>
                         Volume
                       </Button>
