@@ -185,8 +185,8 @@ const WorkoutView = () => {
       </div>
       {historyExercise && (
         <ExerciseHistoryDialog
-          exercise={historyExercise}
-          workoutHistory={getExerciseHistory(historyExercise)}
+          exercise={historyExercise.exercise}
+          workoutHistory={getExerciseHistory(historyExercise.exercise)}
           open={!!historyExercise}
           onOpenChange={(open) => !open && setHistoryExercise(null)}
         />
