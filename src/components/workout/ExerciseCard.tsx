@@ -45,7 +45,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="flex flex-col justify-center">
+              <div className="flex flex-col items-center justify-center">
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0 mr-2" onClick={() => onShowHistory(exercise)}>
                   <Clock className="h-4 w-4" />
                 </Button>
