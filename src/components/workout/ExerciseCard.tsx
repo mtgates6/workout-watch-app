@@ -46,8 +46,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <div className="flex flex-col justify-center">
-                <Button variant="ghost" size="sm" className="mr-6" onClick={() => onShowHistory(exercise)}>
-                  <Clock className="h-3 w-3" />
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 mr-2" onClick={() => onShowHistory(exercise)}>
+                  <Clock className="h-4 w-4" />
                 </Button>
                 <CollapsibleTrigger asChild>
                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0 mr-2">
