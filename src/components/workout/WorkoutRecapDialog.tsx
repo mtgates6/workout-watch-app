@@ -100,15 +100,30 @@ const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
      let change = 0;
      const volumeChange = previousVolume > 0 ? currentVolume - previousVolume : 0;
 
-      if (currentMaxWeight > previousMaxWeight && previousMaxWeight > 0) {
+     // Check for ANY type of progression
+      const hasWeightProgress = currentMaxWeight > previousMaxWeight && previousMaxWeight > 0;
+      const hasRepProgress = currentMaxReps > previousMaxReps && previousMaxReps > 0 && currentMaxWeight >= previousMaxWeight;
+      const hasVolumeProgress = volumeChange > 0 && previousVolume > 0;
+      const hasSetsProgress = currentSets > previousSets && previousSets > 0;
+
+      if (hasWeightProgress) {
         status = "progressed";
         change = currentMaxWeight - previousMaxWeight;
+      } else if (hasRepProgress) {
+        status = "progressed";
+        change = currentMaxReps - previousMaxReps;
+      } else if (hasVolumeProgress) {
+        status = "progressed";
+        change = Math.round(volumeChange);
+      } else if (hasSetsProgress) {
+        status = "progressed";
+        change = currentSets - previousSets;
       } else if (currentMaxWeight < previousMaxWeight && previousMaxWeight > 0) {
         status = "decreased";
         change = previousMaxWeight - currentMaxWeight;
       } else {
         status = "maintained";
-      }
+}
 
       return {
         name: exerciseItem.exercise.name,
