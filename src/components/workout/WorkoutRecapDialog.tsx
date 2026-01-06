@@ -468,17 +468,17 @@ const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
                   >
                     {comp.status === "progressed" && (
                       <>
-                        <TrendingUp className="h-3 w-3 mr-1" /> Progress
+                        <TrendingUp className="h-3 w-3 mr-1" /> 
                       </>
                     )}
                     {comp.status === "maintained" && (
                       <>
-                        <Minus className="h-3 w-3 mr-1" /> Same
+                        <Minus className="h-3 w-3 mr-1" /> 
                       </>
                     )}
                     {comp.status === "decreased" && (
                       <>
-                        <TrendingDown className="h-3 w-3 mr-1" /> Deload
+                        <TrendingDown className="h-3 w-3 mr-1" /> 
                       </>
                     )}
                   </Badge>
