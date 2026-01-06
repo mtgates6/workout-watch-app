@@ -251,6 +251,13 @@ const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
 
     return goals.slice(0, 3);
   }, [exerciseComparisons]);
+  const motivationalMessage = useMemo(() => {
+    if (personalRecords.length >= 3) return "🔥 Crushing it! Multiple PRs today!";
+    if (personalRecords.length > 0) return "💪 New PR! Keep pushing!";
+    if (volumeChange > 5) return "📈 Volume is climbing! Great work!";
+    if (progressStreak.current >= 3) return "🚀 On fire! Consistency pays off!";
+    return "✅ Solid workout! Consistency is key!";
+  }, [personalRecords, volumeChange, progressStreak]);
 
   const handleShare = async () => {
     const summary = [
@@ -296,6 +303,7 @@ const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
           <p className="text-muted-foreground">
             {workout.name} • {format(new Date(workout.date), "MMM dd, yyyy")}
           </p>
+          <p className="text-sm text-muted-foreground font-medium mt-2">{motivationalMessage}</p>
         </DialogHeader>
         <div className="space-y-4">
           {/* First Workout Empty State */}
