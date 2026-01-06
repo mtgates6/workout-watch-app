@@ -420,6 +420,13 @@ const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
                     {/* Show all progress metrics */}
                     {comp.previousTotalVolume > 0 && (
                       <div className="flex flex-wrap gap-2 mt-1.5 text-xs">
+                        {/* Sets change */}
+                        {comp.currentSets !== comp.previousSets && (
+                          <span className={comp.currentSets > comp.previousSets ? "text-green-600 dark:text-green-400" : "text-yellow-600 dark:text-yellow-400"}>
+                            Sets: {comp.currentSets > comp.previousSets ? '+' : ''}
+                            {comp.currentSets - comp.previousSets}
+                          </span>
+                        )}
                         {/* Weight change */}
                         {comp.currentMaxWeight !== comp.previousMaxWeight && (
                           <span className={comp.currentMaxWeight > comp.previousMaxWeight ? "text-green-600 dark:text-green-400" : "text-yellow-600 dark:text-yellow-400"}>
@@ -444,13 +451,6 @@ const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
                           </span>
                         )}
                         
-                        {/* Sets change */}
-                        {comp.currentSets !== comp.previousSets && (
-                          <span className={comp.currentSets > comp.previousSets ? "text-green-600 dark:text-green-400" : "text-yellow-600 dark:text-yellow-400"}>
-                            Sets: {comp.currentSets > comp.previousSets ? '+' : ''}
-                            {comp.currentSets - comp.previousSets}
-                          </span>
-                        )}
                       </div>
                     )}
                   </div>
