@@ -18,13 +18,16 @@ interface WorkoutRecapDialogProps {
 interface ExerciseComparison {
   name: string;
   currentMaxWeight: number;
+  currentMaxReps: number;
   currentTotalVolume: number;
   currentSets: number;
   previousMaxWeight: number;
+  previousMaxReps: number;
   previousTotalVolume: number;
   previousSets: number;
   status: "progressed" | "maintained" | "decreased";
   change: number;
+  volumeChange: number;
 }
 
 interface PersonalRecord {
@@ -32,6 +35,7 @@ interface PersonalRecord {
   improvement: string;
   previousValue: number;
   newValue: number;
+  type: string;
 }
 
 const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
@@ -58,6 +62,12 @@ const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
       .map((s) => Number(s.weight) || 0);
     return Math.max(0, ...weights);
   };
+  const calculateExerciseMaxReps = (exerciseItem: WorkoutExercise): number => {
+    const reps = exerciseItem.sets
+      .filter((s) => s.completed)
+      .map((s) => Number(s.reps) || 0);
+    return Math.max(0, ...reps);
+  };
 
   const getPreviousWorkoutForExercise = (exerciseName: string): WorkoutExercise | null => {
     const previousWorkouts = allWorkouts
@@ -73,19 +83,22 @@ const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
 
   const exerciseComparisons = useMemo((): ExerciseComparison[] => {
     return workout.exercises.map((exerciseItem) => {
-      const currentVolume = calculateExerciseVolume(exerciseItem);
-      const currentMaxWeight = calculateExerciseMaxWeight(exerciseItem);
-      const currentSets = exerciseItem.sets.filter((s) => s.completed).length;
-
-      const previousExercise = getPreviousWorkoutForExercise(exerciseItem.exercise.name);
-      const previousVolume = previousExercise ? calculateExerciseVolume(previousExercise) : 0;
-      const previousMaxWeight = previousExercise ? calculateExerciseMaxWeight(previousExercise) : 0;
-      const previousSets = previousExercise
-        ? previousExercise.sets.filter((s) => s.completed).length
-        : 0;
-
-      let status: "progressed" | "maintained" | "decreased";
-      let change = 0;
+     const currentVolume = calculateExerciseVolume(exerciseItem);
+     const currentMaxWeight = calculateExerciseMaxWeight(exerciseItem);
+     const currentMaxReps = calculateExerciseMaxReps(exerciseItem);
+     const currentSets = exerciseItem.sets.filter((s) => s.completed).length;
+     
+     const previousExercise = getPreviousWorkoutForExercise(exerciseItem.exercise.name);
+     const previousVolume = previousExercise ? calculateExerciseVolume(previousExercise) : 0;
+     const previousMaxWeight = previousExercise ? calculateExerciseMaxWeight(previousExercise) : 0;
+     const previousMaxReps = previousExercise ? calculateExerciseMaxReps(previousExercise) : 0;
+     const previousSets = previousExercise
+     ? previousExercise.sets.filter((s) => s.completed).length
+     : 0;
+     
+     let status: "progressed" | "maintained" | "decreased";
+     let change = 0;
+     const volumeChange = previousVolume > 0 ? currentVolume - previousVolume : 0;
 
       if (currentMaxWeight > previousMaxWeight && previousMaxWeight > 0) {
         status = "progressed";
@@ -107,19 +120,42 @@ const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
         previousSets,
         status,
         change,
+        currentMaxReps,
+        previousMaxReps,
+        volumeChange,
       };
     });
   }, [workout, allWorkouts]);
 
   const personalRecords = useMemo((): PersonalRecord[] => {
-    return exerciseComparisons
-      .filter((comp) => comp.status === "progressed" && comp.previousMaxWeight > 0)
-      .map((comp) => ({
-        exerciseName: comp.name,
-        improvement: `+${comp.change} lbs`,
-        previousValue: comp.previousMaxWeight,
-        newValue: comp.currentMaxWeight,
-      }));
+    const records: PersonalRecord[] = [];
+    
+    exerciseComparisons.forEach((comp) => {
+      // Weight PR
+      if (comp.status === "progressed" && comp.previousMaxWeight > 0) {
+        records.push({
+          exerciseName: comp.name,
+          improvement: `+${comp.change} lbs`,
+          previousValue: comp.previousMaxWeight,
+          newValue: comp.currentMaxWeight,
+          type: "weight",
+        });
+      }
+      
+      // Rep PR (at same or higher weight)
+      if (comp.currentMaxReps > comp.previousMaxReps && comp.previousMaxReps > 0 && 
+          comp.currentMaxWeight >= comp.previousMaxWeight) {
+        records.push({
+          exerciseName: comp.name,
+          improvement: `+${comp.currentMaxReps - comp.previousMaxReps} reps`,
+          previousValue: comp.previousMaxReps,
+          newValue: comp.currentMaxReps,
+          type: "reps",
+        });
+      }
+    });
+    
+    return records;
   }, [exerciseComparisons]);
 
   const totalVolume = useMemo(() => {
@@ -222,9 +258,17 @@ const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
       `📋 ${workout.name}`,
       `📅 ${format(new Date(workout.date), "MMM dd, yyyy")}`,
       "",
-      `💪 Total Volume: ${totalVolume.toLocaleString()} lbs`,
+      `💪 Total Volume: ${totalVolume.toLocaleString()} lbs${
+        volumeChange > 0 ? ` (+${volumeChange.toFixed(0)}%)` : 
+        volumeChange < 0 ? ` (${volumeChange.toFixed(0)}%)` : ''
+      }`,
       `🎯 Sets Completed: ${totalSets}`,
-      personalRecords.length > 0 ? `🏆 PRs: ${personalRecords.length}` : "",
+      personalRecords.length > 0 ? `\n🏆 Personal Records:` : "",
+      ...personalRecords.map(pr => 
+        `  • ${pr.exerciseName}: ${pr.newValue} lbs ${pr.improvement}`
+      ),
+      progressStreak.current > 0 ? 
+        `\n🔥 ${progressStreak.current} workout progress streak!` : "",
     ]
       .filter(Boolean)
       .join("\n");
@@ -253,8 +297,15 @@ const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
             {workout.name} • {format(new Date(workout.date), "MMM dd, yyyy")}
           </p>
         </DialogHeader>
-
         <div className="space-y-4">
+          {/* First Workout Empty State */}
+          {!previousWorkoutStats && (
+            <div className="text-center p-4 bg-muted/50 rounded-lg border-2 border-dashed">
+              <p className="text-sm text-muted-foreground">
+                🎉 First workout tracked! Keep it up to see progress comparisons.
+              </p>
+            </div>
+          )}
           {/* Personal Records */}
           {personalRecords.length > 0 && (
             <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
@@ -334,6 +385,13 @@ const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
                     <p className="font-medium text-sm">{comp.name}</p>
                     <p className="text-xs text-muted-foreground">
                       {comp.currentSets} sets • {comp.currentMaxWeight} lbs max
+                      {comp.previousTotalVolume > 0 && (
+                          <> • Vol: {comp.currentTotalVolume.toLocaleString()} lbs
+                            {comp.volumeChange > 0 && (
+                              <span className="text-green-600 dark:text-green-400"> (+{comp.volumeChange.toLocaleString()})</span>
+                            )}
+                          </>
+                        )}
                     </p>
                   </div>
                   <Badge
@@ -414,8 +472,7 @@ const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
           {/* Action Buttons */}
           <div className="flex gap-3 pt-2">
             <Button className="flex-1" onClick={() => onOpenChange(false)}>
-              <BarChart3 className="h-4 w-4 mr-2" />
-              View Stats
+              Return
             </Button>
             <Button variant="outline" className="flex-1" onClick={handleShare}>
               <Share2 className="h-4 w-4 mr-2" />
