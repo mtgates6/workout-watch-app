@@ -245,14 +245,6 @@ const WorkoutHistory = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setRecapWorkout(workout)}
-                        className="flex items-center gap-1"
-                      >
-                        <Trophy className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
                         onClick={() => handleShareWorkout(workout)}
                         className="flex items-center gap-1"
                       >
@@ -386,12 +378,20 @@ const WorkoutHistory = () => {
                       ))}
                     </div>
                     {workout.exercises.length > 0 && (
-                      <div className="text-xs text-muted-foreground mt-2">
+                      <div className="flex justify-between items-center text-xs text-muted-foreground mt-2">
                         {workout.exercises.reduce(
                           (total, ex) => total + ex.sets.filter((s) => s.completed).length,
                           0
                         )}{" "}
                         sets completed
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setRecapWorkout(workout)}
+                        className="flex items-center gap-1"
+                      >
+                        <Trophy className="h-4 w-4" />
+                      </Button>
                       </div>
                     )}
                   </div>
