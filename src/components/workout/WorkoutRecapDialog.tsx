@@ -123,7 +123,7 @@ const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
         change = previousMaxWeight - currentMaxWeight;
       } else {
         status = "maintained";
-}
+      }
 
       return {
         name: exerciseItem.exercise.name,
@@ -411,19 +411,51 @@ const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
                   key={idx}
                   className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
                 >
-                  <div>
+                  <div className="flex-1">
                     <p className="font-medium text-sm">{comp.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {comp.currentSets} sets • {comp.currentMaxWeight} lbs max
-                      {comp.previousTotalVolume > 0 && (
-                          <> • Vol: {comp.currentTotalVolume.toLocaleString()} lbs
-                            {comp.volumeChange > 0 && (
-                              <span className="text-green-600 dark:text-green-400"> (+{comp.volumeChange.toLocaleString()})</span>
-                            )}
-                          </>
-                        )}
+                      {comp.currentSets} sets • {comp.currentMaxWeight} lbs max • {comp.currentMaxReps} reps max
                     </p>
+                        
+                    {/* Show all progress metrics */}
+                    {comp.previousTotalVolume > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-1.5 text-xs">
+                        {/* Weight change */}
+                        {comp.currentMaxWeight !== comp.previousMaxWeight && (
+                          <span className={comp.currentMaxWeight > comp.previousMaxWeight ? "text-green-600 dark:text-green-400" : "text-yellow-600 dark:text-yellow-400"}>
+                            Weight: {comp.currentMaxWeight > comp.previousMaxWeight ? '+' : ''}
+                            {comp.currentMaxWeight - comp.previousMaxWeight} lbs
+                          </span>
+                        )}
+                        
+                        {/* Reps change */}
+                        {comp.currentMaxReps !== comp.previousMaxReps && (
+                          <span className={comp.currentMaxReps > comp.previousMaxReps ? "text-green-600 dark:text-green-400" : "text-yellow-600 dark:text-yellow-400"}>
+                            Reps: {comp.currentMaxReps > comp.previousMaxReps ? '+' : ''}
+                            {comp.currentMaxReps - comp.previousMaxReps}
+                          </span>
+                        )}
+                        
+                        {/* Volume change */}
+                        {comp.volumeChange !== 0 && (
+                          <span className={comp.volumeChange > 0 ? "text-green-600 dark:text-green-400" : "text-yellow-600 dark:text-yellow-400"}>
+                            Vol: {comp.volumeChange > 0 ? '+' : ''}
+                            {comp.volumeChange.toLocaleString()} lbs
+                          </span>
+                        )}
+                        
+                        {/* Sets change */}
+                        {comp.currentSets !== comp.previousSets && (
+                          <span className={comp.currentSets > comp.previousSets ? "text-green-600 dark:text-green-400" : "text-yellow-600 dark:text-yellow-400"}>
+                            Sets: {comp.currentSets > comp.previousSets ? '+' : ''}
+                            {comp.currentSets - comp.previousSets}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
+                  
+                  {/* Simplified badge - just overall status */}
                   <Badge
                     variant="secondary"
                     className={
@@ -436,7 +468,7 @@ const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
                   >
                     {comp.status === "progressed" && (
                       <>
-                        <TrendingUp className="h-3 w-3 mr-1" /> +{comp.change}
+                        <TrendingUp className="h-3 w-3 mr-1" /> Progress
                       </>
                     )}
                     {comp.status === "maintained" && (
@@ -446,7 +478,7 @@ const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
                     )}
                     {comp.status === "decreased" && (
                       <>
-                        <TrendingDown className="h-3 w-3 mr-1" /> -{comp.change}
+                        <TrendingDown className="h-3 w-3 mr-1" /> Deload
                       </>
                     )}
                   </Badge>
