@@ -260,22 +260,29 @@ const WorkoutRecapDialog: React.FC<WorkoutRecapDialogProps> = ({
   }, [personalRecords, volumeChange, progressStreak]);
 
   const handleShare = async () => {
+    const volumeChangeText = volumeChange > 0 
+      ? ` (+${volumeChange.toFixed(0)}%)` 
+      : volumeChange < 0 
+      ? ` (${volumeChange.toFixed(0)}%)` 
+      : '';
+
     const summary = [
       `🔥 Workout Complete!`,
       `📋 ${workout.name}`,
       `📅 ${format(new Date(workout.date), "MMM dd, yyyy")}`,
       "",
-      `💪 Total Volume: ${totalVolume.toLocaleString()} lbs${
-        volumeChange > 0 ? ` (+${volumeChange.toFixed(0)}%)` : 
-        volumeChange < 0 ? ` (${volumeChange.toFixed(0)}%)` : ''
-      }`,
+      `💪 Total Volume: ${totalVolume.toLocaleString()} lbs${volumeChangeText}`,
       `🎯 Sets Completed: ${totalSets}`,
       personalRecords.length > 0 ? `\n🏆 Personal Records:` : "",
-      ...personalRecords.map(pr => 
-        `  • ${pr.exerciseName}: ${pr.newValue} lbs ${pr.improvement}`
-      ),
-      progressStreak.current > 0 ? 
-        `\n🔥 ${progressStreak.current} workout progress streak!` : "",
+      ...personalRecords.map(pr => {
+        const value = pr.type === 'weight' 
+          ? `${pr.newValue} lbs` 
+          : `${pr.newValue} reps`;
+        return `  • ${pr.exerciseName}: ${value} ${pr.improvement}`;
+      }),
+      progressStreak.current > 0 
+        ? `\n🔥 ${progressStreak.current} workout progress streak!` 
+        : "",
     ]
       .filter(Boolean)
       .join("\n");
