@@ -378,12 +378,14 @@ const WorkoutHistory = () => {
                       ))}
                     </div>
                     {workout.exercises.length > 0 && (
-                      <div className="flex justify-between items-center text-xs text-muted-foreground mt-2">
+                      <div className="flex justify-between items-center text-xs  mt-2">
+                        <div className="text-muted-foreground">
                         {workout.exercises.reduce(
                           (total, ex) => total + ex.sets.filter((s) => s.completed).length,
                           0
                         )}{" "}
                         sets completed
+                        </div>
                       <Button
                         variant="outline"
                         size="sm"
