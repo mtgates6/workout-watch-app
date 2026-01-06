@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
-import { CalendarIcon, Clock, Repeat, BarChart, Edit, Pencil, Search } from "lucide-react";
+import { CalendarIcon, Clock, Repeat, BarChart, Edit, Pencil, Search, Trophy } from "lucide-react";
 import { formatDuration } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,8 +15,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ExerciseNotes from "./workout/ExerciseNotes";
-import { PlannedExercise } from "@/types/workout";
+import { PlannedExercise, Workout } from "@/types/workout";
 import { Share2 } from "lucide-react";
+import WorkoutRecapDialog from "./workout/WorkoutRecapDialog";
 
 const WorkoutHistory = () => {
   const { workouts, createPlannedWorkout, updatePlannedWorkout, updateExerciseNotes } = useWorkout();
@@ -28,6 +29,7 @@ const WorkoutHistory = () => {
   const isMobile = useIsMobile();
   const [mobileExerciseModal, setMobileExerciseModal] = useState<{open: boolean, exerciseItem?: any}>({open: false});
   const [searchQuery, setSearchQuery] = useState("");
+  const [recapWorkout, setRecapWorkout] = useState<Workout | null>(null);
 
   // Map muscle groups to emojis (all lowercase keys)
   const muscleGroupEmojis: Record<string, string> = {
@@ -243,6 +245,14 @@ const WorkoutHistory = () => {
                       <Button
                         variant="outline"
                         size="sm"
+                        onClick={() => setRecapWorkout(workout)}
+                        className="flex items-center gap-1"
+                      >
+                        <Trophy className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => handleShareWorkout(workout)}
                         className="flex items-center gap-1"
                       >
@@ -389,6 +399,16 @@ const WorkoutHistory = () => {
               </Card>
             ))}
         </div>
+      )}
+
+      {/* Workout Recap Dialog */}
+      {recapWorkout && (
+        <WorkoutRecapDialog
+          workout={recapWorkout}
+          allWorkouts={workouts}
+          open={!!recapWorkout}
+          onOpenChange={(open) => !open && setRecapWorkout(null)}
+        />
       )}
     </div>
   );
