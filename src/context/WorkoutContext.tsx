@@ -224,8 +224,19 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     console.log('Completing workout with exercises:', activeWorkout.exercises);
 
+    // Mark all sets that have weight and reps as completed
+    const exercisesWithCompletedSets = activeWorkout.exercises.map(ex => ({
+      ...ex,
+      sets: ex.sets.map(set => ({
+        ...set,
+        // Auto-complete sets that have both weight and reps filled in
+        completed: set.completed || (typeof set.weight === 'number' && typeof set.reps === 'number' && set.weight > 0 && set.reps > 0)
+      }))
+    }));
+
     const completedWorkout: Workout = {
       ...activeWorkout,
+      exercises: exercisesWithCompletedSets,
       completed: true,
       duration: 1800, // Example: 30 minutes
     };
