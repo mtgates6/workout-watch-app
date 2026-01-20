@@ -99,15 +99,12 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      {/* Weekly Recap Card - Full Width */}
-      <WeeklyRecapCard />
+      
 
       {workoutSummary.totalWorkouts > 0 ? (
         <div>
-          <h2 className="text-xl font-bold mb-4">Recent Progress</h2>
-          <div className="h-60 bg-muted rounded-md flex items-center justify-center">
-            <p className="text-muted-foreground">Workout activity chart would go here</p>
-          </div>
+          {/* Weekly Recap Card - Full Width */}
+          <WeeklyRecapCard />
         </div>
       ) : (
         <Card>
