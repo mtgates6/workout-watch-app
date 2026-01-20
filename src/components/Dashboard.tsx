@@ -25,7 +25,8 @@ const Dashboard = () => {
         </Button>
       </div>
 
-
+      {/* Weekly Recap Card - Full Width */}
+      <WeeklyRecapCard />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
@@ -103,8 +104,7 @@ const Dashboard = () => {
         <div>
           <h2 className="text-xl font-bold mb-4">Recent Progress</h2>
           <div className="h-60 bg-muted rounded-md flex items-center justify-center">
-            {/* Weekly Recap Card - Full Width */}
-            <WeeklyRecapCard />
+            <p className="text-muted-foreground">Workout activity chart would go here</p>
           </div>
         </div>
       ) : (
