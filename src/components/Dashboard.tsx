@@ -25,8 +25,7 @@ const Dashboard = () => {
         </Button>
       </div>
 
-      {/* Weekly Recap Card - Full Width */}
-      <WeeklyRecapCard />
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
@@ -99,6 +98,9 @@ const Dashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Weekly Recap Card - Full Width */}
+      <WeeklyRecapCard />
 
       {workoutSummary.totalWorkouts > 0 ? (
         <div>
