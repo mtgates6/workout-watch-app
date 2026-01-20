@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Clock, CalendarDays, Dumbbell, TrendingUp, CalendarPlus } from "lucide-react";
 import { formatDuration } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import WeeklyRecapCard from "@/components/dashboard/WeeklyRecapCard";
 
 const Dashboard = () => {
   const { workoutSummary, startWorkout } = useWorkout();
@@ -24,6 +24,9 @@ const Dashboard = () => {
           Start Workout
         </Button>
       </div>
+
+      {/* Weekly Recap Card - Full Width */}
+      <WeeklyRecapCard />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
