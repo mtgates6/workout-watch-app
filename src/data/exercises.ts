@@ -368,6 +368,13 @@ export const exercises: Exercise[] = [
   },
   {
     id: "53",
+    name: "Bicep Pull Down",
+    type: "strength",
+    muscleGroups: ["bicep", "back"],
+    instructions: "Set up on a lat pull down and squereze biceps to your chin."
+  },
+  {
+    id: "54",
     name: "Bulgarian Split Squat",
     type: "strength",
     muscleGroups: ["quads", "hamstrings", "glutes"],
