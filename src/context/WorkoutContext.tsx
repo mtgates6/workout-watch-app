@@ -11,8 +11,10 @@ interface WorkoutContextType {
   addExerciseToWorkout: (exercise: Exercise) => void;
   removeExerciseFromWorkout: (exerciseId: String) => void;
   addSetToExercise: (exerciseId: string) => void;
+  duplicateLastSet: (exerciseId: string) => void;
   removeSetFromExercise: (exerciseId: string, setId: string) => void;
   updateSet: (exerciseId: string, setId: string, updates: Partial<WorkoutSet>) => void;
+  reorderSets: (exerciseId: string, newSets: WorkoutSet[]) => void;
   completeWorkout: () => void;
   cancelWorkout: () => void;
   getWorkout: (id: string) => Workout | undefined;
@@ -155,6 +157,47 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
               exerciseId: ex.exercise.id,
               completed: false,
             }],
+          };
+        }
+        return ex;
+      }),
+    });
+  };
+
+  const duplicateLastSet = (exerciseId: string) => {
+    if (!activeWorkout) return;
+
+    setActiveWorkout({
+      ...activeWorkout,
+      exercises: activeWorkout.exercises.map(ex => {
+        if (ex.id === exerciseId && ex.sets.length > 0) {
+          const lastSet = ex.sets[ex.sets.length - 1];
+          return {
+            ...ex,
+            sets: [...ex.sets, {
+              id: uuidv4(),
+              exerciseId: ex.exercise.id,
+              weight: lastSet.weight,
+              reps: lastSet.reps,
+              completed: false,
+            }],
+          };
+        }
+        return ex;
+      }),
+    });
+  };
+
+  const reorderSets = (exerciseId: string, newSets: WorkoutSet[]) => {
+    if (!activeWorkout) return;
+
+    setActiveWorkout({
+      ...activeWorkout,
+      exercises: activeWorkout.exercises.map(ex => {
+        if (ex.id === exerciseId) {
+          return {
+            ...ex,
+            sets: newSets,
           };
         }
         return ex;
@@ -418,8 +461,10 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
         addExerciseToWorkout,
         removeExerciseFromWorkout,
         addSetToExercise,
+        duplicateLastSet,
         removeSetFromExercise,
         updateSet,
+        reorderSets,
         completeWorkout,
         cancelWorkout,
         getWorkout,

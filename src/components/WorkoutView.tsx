@@ -22,6 +22,8 @@ const WorkoutView = () => {
     removeSetFromExercise,
     reorderExercises,
     addSetToExercise,
+    duplicateLastSet,
+    reorderSets,
     addExerciseToWorkout,
     updateExerciseNotes,
   } = useWorkout();
@@ -87,6 +89,24 @@ const WorkoutView = () => {
         title: "Set Added",
         description: "Set added to exercise.",
       });
+    }
+  };
+
+  const handleDuplicateLastSet = (exerciseIndex: number) => {
+    if (activeWorkout) {
+      const exerciseId = activeWorkout.exercises[exerciseIndex].id;
+      duplicateLastSet(exerciseId);
+      toast({
+        title: "Set Duplicated",
+        description: "Last set copied with same weight and reps.",
+      });
+    }
+  };
+
+  const handleReorderSets = (exerciseIndex: number, newSets: any[]) => {
+    if (activeWorkout) {
+      const exerciseId = activeWorkout.exercises[exerciseIndex].id;
+      reorderSets(exerciseId, newSets);
     }
   };
 
@@ -220,6 +240,8 @@ const WorkoutView = () => {
                           handleSetUpdate={handleSetUpdate}
                           handleRemoveSet={handleRemoveSet}
                           handleAddSet={handleAddSet}
+                          handleDuplicateLastSet={handleDuplicateLastSet}
+                          handleReorderSets={handleReorderSets}
                           handleExerciseNotes={handleExerciseNotes}
                           onShowHistory={setHistoryExercise}
                         />

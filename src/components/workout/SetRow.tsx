@@ -2,8 +2,9 @@
 import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Clock, Trash2 } from "lucide-react";
+import { CheckCircle2, Clock, Trash2, GripVertical } from "lucide-react";
 import { WorkoutSet } from "@/types/workout";
+import { Draggable } from "react-beautiful-dnd";
 
 interface SetRowProps {
   set: WorkoutSet;
@@ -12,6 +13,7 @@ interface SetRowProps {
   handleSetCompletion: (setIndex: number, exerciseIndex: number, completed: boolean) => void;
   handleSetUpdate: (exerciseIndex: number, setIndex: number, field: 'weight' | 'reps', value: string | number) => void;
   handleRemoveSet: (exerciseIndex: number, setIndex: number) => void;
+  isDraggable?: boolean;
 }
 
 export const SetRow: React.FC<SetRowProps> = ({
@@ -20,18 +22,27 @@ export const SetRow: React.FC<SetRowProps> = ({
   exerciseIndex,
   handleSetCompletion,
   handleSetUpdate,
-  handleRemoveSet
+  handleRemoveSet,
+  isDraggable = true
 }) => {
-  return (
-    <div key={set.id} className="grid grid-cols-3 gap-2 items-center justify-between">
+  const content = (provided?: any) => (
+    <div 
+      ref={provided?.innerRef}
+      {...provided?.draggableProps}
+      className="grid grid-cols-[auto_1fr_1fr_auto] gap-2 items-center"
+    >
+      {isDraggable && (
+        <div {...provided?.dragHandleProps} className="cursor-grab active:cursor-grabbing p-1">
+          <GripVertical className="h-4 w-4 text-muted-foreground" />
+        </div>
+      )}
       <Input
         type="text"
         placeholder="Weight"
         value={set.weight ?? ''}
         onChange={(e) => {
-            handleSetUpdate(exerciseIndex, setIndex, 'weight', e.target.value);
-          }
-        }
+          handleSetUpdate(exerciseIndex, setIndex, 'weight', e.target.value);
+        }}
         className='p-2 w-full'
       />
       <Input
@@ -40,8 +51,7 @@ export const SetRow: React.FC<SetRowProps> = ({
         value={set.reps ?? ''}
         onChange={(e) => {
           handleSetUpdate(exerciseIndex, setIndex, 'reps', e.target.value);
-          }
-        }
+        }}
         className='p-2 w-full'
       />
       <div className="flex items-center gap-2">
@@ -67,4 +77,14 @@ export const SetRow: React.FC<SetRowProps> = ({
       </div>
     </div>
   );
+
+  if (isDraggable) {
+    return (
+      <Draggable draggableId={set.id} index={setIndex}>
+        {(provided) => content(provided)}
+      </Draggable>
+    );
+  }
+
+  return content();
 };
