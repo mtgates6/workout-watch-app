@@ -2,12 +2,13 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2, Plus, ChevronDown, ChevronUp, Clock } from "lucide-react";
-import { Exercise, WorkoutExercise } from "@/types/workout";
+import { Trash2, Plus, ChevronDown, ChevronUp, Clock, Copy } from "lucide-react";
+import { WorkoutExercise, WorkoutSet } from "@/types/workout";
 import { SetRow } from "./SetRow";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import ExerciseNotes from "./ExerciseNotes";
 import ExerciseHistoryDialog from '../ExerciseHistoryDialog';
+import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 
 interface ExerciseCardProps {
   exercise: WorkoutExercise;
@@ -17,6 +18,8 @@ interface ExerciseCardProps {
   handleSetUpdate: (exerciseIndex: number, setIndex: number, field: 'weight' | 'reps', value: number) => void;
   handleRemoveSet: (exerciseIndex: number, setIndex: number) => void;
   handleAddSet: (exerciseIndex: number) => void;
+  handleDuplicateLastSet: (exerciseIndex: number) => void;
+  handleReorderSets: (exerciseIndex: number, newSets: WorkoutSet[]) => void;
   handleExerciseNotes?: (exerciseId: string, notes: string) => void;
   onShowHistory: (exercise: WorkoutExercise) => void;
 }
@@ -29,6 +32,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   handleSetUpdate,
   handleRemoveSet,
   handleAddSet,
+  handleDuplicateLastSet,
+  handleReorderSets,
   handleExerciseNotes,
   onShowHistory
 }) => {
@@ -38,6 +43,16 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const totalSets = exercise.sets.length;
   const completedSets = exercise.sets.filter(set => set.completed).length;
   const isCompleted = totalSets > 0 && completedSets === totalSets;
+
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+    
+    const reorderedSets = Array.from(exercise.sets);
+    const [movedItem] = reorderedSets.splice(result.source.index, 1);
+    reorderedSets.splice(result.destination.index, 0, movedItem);
+    
+    handleReorderSets(exerciseIndex, reorderedSets);
+  };
   
   return (
     <Card key={exercise.exercise.id} className={isCompleted ? "border-green-500" : ""}>
@@ -88,24 +103,49 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         </CardHeader>
         <CollapsibleContent>
           <CardContent className="space-y-2 pt-3">
-            {exercise.sets.map((set, setIndex) => (
-              <SetRow 
-                key={set.id}
-                set={set}
-                setIndex={setIndex}
-                exerciseIndex={exerciseIndex}
-                handleSetCompletion={handleSetCompletion}
-                handleSetUpdate={handleSetUpdate}
-                handleRemoveSet={handleRemoveSet}
-              />
-            ))}
-            <Button 
-              onClick={() => handleAddSet(exerciseIndex)} 
-              className="w-full"
-              type="button"
-            >
-              <Plus className="mr-2 h-4 w-4" /> Add Set
-            </Button>
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId={`sets-${exercise.id}`}>
+                {(provided) => (
+                  <div 
+                    ref={provided.innerRef} 
+                    {...provided.droppableProps}
+                    className="space-y-2"
+                  >
+                    {exercise.sets.map((set, setIndex) => (
+                      <SetRow 
+                        key={set.id}
+                        set={set}
+                        setIndex={setIndex}
+                        exerciseIndex={exerciseIndex}
+                        handleSetCompletion={handleSetCompletion}
+                        handleSetUpdate={handleSetUpdate}
+                        handleRemoveSet={handleRemoveSet}
+                        isDraggable={true}
+                      />
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => handleAddSet(exerciseIndex)} 
+                className="flex-1"
+                type="button"
+              >
+                <Plus className="mr-2 h-4 w-4" /> Add Set
+              </Button>
+              <Button 
+                onClick={() => handleDuplicateLastSet(exerciseIndex)} 
+                variant="secondary"
+                className="flex-1"
+                type="button"
+                disabled={exercise.sets.length === 0}
+              >
+                <Copy className="mr-2 h-4 w-4" /> Copy Last
+              </Button>
+            </div>
           </CardContent>
         </CollapsibleContent>
       </Collapsible>
