@@ -32,7 +32,12 @@ export const SetRow: React.FC<SetRowProps> = ({
       className="grid grid-cols-[auto_1fr_1fr_auto] gap-2 items-center"
     >
       {isDraggable && (
-        <div {...provided?.dragHandleProps} className="cursor-grab active:cursor-grabbing p-1">
+        <div 
+          {...provided?.dragHandleProps} 
+          className="cursor-grab active:cursor-grabbing p-1"
+          onMouseDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+        >
           <GripVertical className="h-4 w-4 text-muted-foreground" />
         </div>
       )}
