@@ -379,8 +379,14 @@ export const exercises: Exercise[] = [
     type: "strength",
     muscleGroups: ["quads", "hamstrings", "glutes"],
     instructions: "Stand a few feet in front of a bench with one foot resting on the bench behind you. Lower your body by bending your front knee until your thigh is parallel to the ground. Push through your front heel to return to the starting position."
+  },
+  {
+    id: "55",
+    name: "Back Extension",
+    type: "strength",
+    muscleGroups:["back","hamstrings", "glutes"],
+    instructions: "Using a back extension bench (Roman chair), place your feet securely, adjust the pad to just below your hip crease, and lower your torso slowly. Contract your glutes and lower back to raise your body until it is in a straight line with your legs, avoiding hyperextension"
   }
-   
 ];
 
 export const getExerciseById = (id: string): Exercise | undefined => {
