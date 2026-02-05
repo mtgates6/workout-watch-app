@@ -384,7 +384,7 @@ export const exercises: Exercise[] = [
     id: "55",
     name: "Back Extension",
     type: "strength",
-    muscleGroups:["back","hamstrings", "glutes"],
+    muscleGroups:["hamstrings", "back", "glutes"],
     instructions: "Using a back extension bench (Roman chair), place your feet securely, adjust the pad to just below your hip crease, and lower your torso slowly. Contract your glutes and lower back to raise your body until it is in a straight line with your legs, avoiding hyperextension"
   }
 ];
