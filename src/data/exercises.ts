@@ -386,6 +386,13 @@ export const exercises: Exercise[] = [
     type: "strength",
     muscleGroups:["hamstrings", "back", "glutes"],
     instructions: "Using a back extension bench (Roman chair), place your feet securely, adjust the pad to just below your hip crease, and lower your torso slowly. Contract your glutes and lower back to raise your body until it is in a straight line with your legs, avoiding hyperextension"
+  },
+  {
+    id: "56",
+    name: "Tricep Kickback",
+    type: "strength",
+    muscleGroups:["tricep"],
+    instructions: "extending the arm at the elbow while keeping the upper arm stationary, often performed with a slight forward lean or a lean back"
   }
 ];
 
