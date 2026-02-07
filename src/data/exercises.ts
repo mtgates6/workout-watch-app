@@ -391,7 +391,7 @@ export const exercises: Exercise[] = [
     id: "56",
     name: "Tricep Kickback",
     type: "strength",
-    muscleGroups:["tricep"],
+    muscleGroups:["triceps"],
     instructions: "extending the arm at the elbow while keeping the upper arm stationary, often performed with a slight forward lean or a lean back"
   }
 ];
