@@ -1,17 +1,19 @@
 
-import React, { useState } from "react";
-import { exercises } from "@/data/exercises";
+import React, { useState, useEffect } from "react";
+import { exercises as defaultExercises } from "@/data/exercises";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { Search, Plus, History, Clock } from "lucide-react";
+import { Search, Plus, History, Clock, ChevronDown, ChevronUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Exercise, MuscleGroup } from "@/types/workout";
 import { useNavigate } from "react-router-dom";
 import ExerciseHistoryDialog from "./ExerciseHistoryDialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { v4 as uuidv4 } from "uuid";
 
 const muscleGroups: MuscleGroup[] = [
   'chest',
@@ -26,14 +28,47 @@ const muscleGroups: MuscleGroup[] = [
   'core'
 ];
 
+const CUSTOM_EXERCISES_KEY = "custom_exercises";
+
 const ExerciseLibrary = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<MuscleGroup | "all">("all");
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [historyExercise, setHistoryExercise] = useState<Exercise | null>(null);
+  const [customExercises, setCustomExercises] = useState<Exercise[]>(() => {
+    const saved = localStorage.getItem(CUSTOM_EXERCISES_KEY);
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [newExerciseName, setNewExerciseName] = useState("");
+  const [newExerciseMuscleGroup, setNewExerciseMuscleGroup] = useState<MuscleGroup>("chest");
+  const [showCreateForm, setShowCreateForm] = useState(false);
   const { activeWorkout, addExerciseToWorkout, startWorkout, workouts } = useWorkout();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    localStorage.setItem(CUSTOM_EXERCISES_KEY, JSON.stringify(customExercises));
+  }, [customExercises]);
+
+  const exercises = [...defaultExercises, ...customExercises];
+
+  const handleCreateExercise = () => {
+    const trimmed = newExerciseName.trim();
+    if (!trimmed) return;
+    if (exercises.some(e => e.name.toLowerCase() === trimmed.toLowerCase())) {
+      toast({ title: "Exercise already exists", description: `"${trimmed}" is already in the library.`, variant: "destructive" });
+      return;
+    }
+    const newExercise: Exercise = {
+      id: uuidv4(),
+      name: trimmed,
+      type: "strength",
+      muscleGroups: [newExerciseMuscleGroup],
+    };
+    setCustomExercises(prev => [...prev, newExercise]);
+    setNewExerciseName("");
+    toast({ title: "Exercise Created", description: `${trimmed} added to your library` });
+  };
 
   const getExerciseHistory = (exercise: Exercise) => {
     return workouts
@@ -133,6 +168,43 @@ const ExerciseLibrary = () => {
             </Badge>
           ))}
         </div>
+      </div>
+
+      <div className="border rounded-lg p-4 space-y-3">
+        <button
+          onClick={() => setShowCreateForm(!showCreateForm)}
+          className="flex items-center gap-2 text-sm font-medium w-full"
+        >
+          <Plus className="h-4 w-4" />
+          Create Custom Exercise
+          {showCreateForm ? <ChevronUp className="h-4 w-4 ml-auto" /> : <ChevronDown className="h-4 w-4 ml-auto" />}
+        </button>
+        {showCreateForm && (
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Input
+              placeholder="Exercise name..."
+              value={newExerciseName}
+              onChange={(e) => setNewExerciseName(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleCreateExercise()}
+              className="flex-1"
+            />
+            <Select value={newExerciseMuscleGroup} onValueChange={(v) => setNewExerciseMuscleGroup(v as MuscleGroup)}>
+              <SelectTrigger className="w-full sm:w-[160px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {muscleGroups.map((g) => (
+                  <SelectItem key={g} value={g} className="capitalize">
+                    {g.charAt(0).toUpperCase() + g.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button onClick={handleCreateExercise} disabled={!newExerciseName.trim()}>
+              <Plus className="h-4 w-4 mr-1" /> Add
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
