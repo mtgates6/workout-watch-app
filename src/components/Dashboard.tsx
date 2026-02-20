@@ -6,6 +6,7 @@ import { Clock, CalendarDays, Dumbbell, TrendingUp, CalendarPlus } from "lucide-
 import { formatDuration } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import WeeklyRecapCard from "@/components/dashboard/WeeklyRecapCard";
+import MigrateToCloudBanner from "@/components/MigrateToCloudBanner";
 
 const Dashboard = () => {
   const { workoutSummary, startWorkout } = useWorkout();
@@ -25,8 +26,7 @@ const Dashboard = () => {
         </Button>
       </div>
 
-
-
+      <MigrateToCloudBanner />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader className="pb-2">
