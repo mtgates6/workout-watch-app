@@ -393,6 +393,13 @@ export const exercises: Exercise[] = [
     type: "strength",
     muscleGroups:["triceps"],
     instructions: "extending the arm at the elbow while keeping the upper arm stationary, often performed with a slight forward lean or a lean back"
+  },
+  {
+    id: "57",
+    name: "Hanging Leg Raise",
+    type: "strength",
+    muscleGroups:["core"],
+    instructions: "Hang from a pull-up bar or stall bars. Without swinging, lift your straight legs up."
   }
 ];
 
