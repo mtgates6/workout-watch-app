@@ -1,14 +1,12 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Workout, WorkoutExercise, WorkoutSet, WorkoutSummary, Exercise, PlannedExercise } from "@/types/workout";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "./AuthContext";
+import { exercises } from "@/data/exercises";
 
 interface WorkoutContextType {
   workouts: Workout[];
   activeWorkout: Workout | null;
   workoutSummary: WorkoutSummary;
-  loading: boolean;
   startWorkout: (name: string) => void;
   addExerciseToWorkout: (exercise: Exercise) => void;
   removeExerciseFromWorkout: (exerciseId: String) => void;
@@ -35,242 +33,43 @@ const initialSummary: WorkoutSummary = {
   totalDuration: 0,
 };
 
-const ACTIVE_WORKOUT_KEY = "fitness_active_workout";
+const STORAGE_KEY = "fitness_workout_data";
 
 const WorkoutContext = createContext<WorkoutContextType | undefined>(undefined);
 
-// ---------- DB helpers ----------
-
-async function dbSaveWorkout(workout: Workout, userId: string): Promise<void> {
-  const { error } = await supabase
-    .from("workouts")
-    .upsert({
-      id: workout.id,
-      user_id: userId,
-      name: workout.name,
-      date: workout.date,
-      duration: workout.duration ?? null,
-      notes: workout.notes ?? null,
-      completed: workout.completed,
-      planned: workout.planned ?? false,
-    });
-  if (error) throw error;
-}
-
-async function dbSaveExercises(workoutId: string, exercises: WorkoutExercise[]): Promise<void> {
-  // Delete existing exercises and re-insert (simplest approach for reordering)
-  await supabase.from("workout_exercises").delete().eq("workout_id", workoutId);
-
-  for (let i = 0; i < exercises.length; i++) {
-    const ex = exercises[i];
-    const { data: dbEx, error: exError } = await supabase
-      .from("workout_exercises")
-      .insert({
-        id: ex.id,
-        workout_id: workoutId,
-        exercise_id: ex.exercise.id,
-        exercise_name: ex.exercise.name,
-        exercise_type: ex.exercise.type,
-        muscle_groups: ex.exercise.muscleGroups,
-        instructions: ex.exercise.instructions ?? null,
-        notes: ex.notes ?? null,
-        sort_order: i,
-      })
-      .select()
-      .single();
-    if (exError) throw exError;
-
-    for (let j = 0; j < ex.sets.length; j++) {
-      const set = ex.sets[j];
-      const { error: setError } = await supabase
-        .from("workout_sets")
-        .insert({
-          id: set.id,
-          workout_exercise_id: dbEx.id,
-          weight: set.weight !== undefined ? String(set.weight) : null,
-          reps: set.reps !== undefined ? String(set.reps) : null,
-          duration: set.duration ?? null,
-          distance: set.distance ?? null,
-          completed: set.completed,
-          sort_order: j,
-        });
-      if (setError) throw setError;
-    }
-  }
-}
-
-async function dbSavePlannedExercises(workoutId: string, plannedExercises: PlannedExercise[]): Promise<void> {
-  await supabase.from("planned_exercises").delete().eq("workout_id", workoutId);
-
-  for (let i = 0; i < plannedExercises.length; i++) {
-    const pe = plannedExercises[i];
-    const { data: dbPe, error: peError } = await supabase
-      .from("planned_exercises")
-      .insert({
-        id: pe.id,
-        workout_id: workoutId,
-        exercise_id: pe.id,
-        exercise_name: pe.name,
-        exercise_type: pe.type,
-        muscle_groups: pe.muscleGroups,
-        instructions: pe.instructions ?? null,
-        reference_weight: pe.referenceWeight ?? null,
-        reference_reps: pe.referenceReps ?? null,
-        sort_order: i,
-      })
-      .select()
-      .single();
-    if (peError) throw peError;
-
-    if (pe.previousSets && pe.previousSets.length > 0) {
-      for (let j = 0; j < pe.previousSets.length; j++) {
-        const ps = pe.previousSets[j];
-        await supabase.from("planned_exercise_previous_sets").insert({
-          planned_exercise_id: dbPe.id,
-          weight: ps.weight ?? null,
-          reps: ps.reps ?? null,
-          sort_order: j,
-        });
-      }
-    }
-  }
-}
-
-async function dbDeleteWorkout(workoutId: string): Promise<void> {
-  await supabase.from("workouts").delete().eq("id", workoutId);
-}
-
-async function dbLoadWorkouts(userId: string): Promise<Workout[]> {
-  const { data: workoutRows, error } = await supabase
-    .from("workouts")
-    .select("*")
-    .eq("user_id", userId)
-    .order("date", { ascending: false });
-
-  if (error) throw error;
-  if (!workoutRows || workoutRows.length === 0) return [];
-
-  const workouts: Workout[] = [];
-
-  for (const row of workoutRows) {
-    // Load exercises
-    const { data: exRows } = await supabase
-      .from("workout_exercises")
-      .select("*")
-      .eq("workout_id", row.id)
-      .order("sort_order");
-
-    const exercises: WorkoutExercise[] = [];
-    for (const exRow of (exRows ?? [])) {
-      const { data: setRows } = await supabase
-        .from("workout_sets")
-        .select("*")
-        .eq("workout_exercise_id", exRow.id)
-        .order("sort_order");
-
-      exercises.push({
-        id: exRow.id,
-        exercise: {
-          id: exRow.exercise_id,
-          name: exRow.exercise_name,
-          type: exRow.exercise_type as any,
-          muscleGroups: exRow.muscle_groups as any[],
-          instructions: exRow.instructions ?? undefined,
-        },
-        sets: (setRows ?? []).map(s => ({
-          id: s.id,
-          exerciseId: exRow.exercise_id,
-          weight: s.weight ?? undefined,
-          reps: s.reps ?? undefined,
-          duration: s.duration ?? undefined,
-          distance: s.distance ?? undefined,
-          completed: s.completed,
-        })),
-        notes: exRow.notes ?? undefined,
-      });
-    }
-
-    // Load planned exercises
-    const { data: peRows } = await supabase
-      .from("planned_exercises")
-      .select("*")
-      .eq("workout_id", row.id)
-      .order("sort_order");
-
-    const plannedExercises: PlannedExercise[] = [];
-    for (const peRow of (peRows ?? [])) {
-      const { data: psRows } = await supabase
-        .from("planned_exercise_previous_sets")
-        .select("*")
-        .eq("planned_exercise_id", peRow.id)
-        .order("sort_order");
-
-      plannedExercises.push({
-        id: peRow.exercise_id,
-        name: peRow.exercise_name,
-        type: peRow.exercise_type as any,
-        muscleGroups: peRow.muscle_groups as any[],
-        instructions: peRow.instructions ?? undefined,
-        referenceWeight: peRow.reference_weight ?? undefined,
-        referenceReps: peRow.reference_reps ?? undefined,
-        previousSets: (psRows ?? []).map(ps => ({
-          weight: ps.weight ?? undefined,
-          reps: ps.reps ?? undefined,
-        })),
-      });
-    }
-
-    workouts.push({
-      id: row.id,
-      name: row.name,
-      date: row.date,
-      duration: row.duration ?? undefined,
-      notes: row.notes ?? undefined,
-      completed: row.completed,
-      planned: row.planned,
-      exercises,
-      plannedExercises,
-    });
-  }
-
-  return workouts;
-}
-
-// ---------- Provider ----------
-
 export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user } = useAuth();
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const [activeWorkout, setActiveWorkout] = useState<Workout | null>(() => {
-    const saved = localStorage.getItem(ACTIVE_WORKOUT_KEY);
-    return saved ? JSON.parse(saved) : null;
+  const [workouts, setWorkouts] = useState<Workout[]>(() => {
+    // Load workouts from localStorage on initial render
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      return parsedData.workouts || [];
+    }
+    return [];
   });
-
+  
+  const [activeWorkout, setActiveWorkout] = useState<Workout | null>(() => {
+    // Load active workout from localStorage on initial render
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      return parsedData.activeWorkout || null;
+    }
+    return null;
+  });
+  
   const [workoutSummary, setWorkoutSummary] = useState<WorkoutSummary>(initialSummary);
 
-  // Persist active workout to localStorage (it's in-progress, not saved to DB yet)
+  // Save data to localStorage whenever workouts or activeWorkout change
   useEffect(() => {
-    if (activeWorkout) {
-      localStorage.setItem(ACTIVE_WORKOUT_KEY, JSON.stringify(activeWorkout));
-    } else {
-      localStorage.removeItem(ACTIVE_WORKOUT_KEY);
-    }
-  }, [activeWorkout]);
-
-  // Load workouts from DB when user is ready
-  useEffect(() => {
-    if (!user) return;
-    setLoading(true);
-    dbLoadWorkouts(user.id)
-      .then(setWorkouts)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [user]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ 
+      workouts, 
+      activeWorkout 
+    }));
+  }, [workouts, activeWorkout]);
 
   // Calculate workout summary whenever workouts change
-  useEffect(() => {
+  React.useEffect(() => {
     if (workouts.length === 0) {
       setWorkoutSummary(initialSummary);
       return;
@@ -289,6 +88,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
       .filter(workout => workout.completed && workout.duration)
       .reduce((total, workout) => total + (workout.duration || 0), 0);
 
+    // Find favorite exercise based on frequency
     const exerciseFrequency: Record<string, number> = {};
     workouts.forEach(workout => {
       workout.exercises.forEach(ex => {
@@ -326,28 +126,47 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const addExerciseToWorkout = (exercise: Exercise) => {
     if (!activeWorkout) return;
+
     const newExercise: WorkoutExercise = {
       id: uuidv4(),
       exercise,
-      sets: [{ id: uuidv4(), exerciseId: exercise.id, completed: false }],
+      sets: [{
+        id: uuidv4(),
+        exerciseId: exercise.id,
+        completed: false,
+      }],
     };
-    setActiveWorkout({ ...activeWorkout, exercises: [...activeWorkout.exercises, newExercise] });
+
+    setActiveWorkout({
+      ...activeWorkout,
+      exercises: [...activeWorkout.exercises, newExercise],
+    });
   };
 
   const addSetToExercise = (exerciseId: string) => {
     if (!activeWorkout) return;
+
     setActiveWorkout({
       ...activeWorkout,
-      exercises: activeWorkout.exercises.map(ex =>
-        ex.id === exerciseId
-          ? { ...ex, sets: [...ex.sets, { id: uuidv4(), exerciseId: ex.exercise.id, completed: false }] }
-          : ex
-      ),
+      exercises: activeWorkout.exercises.map(ex => {
+        if (ex.id === exerciseId) {
+          return {
+            ...ex,
+            sets: [...ex.sets, {
+              id: uuidv4(),
+              exerciseId: ex.exercise.id,
+              completed: false,
+            }],
+          };
+        }
+        return ex;
+      }),
     });
   };
 
   const duplicateLastSet = (exerciseId: string) => {
     if (!activeWorkout) return;
+
     setActiveWorkout({
       ...activeWorkout,
       exercises: activeWorkout.exercises.map(ex => {
@@ -355,7 +174,13 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
           const lastSet = ex.sets[ex.sets.length - 1];
           return {
             ...ex,
-            sets: [...ex.sets, { id: uuidv4(), exerciseId: ex.exercise.id, weight: lastSet.weight, reps: lastSet.reps, completed: false }],
+            sets: [...ex.sets, {
+              id: uuidv4(),
+              exerciseId: ex.exercise.id,
+              weight: lastSet.weight,
+              reps: lastSet.reps,
+              completed: false,
+            }],
           };
         }
         return ex;
@@ -365,30 +190,46 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const reorderSets = (exerciseId: string, newSets: WorkoutSet[]) => {
     if (!activeWorkout) return;
-    setActiveWorkout({
-      ...activeWorkout,
-      exercises: activeWorkout.exercises.map(ex =>
-        ex.id === exerciseId ? { ...ex, sets: newSets } : ex
-      ),
-    });
-  };
 
-  const removeExerciseFromWorkout = (exerciseId: String) => {
-    if (!activeWorkout) return;
-    setActiveWorkout({
-      ...activeWorkout,
-      exercises: activeWorkout.exercises.filter(ex => ex.id !== exerciseId),
-    });
-  };
-
-  const removeSetFromExercise = (exerciseId: string, setId: string) => {
-    if (!activeWorkout) return;
     setActiveWorkout({
       ...activeWorkout,
       exercises: activeWorkout.exercises.map(ex => {
         if (ex.id === exerciseId) {
-          if (ex.sets.length <= 1) return ex;
-          return { ...ex, sets: ex.sets.filter(set => set.id !== setId) };
+          return {
+            ...ex,
+            sets: newSets,
+          };
+        }
+        return ex;
+      }),
+    });
+  };
+
+  const removeExerciseFromWorkout = (exerciseId : String) => {
+    if (!activeWorkout) return;
+      
+    setActiveWorkout({
+      ...activeWorkout,
+      exercises: activeWorkout.exercises.filter(ex => ex.id !== exerciseId),
+    });
+  }
+
+  const removeSetFromExercise = (exerciseId: string, setId: string) => {
+    if (!activeWorkout) return;
+
+    setActiveWorkout({
+      ...activeWorkout,
+      exercises: activeWorkout.exercises.map(ex => {
+        if (ex.id === exerciseId) {
+          // Don't allow removing the last set
+          if (ex.sets.length <= 1) {
+            return ex;
+          }
+          
+          return {
+            ...ex,
+            sets: ex.sets.filter(set => set.id !== setId),
+          };
         }
         return ex;
       }),
@@ -397,13 +238,23 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const updateSet = (exerciseId: string, setId: string, updates: Partial<WorkoutSet>) => {
     if (!activeWorkout) return;
+
+    console.log('Updating set:', { exerciseId, setId, updates });
+
     setActiveWorkout({
       ...activeWorkout,
       exercises: activeWorkout.exercises.map(ex => {
         if (ex.id === exerciseId) {
           return {
             ...ex,
-            sets: ex.sets.map(set => set.id === setId ? { ...set, ...updates } : set),
+            sets: ex.sets.map(set => {
+              if (set.id === setId) {
+                const updatedSet = { ...set, ...updates };
+                console.log('Updated set:', updatedSet);
+                return updatedSet;
+              }
+              return set;
+            }),
           };
         }
         return ex;
@@ -411,41 +262,44 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   };
 
-  const completeWorkout = useCallback(async () => {
-    if (!activeWorkout || !user) return;
+  const completeWorkout = () => {
+    if (!activeWorkout) return;
 
+    console.log('Completing workout with exercises:', activeWorkout.exercises);
+
+    // Mark all sets that have weight and reps as completed
     const exercisesWithCompletedSets = activeWorkout.exercises.map(ex => ({
       ...ex,
       sets: ex.sets.map(set => ({
         ...set,
-        completed: set.completed || (typeof set.weight === 'number' && typeof set.reps === 'number' && set.weight > 0 && set.reps > 0),
-      })),
+        // Auto-complete sets that have both weight and reps filled in
+        completed: set.completed || (typeof set.weight === 'number' && typeof set.reps === 'number' && set.weight > 0 && set.reps > 0)
+      }))
     }));
 
     const completedWorkout: Workout = {
       ...activeWorkout,
       exercises: exercisesWithCompletedSets,
       completed: true,
-      duration: 1800,
+      duration: 1800, // Example: 30 minutes
     };
 
-    try {
-      await dbSaveWorkout(completedWorkout, user.id);
-      await dbSaveExercises(completedWorkout.id, completedWorkout.exercises);
-      setWorkouts(prev => [completedWorkout, ...prev]);
-      setActiveWorkout(null);
-    } catch (err) {
-      console.error("Failed to save workout:", err);
-    }
-  }, [activeWorkout, user]);
+    console.log('Completed workout:', completedWorkout);
+
+    setWorkouts([...workouts, completedWorkout]);
+    setActiveWorkout(null);
+  };
 
   const cancelWorkout = () => {
     setActiveWorkout(null);
   };
 
-  const getWorkout = (id: string) => workouts.find(w => w.id === id);
-
-  const createPlannedWorkout = (name: string, date: string): Workout => {
+  const getWorkout = (id: string) => {
+    return workouts.find((workout) => workout.id === id);
+  };
+  
+  // Functions for planned workouts
+  const createPlannedWorkout = (name: string, date: string) => {
     const newWorkout: Workout = {
       id: uuidv4(),
       name,
@@ -455,41 +309,56 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
       planned: true,
       plannedExercises: [],
     };
-
-    if (user) {
-      dbSaveWorkout(newWorkout, user.id).catch(console.error);
-    }
+    
     setWorkouts(prev => [...prev, newWorkout]);
     return newWorkout;
   };
-
+  
   const getWorkoutsByDate = (dateString: string) => {
     const date = new Date(dateString);
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
+    
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
-
+    
     return workouts.filter(workout => {
       const workoutDate = new Date(workout.date);
       return workoutDate >= startOfDay && workoutDate <= endOfDay;
     });
   };
-
+  
   const startPlannedWorkout = (plannedWorkout: Workout) => {
+    console.log('Starting planned workout:', plannedWorkout);
+    
+    
+    if (!plannedWorkout) {
+      console.log('Planned workout not found');
+      return;
+    }
+    
+    console.log('Found planned workout:', plannedWorkout);
+    console.log('Planned exercises:', plannedWorkout.plannedExercises);
+    
+    // Create a new active workout based on the planned workout
     const newActiveWorkout: Workout = {
       ...plannedWorkout,
-      id: uuidv4(),
-      date: new Date().toISOString(),
-      planned: false,
+      id: uuidv4(), // Generate new ID for the active workout
+      date: new Date().toISOString(), // Set current date
+      planned: false, // No longer a planned workout
     };
-
+    
+    // If there are planned exercises, add them to the workout
     if (plannedWorkout.plannedExercises && plannedWorkout.plannedExercises.length > 0) {
+      console.log('Converting planned exercises to workout exercises');
       newActiveWorkout.exercises = plannedWorkout.plannedExercises.map((exercise: PlannedExercise) => {
+        // Check if this exercise has reference data from a repeated workout
         const hasReferenceData = exercise.referenceWeight !== undefined || exercise.referenceReps !== undefined;
+        
         let initialSets;
-
+        
         if (hasReferenceData && exercise.previousSets && exercise.previousSets.length > 0) {
+          // Create sets based on the previous workout's completed sets
           initialSets = exercise.previousSets.map(prevSet => ({
             id: uuidv4(),
             exerciseId: exercise.id,
@@ -498,7 +367,12 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
             completed: false,
           }));
         } else {
-          initialSets = [{ id: uuidv4(), exerciseId: exercise.id, completed: false }];
+          // Create a single empty set
+          initialSets = [{
+            id: uuidv4(),
+            exerciseId: exercise.id,
+            completed: false,
+          }];
         }
 
         return {
@@ -508,61 +382,71 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
             name: exercise.name,
             type: exercise.type,
             muscleGroups: exercise.muscleGroups,
-            instructions: exercise.instructions,
+            instructions: exercise.instructions
           },
           sets: initialSets,
         };
       });
     }
-
+    
+    console.log('New active workout created:', newActiveWorkout);
     setActiveWorkout(newActiveWorkout);
   };
-
+  
   const deletePlannedWorkout = (workoutId: string) => {
-    if (user) {
-      dbDeleteWorkout(workoutId).catch(console.error);
-    }
-    setWorkouts(prev => prev.filter(w => w.id !== workoutId));
+    setWorkouts(prev => prev.filter(workout => workout.id !== workoutId));
   };
-
-  const updatePlannedWorkout = async (workoutId: string, updates: Partial<Workout>) => {
-    setWorkouts(prev =>
-      prev.map(workout => workout.id === workoutId ? { ...workout, ...updates } : workout)
+  
+  // New function to update planned workout
+  const updatePlannedWorkout = (workoutId: string, updates: Partial<Workout>) => {
+    setWorkouts(prev => 
+      prev.map(workout => 
+        workout.id === workoutId 
+          ? { ...workout, ...updates }
+          : workout
+      )
     );
-
-    const updatedWorkout = workouts.find(w => w.id === workoutId);
-    if (updatedWorkout && user) {
-      const merged = { ...updatedWorkout, ...updates };
-      try {
-        await dbSaveWorkout(merged, user.id);
-        if (updates.plannedExercises) {
-          await dbSavePlannedExercises(workoutId, updates.plannedExercises);
-        }
-      } catch (err) {
-        console.error("Failed to update planned workout:", err);
-      }
-    }
   };
 
   const reorderExercises = (newExercises: WorkoutExercise[]) => {
     if (!activeWorkout) return;
-    setActiveWorkout({ ...activeWorkout, exercises: newExercises });
-  };
-
-  const updateExerciseNotes = (exerciseId: string, notes: string) => {
-    if (!activeWorkout) return;
     setActiveWorkout({
       ...activeWorkout,
-      exercises: activeWorkout.exercises.map(ex =>
-        ex.id === exerciseId ? { ...ex, notes } : ex
-      ),
+      exercises: newExercises,
     });
-    setWorkouts(prev =>
-      prev.map(workout => ({
+  };
+
+  // Add the new updateExerciseNotes function
+  const updateExerciseNotes = (exerciseId: string, notes: string) => {
+    if (!activeWorkout) return;
+
+    // Update notes for an exercise in the active workout
+    setActiveWorkout({
+      ...activeWorkout,
+      exercises: activeWorkout.exercises.map(ex => {
+        if (ex.id === exerciseId) {
+          return {
+            ...ex,
+            notes: notes,
+          };
+        }
+        return ex;
+      }),
+    });
+
+    // If the exercise is in a completed workout in history, update it there too
+    setWorkouts(prevWorkouts => 
+      prevWorkouts.map(workout => ({
         ...workout,
-        exercises: workout.exercises.map(ex =>
-          ex.id === exerciseId ? { ...ex, notes } : ex
-        ),
+        exercises: workout.exercises.map(ex => {
+          if (ex.id === exerciseId) {
+            return {
+              ...ex,
+              notes: notes,
+            };
+          }
+          return ex;
+        }),
       }))
     );
   };
@@ -573,7 +457,6 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
         workouts,
         activeWorkout,
         workoutSummary,
-        loading,
         startWorkout,
         addExerciseToWorkout,
         removeExerciseFromWorkout,
@@ -591,7 +474,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
         deletePlannedWorkout,
         updatePlannedWorkout,
         reorderExercises,
-        updateExerciseNotes,
+        updateExerciseNotes
       }}
     >
       {children}
