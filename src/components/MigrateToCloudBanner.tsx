@@ -38,8 +38,11 @@ const MigrateToCloudBanner: React.FC = () => {
   const [dismissed, setDismissed] = useState(() => localStorage.getItem(MIGRATED_KEY) === "true");
   const [migrating, setMigrating] = useState(false);
 
-  // Don't show if already migrated or no local data
-  if (dismissed || !user || !hasLocalData()) return null;
+  const showRetry = dismissed && user && hasLocalData();
+
+  // Show banner if has local data (either fresh or retry)
+  if (!user || (!hasLocalData() && !showRetry)) return null;
+  if (dismissed && !showRetry) return null;
 
   const handleMigrate = async () => {
     setMigrating(true);
@@ -212,6 +215,24 @@ const MigrateToCloudBanner: React.FC = () => {
     localStorage.setItem(MIGRATED_KEY, "true");
     setDismissed(true);
   };
+
+  if (showRetry) {
+    return (
+      <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 flex items-center gap-3 mb-4">
+        <CloudUpload className="h-5 w-5 text-destructive shrink-0" />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium">Migration may have failed</p>
+          <p className="text-xs text-muted-foreground">Local data still detected. Tap retry to migrate again.</p>
+        </div>
+        <Button size="sm" variant="destructive" onClick={() => {
+          localStorage.removeItem(MIGRATED_KEY);
+          setDismissed(false);
+        }}>
+          Retry
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 flex items-center gap-3 mb-4">
