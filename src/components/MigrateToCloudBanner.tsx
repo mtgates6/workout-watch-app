@@ -44,12 +44,20 @@ const MigrateToCloudBanner: React.FC = () => {
   const handleMigrate = async () => {
     setMigrating(true);
     try {
+      let hasError = false;
+      const checkError = (result: any, label: string) => {
+        if (result.error) {
+          console.error(`Migration error (${label}):`, result.error);
+          hasError = true;
+        }
+      };
+
       // --- Migrate workouts ---
       const workoutRaw = localStorage.getItem(WORKOUT_STORAGE_KEY);
       if (workoutRaw) {
         const { workouts = [] } = JSON.parse(workoutRaw);
         for (const workout of workouts) {
-          await supabase.from("workouts").upsert({
+          const wResult = await supabase.from("workouts").upsert({
             id: workout.id,
             user_id: user.id,
             name: workout.name,
@@ -59,6 +67,7 @@ const MigrateToCloudBanner: React.FC = () => {
             completed: workout.completed,
             planned: workout.planned ?? false,
           });
+          checkError(wResult, `workout ${workout.name}`);
 
           // Save exercises
           for (let i = 0; i < (workout.exercises || []).length; i++) {
@@ -169,6 +178,15 @@ const MigrateToCloudBanner: React.FC = () => {
             instructions: ex.instructions ?? null,
           });
         }
+      }
+
+      if (hasError) {
+        toast({
+          title: "Migration had errors",
+          description: "Some data may not have been saved. Please try again.",
+          variant: "destructive",
+        });
+        return;
       }
 
       localStorage.setItem(MIGRATED_KEY, "true");
