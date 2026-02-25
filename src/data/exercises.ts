@@ -403,7 +403,7 @@ export const exercises: Exercise[] = [
   },
   {
     id: "58",
-    name: "Dumbbell Pullover",
+    name: "Lat Pullover",
     type: "strength",
     muscleGroups: ["back"],
     instructions: "Lie perpendicular on bench with upper back supported, hold one dumbbell with both hands above chest, lower weight back over head in an arc while keeping slight elbow bend, pull back to start position"
