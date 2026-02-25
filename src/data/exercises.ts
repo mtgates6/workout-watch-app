@@ -393,7 +393,22 @@ export const exercises: Exercise[] = [
     type: "strength",
     muscleGroups:["triceps"],
     instructions: "extending the arm at the elbow while keeping the upper arm stationary, often performed with a slight forward lean or a lean back"
+  },
+  {
+    id: "57",
+    name: "Hanging Leg Raise",
+    type: "strength",
+    muscleGroups: ["core"],
+    instructions: "Hang from a pull-up bar with arms fully extended, engage core and raise legs by flexing hips and knees until thighs are parallel to ground or higher, lower with control"
+  },
+  {
+    id: "58",
+    name: "Dumbbell Pullover",
+    type: "strength",
+    muscleGroups: ["back"],
+    instructions: "Lie perpendicular on bench with upper back supported, hold one dumbbell with both hands above chest, lower weight back over head in an arc while keeping slight elbow bend, pull back to start position"
   }
+
 ];
 
 export const getExerciseById = (id: string): Exercise | undefined => {
