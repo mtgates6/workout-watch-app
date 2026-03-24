@@ -407,7 +407,84 @@ export const exercises: Exercise[] = [
     type: "strength",
     muscleGroups: ["back"],
     instructions: "Lie perpendicular on bench with upper back supported, hold one dumbbell with both hands above chest, lower weight back over head in an arc while keeping slight elbow bend, pull back to start position"
-  }
+  },
+  {
+    id: "59",
+    name: "Good Morning",
+    type: "strength",
+    muscleGroups: ["hamstrings", "glutes", "back"],
+    instructions: "Stand with feet shoulder-width apart, barbell across upper back. Keeping a slight bend in the knees, hinge at the hips to lower your torso forward until it is almost parallel to the ground, then return to standing."
+  },
+  {
+  id: "60",
+  name: "Reverse Cable Crossover",
+  type: "strength",
+  muscleGroups: ["shoulders"],
+  instructions: "Stand between two cable pulleys set at shoulder height, grab handles with arms extended, pull cables outward and back in a reverse fly motion focusing on rear delts, return slowly with control"
+},
+{
+  id: "61",
+  name: "Bayesian Curl",
+  type: "strength",
+  muscleGroups: ["biceps"],
+  instructions: "Stand facing away from a low cable with handle in hand, arm extended behind body, curl the handle forward while keeping elbow slightly behind torso, squeeze biceps and return slowly"
+},
+{
+  id: "62",
+  name: "Belt Squat",
+  type: "strength",
+  muscleGroups: ["quads", "glutes"],
+  instructions: "Attach belt to weight machine or plates, stand on platform, squat down by bending knees and hips while keeping torso upright, drive through feet to return to standing"
+},
+{
+  id: "63",
+  name: "Pendulum Squat",
+  type: "strength",
+  muscleGroups: ["quads", "glutes"],
+  instructions: "Position yourself in the pendulum squat machine with back supported, lower by bending knees while keeping feet planted, push through feet to extend legs and return to start"
+},
+{
+  id: "64",
+  name: "Incline Cable Fly",
+  type: "strength",
+  muscleGroups: ["chest"],
+  instructions: "Set cables low and lie on an incline bench, bring handles together in an arc motion above chest with slight elbow bend, squeeze chest and return slowly"
+},
+{
+  id: "65",
+  name: "Decline Cable Fly",
+  type: "strength",
+  muscleGroups: ["chest"],
+  instructions: "Set cables high and stand or lie on a decline bench, pull handles downward in an arc motion toward lower chest, squeeze and return with control"
+},
+{
+  id: "66",
+  name: "Lat Pulldown (Wide Grip)",
+  type: "strength",
+  muscleGroups: ["back"],
+  instructions: "Sit at lat pulldown machine with wide grip on bar, pull bar down to upper chest while driving elbows down and back, control the bar as it returns upward"
+},
+{
+  id: "67",
+  name: "Lat Pulldown (Close Grip)",
+  type: "strength",
+  muscleGroups: ["back"],
+  instructions: "Use a close grip attachment, pull handle toward upper chest while keeping elbows tucked, squeeze lats and return slowly"
+},
+{
+  id: "68",
+  name: "Glute Bridge",
+  type: "strength",
+  muscleGroups: ["glutes"],
+  instructions: "Lie on your back with feet flat and knees bent, drive hips upward by squeezing glutes until body forms a straight line, lower with control"
+},
+{
+  id: "69",
+  name: "Hip Thrust (Glute Drive)",
+  type: "strength",
+  muscleGroups: ["glutes"],
+  instructions: "Position upper back on bench or machine, feet flat, drive hips upward by squeezing glutes, pause at the top and lower slowly"
+}
 
 ];
 
