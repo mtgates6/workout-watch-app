@@ -484,7 +484,14 @@ export const exercises: Exercise[] = [
   type: "strength",
   muscleGroups: ["glutes"],
   instructions: "Position upper back on bench or machine, feet flat, drive hips upward by squeezing glutes, pause at the top and lower slowly"
-}
+},
+{
+    id: "70",
+    name: "Crunch Machine",
+    type: "strength",
+    muscleGroups: ["core"],
+    instructions: "The machine crunch is a resistance exercise that targets the abdominal muscles, primarily the rectus abdominis, by guiding the user through a controlled spinal flexion movement. Unlike bodyweight crunches, the machine allows for adjustable resistance (progressive overload) and helps maintain proper form, making it suitable for various fitness levels."
+  }
 
 ];
 
