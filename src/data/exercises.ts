@@ -491,6 +491,13 @@ export const exercises: Exercise[] = [
     type: "strength",
     muscleGroups: ["core"],
     instructions: "The machine crunch is a resistance exercise that targets the abdominal muscles, primarily the rectus abdominis, by guiding the user through a controlled spinal flexion movement. Unlike bodyweight crunches, the machine allows for adjustable resistance (progressive overload) and helps maintain proper form, making it suitable for various fitness levels."
+},
+{
+    id: "71",
+    name: "Barbell Row",
+    type: "strength",
+    muscleGroups: ["back", "biceps"],
+    instructions: "Bend over and grab the barbell, arms extended. Pull the weight up to your chest while keeping your back flat."
   }
 
 ];
