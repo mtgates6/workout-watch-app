@@ -498,6 +498,20 @@ export const exercises: Exercise[] = [
     type: "strength",
     muscleGroups: ["back", "biceps"],
     instructions: "Bend over and grab the barbell, arms extended. Pull the weight up to your chest while keeping your back flat."
+  },
+  {
+    id: "72",
+    name: "Deficit Push Ups",
+    type: "strength",
+    muscleGroups: ["chest", "triceps", "shoulders"],
+    instructions: "Place your hands on elevated surfaces (such as push-up handles or weight plates) to allow a greater range of motion. Lower your chest below the level of your hands, then press back up."
+  },
+  {
+    id: "73",
+    name: "Barbell Shoulder Press",
+    type: "strength",
+    muscleGroups: ["shoulders", "triceps"],
+    instructions: "Stand or sit holding a barbell at shoulder height with hands slightly wider than shoulder-width. Press the barbell overhead until arms are fully extended, then lower back to shoulder level with control."
   }
 
 ];
