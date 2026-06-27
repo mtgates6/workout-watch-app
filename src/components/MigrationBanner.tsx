@@ -19,15 +19,16 @@ const MigrationBanner = ({ userId, onMigrated }: MigrationBannerProps) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const alreadyDone = localStorage.getItem(`${MIGRATION_KEY}_${userId}`);
-    if (alreadyDone) return;
-
     const workoutData = JSON.parse(localStorage.getItem("fitness_workout_data") || "{}");
     const healthData = JSON.parse(localStorage.getItem("fitness_health_data") || "{}");
-    const hasWorkouts = (workoutData.workouts || []).length > 0;
-    const hasGoals = (healthData.goals || []).length > 0;
+    const localWorkouts = (workoutData.workouts || []).filter((w: any) => w.completed).length;
+    const localGoals = (healthData.goals || []).length;
+    if (localWorkouts === 0 && localGoals === 0) return;
 
-    if (hasWorkouts || hasGoals) setHasLocalData(true);
+    // Check if Supabase already has the data
+    supabase.from("workouts").select("id", { count: "exact", head: true }).eq("user_id", userId).then(({ count }) => {
+      if ((count ?? 0) < localWorkouts) setHasLocalData(true);
+    });
   }, [userId]);
 
   if (!hasLocalData) return null;
