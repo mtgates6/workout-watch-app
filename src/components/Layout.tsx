@@ -2,9 +2,10 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Dumbbell, Home, Library, MenuIcon, X, Heart } from "lucide-react";
+import { BarChart3, Dumbbell, Home, Library, MenuIcon, X, Heart, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useWorkout } from "@/context/WorkoutContext";
+import { useUser } from "@/context/UserContext";
 
 
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -38,7 +39,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
   const isMobile = useIsMobile();
   const [menuOpen, setMenuOpen] = useState(false);
-  const { activeWorkout } = useWorkout(); // Add this line
+  const { activeWorkout } = useWorkout();
+  const { userId, switchUser } = useUser();
 
   const navigation = [
     {
@@ -140,6 +142,17 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 ))}
               </div>
             </div>
+          </div>
+          <div className="p-4 border-t">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={switchUser}
+              className="w-full justify-start text-muted-foreground capitalize"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Switch ({userId})
+            </Button>
           </div>
         </aside>
 

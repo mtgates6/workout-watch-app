@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useWorkout } from "@/context/WorkoutContext";
+import { useUser } from "@/context/UserContext";
+import MigrationBanner from "@/components/MigrationBanner";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Clock, CalendarDays, Dumbbell, TrendingUp, CalendarPlus } from "lucide-react";
@@ -8,7 +10,9 @@ import { useNavigate } from "react-router-dom";
 import WeeklyRecapCard from "@/components/dashboard/WeeklyRecapCard";
 
 const Dashboard = () => {
-  const { workoutSummary, startWorkout } = useWorkout();
+  const { workoutSummary, startWorkout, workouts } = useWorkout();
+  const { userId } = useUser();
+  const [migrationKey, setMigrationKey] = useState(0);
   const navigate = useNavigate();
 
   const handleStartWorkout = () => {
@@ -18,6 +22,13 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
+      {userId && (
+        <MigrationBanner
+          key={migrationKey}
+          userId={userId}
+          onMigrated={() => { setMigrationKey(k => k + 1); window.location.reload(); }}
+        />
+      )}
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <Button onClick={handleStartWorkout} className="bg-fitness-primary hover:bg-fitness-secondary">

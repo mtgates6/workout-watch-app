@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import ExerciseHistoryDialog from "./ExerciseHistoryDialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { v4 as uuidv4 } from "uuid";
+import { supabase } from "@/integrations/supabase/client";
 
 const muscleGroups: MuscleGroup[] = [
   'chest',
@@ -28,17 +29,12 @@ const muscleGroups: MuscleGroup[] = [
   'core'
 ];
 
-const CUSTOM_EXERCISES_KEY = "custom_exercises";
-
 const ExerciseLibrary = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<MuscleGroup | "all">("all");
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [historyExercise, setHistoryExercise] = useState<Exercise | null>(null);
-  const [customExercises, setCustomExercises] = useState<Exercise[]>(() => {
-    const saved = localStorage.getItem(CUSTOM_EXERCISES_KEY);
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [customExercises, setCustomExercises] = useState<Exercise[]>([]);
   const [newExerciseName, setNewExerciseName] = useState("");
   const [newExerciseMuscleGroup, setNewExerciseMuscleGroup] = useState<MuscleGroup>("chest");
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -47,12 +43,24 @@ const ExerciseLibrary = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    localStorage.setItem(CUSTOM_EXERCISES_KEY, JSON.stringify(customExercises));
-  }, [customExercises]);
+    const userId = localStorage.getItem("current_user");
+    if (!userId) return;
+    supabase.from("custom_exercises").select("*").eq("user_id", userId).then(({ data }) => {
+      if (data) {
+        setCustomExercises(data.map(row => ({
+          id: row.id,
+          name: row.name,
+          type: row.type as Exercise["type"],
+          muscleGroups: row.muscle_groups as MuscleGroup[],
+          instructions: row.instructions ?? undefined,
+        })));
+      }
+    });
+  }, []);
 
   const exercises = [...defaultExercises, ...customExercises];
 
-  const handleCreateExercise = () => {
+  const handleCreateExercise = async () => {
     const trimmed = newExerciseName.trim();
     if (!trimmed) return;
     if (exercises.some(e => e.name.toLowerCase() === trimmed.toLowerCase())) {
@@ -68,6 +76,18 @@ const ExerciseLibrary = () => {
     setCustomExercises(prev => [...prev, newExercise]);
     setNewExerciseName("");
     toast({ title: "Exercise Created", description: `${trimmed} added to your library` });
+
+    const userId = localStorage.getItem("current_user");
+    if (userId) {
+      await supabase.from("custom_exercises").insert({
+        id: newExercise.id,
+        name: newExercise.name,
+        type: newExercise.type,
+        muscle_groups: newExercise.muscleGroups,
+        instructions: null,
+        user_id: userId,
+      });
+    }
   };
 
   const getExerciseHistory = (exercise: Exercise) => {

@@ -14,11 +14,17 @@ import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 import { WorkoutProvider } from "./context/WorkoutContext";
 import { HealthProvider } from "./context/HealthContext";
+import { UserProvider, useUser } from "./context/UserContext";
+import UserPickerScreen from "./components/UserPickerScreen";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+const AppContent = () => {
+  const { userId } = useUser();
+
+  if (!userId) return <UserPickerScreen />;
+
+  return (
     <WorkoutProvider>
       <HealthProvider>
         <TooltipProvider>
@@ -32,6 +38,7 @@ const App = () => (
                 <Route path="/exercises" element={<ExercisesPage />} />
                 <Route path="/history" element={<HistoryPage />} />
                 <Route path="/planner" element={<PlannerPage />} />
+                <Route path="/health" element={<HealthPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>
@@ -39,6 +46,14 @@ const App = () => (
         </TooltipProvider>
       </HealthProvider>
     </WorkoutProvider>
+  );
+};
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <UserProvider>
+      <AppContent />
+    </UserProvider>
   </QueryClientProvider>
 );
 
