@@ -7,6 +7,11 @@ import { Upload } from "lucide-react";
 
 const MIGRATION_KEY = "supabase_migration_done";
 
+function toNum(val: any): number | null {
+  const n = parseFloat(String(val));
+  return isNaN(n) ? null : n;
+}
+
 interface MigrationBannerProps {
   userId: string;
   onMigrated: () => void;
@@ -109,8 +114,8 @@ const MigrationBanner = ({ userId, onMigrated }: MigrationBannerProps) => {
               exercise_type: pe.type || "strength",
               muscle_groups: pe.muscleGroups || [],
               instructions: pe.instructions || null,
-              reference_weight: pe.referenceWeight || null,
-              reference_reps: pe.referenceReps || null,
+              reference_weight: toNum(pe.referenceWeight),
+              reference_reps: toNum(pe.referenceReps),
               sort_order: i,
             }] as any);
             if (peErr && peErr.code !== "23505") throw new Error(`Planned exercises: ${peErr.message}`);
@@ -119,8 +124,8 @@ const MigrationBanner = ({ userId, onMigrated }: MigrationBannerProps) => {
               await supabase.from("planned_exercise_previous_sets").insert(
                 pe.previousSets.map((ps: any, j: number) => ({
                   planned_exercise_id: peId,
-                  weight: ps.weight || null,
-                  reps: ps.reps || null,
+                  weight: toNum(ps.weight),
+                  reps: toNum(ps.reps),
                   sort_order: j,
                 })) as any
               );
