@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { USER_IDS } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Upload } from "lucide-react";
@@ -18,6 +19,8 @@ const MigrationBanner = ({ userId, onMigrated }: MigrationBannerProps) => {
   const [error, setError] = useState("");
   const { toast } = useToast();
 
+  const userUuid = USER_IDS[userId] ?? null;
+
   useEffect(() => {
     const workoutData = JSON.parse(localStorage.getItem("fitness_workout_data") || "{}");
     const healthData = JSON.parse(localStorage.getItem("fitness_health_data") || "{}");
@@ -26,7 +29,7 @@ const MigrationBanner = ({ userId, onMigrated }: MigrationBannerProps) => {
     if (localWorkouts === 0 && localGoals === 0) return;
 
     // Check if Supabase already has the data
-    supabase.from("workouts").select("id", { count: "exact", head: true }).eq("user_id", userId).then(({ count }) => {
+    supabase.from("workouts").select("id", { count: "exact", head: true }).eq("user_id", userUuid).then(({ count }) => {
       if ((count ?? 0) < localWorkouts) setHasLocalData(true);
     });
   }, [userId]);
@@ -56,7 +59,7 @@ const MigrationBanner = ({ userId, onMigrated }: MigrationBannerProps) => {
           planned: workout.planned || false,
           duration: workout.duration || null,
           notes: workout.notes || null,
-          user_id: userId,
+          user_id: userUuid,
         }] as any);
         if (wErr && wErr.code !== "23505") throw new Error(`Workout: ${wErr.message}`);
 
@@ -132,7 +135,7 @@ const MigrationBanner = ({ userId, onMigrated }: MigrationBannerProps) => {
           goals.map((g: any) => ({
             id: g.id, name: g.name, type: g.type, frequency: g.frequency,
             target: g.target || null, unit: g.unit || null, emoji: g.emoji || null,
-            description: g.description || null, active: g.active, user_id: userId,
+            description: g.description || null, active: g.active, user_id: userUuid,
           })) as any
         );
         if (gErr && gErr.code !== "23505") throw new Error(`Goals: ${gErr.message}`);
@@ -144,7 +147,7 @@ const MigrationBanner = ({ userId, onMigrated }: MigrationBannerProps) => {
           entries.map((e: any) => ({
             id: e.id, goal_id: e.goalId, date: e.date, completed: e.completed,
             value: e.value || null, notes: e.notes || null,
-            completed_at: e.completedAt || null, user_id: userId,
+            completed_at: e.completedAt || null, user_id: userUuid,
           })) as any
         );
         if (eErr && eErr.code !== "23505") throw new Error(`Entries: ${eErr.message}`);
@@ -156,7 +159,7 @@ const MigrationBanner = ({ userId, onMigrated }: MigrationBannerProps) => {
           customExercises.map((ex: any) => ({
             id: ex.id, name: ex.name, type: ex.type || "strength",
             muscle_groups: ex.muscleGroups || [], instructions: ex.instructions || null,
-            user_id: userId,
+            user_id: userUuid,
           })) as any
         );
       }

@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Workout, WorkoutExercise, WorkoutSet, WorkoutSummary, Exercise, PlannedExercise, ExerciseType, MuscleGroup } from "@/types/workout";
 import { exercises } from "@/data/exercises";
 import { supabase } from "@/integrations/supabase/client";
+import { getUserUuid } from "@/context/UserContext";
 
 interface WorkoutContextType {
   workouts: Workout[];
@@ -96,7 +97,7 @@ function mapWorkoutFromDB(row: any): Workout {
 const WorkoutContext = createContext<WorkoutContextType | undefined>(undefined);
 
 export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const userId = localStorage.getItem("current_user");
+  const userId = getUserUuid();
 
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [activeWorkout, setActiveWorkout] = useState<Workout | null>(() => {

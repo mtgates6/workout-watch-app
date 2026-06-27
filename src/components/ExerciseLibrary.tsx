@@ -15,6 +15,7 @@ import ExerciseHistoryDialog from "./ExerciseHistoryDialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { v4 as uuidv4 } from "uuid";
 import { supabase } from "@/integrations/supabase/client";
+import { getUserUuid } from "@/context/UserContext";
 
 const muscleGroups: MuscleGroup[] = [
   'chest',
@@ -43,7 +44,7 @@ const ExerciseLibrary = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userId = localStorage.getItem("current_user");
+    const userId = getUserUuid();
     if (!userId) return;
     supabase.from("custom_exercises").select("*").eq("user_id", userId).then(({ data }) => {
       if (data) {
@@ -77,7 +78,7 @@ const ExerciseLibrary = () => {
     setNewExerciseName("");
     toast({ title: "Exercise Created", description: `${trimmed} added to your library` });
 
-    const userId = localStorage.getItem("current_user");
+    const userId = getUserUuid();
     if (userId) {
       await supabase.from("custom_exercises").insert({
         id: newExercise.id,

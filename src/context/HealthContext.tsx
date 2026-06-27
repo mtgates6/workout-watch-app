@@ -9,6 +9,7 @@ import {
   HealthGoalFrequency
 } from "@/types/health";
 import { supabase } from "@/integrations/supabase/client";
+import { getUserUuid } from "@/context/UserContext";
 
 interface HealthContextType {
   goals: HealthGoal[];
@@ -74,7 +75,7 @@ function mapEntry(row: any): HealthEntry {
 const HealthContext = createContext<HealthContextType | undefined>(undefined);
 
 export const HealthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const userId = localStorage.getItem("current_user");
+  const userId = getUserUuid();
 
   const [goals, setGoals] = useState<HealthGoal[]>([]);
   const [entries, setEntries] = useState<HealthEntry[]>([]);
