@@ -9,6 +9,7 @@ interface WorkoutContextType {
   workouts: Workout[];
   activeWorkout: Workout | null;
   workoutSummary: WorkoutSummary;
+  loading: boolean;
   startWorkout: (name: string) => void;
   addExerciseToWorkout: (exercise: Exercise) => void;
   removeExerciseFromWorkout: (exerciseId: String) => void;
@@ -100,6 +101,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const userId = getUserUuid();
 
   const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeWorkout, setActiveWorkout] = useState<Workout | null>(() => {
     const saved = localStorage.getItem(ACTIVE_WORKOUT_KEY);
     return saved ? JSON.parse(saved) : null;
@@ -127,9 +129,18 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       if (error) {
         console.error("Error loading workouts:", error);
-        return;
+      } else if (data) {
+        const mapped: Workout[] = [];
+        for (const row of data) {
+          try {
+            mapped.push(mapWorkoutFromDB(row));
+          } catch (e) {
+            console.error("Failed to map workout row:", row.id, e);
+          }
+        }
+        setWorkouts(mapped);
       }
-      if (data) setWorkouts(data.map(mapWorkoutFromDB));
+      setLoading(false);
     };
     load();
   }, []);
@@ -563,6 +574,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
         workouts,
         activeWorkout,
         workoutSummary,
+        loading,
         startWorkout,
         addExerciseToWorkout,
         removeExerciseFromWorkout,
