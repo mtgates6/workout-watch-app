@@ -9,7 +9,6 @@ interface WorkoutContextType {
   workouts: Workout[];
   activeWorkout: Workout | null;
   workoutSummary: WorkoutSummary;
-  loading: boolean;
   startWorkout: (name: string) => void;
   addExerciseToWorkout: (exercise: Exercise) => void;
   removeExerciseFromWorkout: (exerciseId: String) => void;
@@ -101,7 +100,6 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const userId = getUserUuid();
 
   const [workouts, setWorkouts] = useState<Workout[]>([]);
-  const [loading, setLoading] = useState(true);
   const [activeWorkout, setActiveWorkout] = useState<Workout | null>(() => {
     const saved = localStorage.getItem(ACTIVE_WORKOUT_KEY);
     return saved ? JSON.parse(saved) : null;
@@ -129,10 +127,9 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       if (error) {
         console.error("Error loading workouts:", error);
-      } else if (data) {
-        setWorkouts(data.map(mapWorkoutFromDB));
+        return;
       }
-      setLoading(false);
+      if (data) setWorkouts(data.map(mapWorkoutFromDB));
     };
     load();
   }, []);
@@ -566,7 +563,6 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
         workouts,
         activeWorkout,
         workoutSummary,
-        loading,
         startWorkout,
         addExerciseToWorkout,
         removeExerciseFromWorkout,
