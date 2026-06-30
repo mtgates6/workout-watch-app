@@ -130,15 +130,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (error) {
         console.error("Error loading workouts:", error);
       } else if (data) {
-        const mapped: Workout[] = [];
-        for (const row of data) {
-          try {
-            mapped.push(mapWorkoutFromDB(row));
-          } catch (e) {
-            console.error("Failed to map workout row:", row.id, e);
-          }
-        }
-        setWorkouts(mapped);
+        setWorkouts(data.map(mapWorkoutFromDB));
       }
       setLoading(false);
     };
