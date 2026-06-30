@@ -8,10 +8,9 @@ import { Clock, CalendarDays, Dumbbell, TrendingUp, CalendarPlus } from "lucide-
 import { formatDuration } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import WeeklyRecapCard from "@/components/dashboard/WeeklyRecapCard";
-import { Skeleton } from "@/components/ui/skeleton";
 
 const Dashboard = () => {
-  const { workoutSummary, startWorkout, workouts, loading } = useWorkout();
+  const { workoutSummary, startWorkout, workouts } = useWorkout();
   const { userId } = useUser();
   const [migrationKey, setMigrationKey] = useState(0);
   const navigate = useNavigate();
@@ -46,37 +45,26 @@ const Dashboard = () => {
             <CardDescription>Your fitness progress</CardDescription>
           </CardHeader>
           <CardContent>
-            {loading ? (
-              <div className="grid grid-cols-2 gap-4">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="flex flex-col space-y-2">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-8 w-16" />
-                  </div>
-                ))}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col space-y-1">
+                <span className="text-sm text-muted-foreground">Total Workouts</span>
+                <span className="text-2xl font-bold text-fitness-primary">{workoutSummary.totalWorkouts}</span>
               </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col space-y-1">
-                  <span className="text-sm text-muted-foreground">Total Workouts</span>
-                  <span className="text-2xl font-bold text-fitness-primary">{workoutSummary.totalWorkouts}</span>
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <span className="text-sm text-muted-foreground">This Week</span>
-                  <span className="text-2xl font-bold text-fitness-primary">{workoutSummary.thisWeekWorkouts}</span>
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <span className="text-sm text-muted-foreground">Total Time</span>
-                  <span className="text-2xl font-bold text-fitness-primary">{formatDuration(workoutSummary.totalDuration)}</span>
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <span className="text-sm text-muted-foreground">Favorite Exercise</span>
-                  <span className="text-lg font-bold text-fitness-primary truncate">
-                    {workoutSummary.favoriteExercise || "None"}
-                  </span>
-                </div>
+              <div className="flex flex-col space-y-1">
+                <span className="text-sm text-muted-foreground">This Week</span>
+                <span className="text-2xl font-bold text-fitness-primary">{workoutSummary.thisWeekWorkouts}</span>
               </div>
-            )}
+              <div className="flex flex-col space-y-1">
+                <span className="text-sm text-muted-foreground">Total Time</span>
+                <span className="text-2xl font-bold text-fitness-primary">{formatDuration(workoutSummary.totalDuration)}</span>
+              </div>
+              <div className="flex flex-col space-y-1">
+                <span className="text-sm text-muted-foreground">Favorite Exercise</span>
+                <span className="text-lg font-bold text-fitness-primary truncate">
+                  {workoutSummary.favoriteExercise || "None"}
+                </span>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -124,9 +112,7 @@ const Dashboard = () => {
 
       
 
-      {loading ? (
-        <Skeleton className="h-48 w-full rounded-xl" />
-      ) : workoutSummary.totalWorkouts > 0 ? (
+      {workoutSummary.totalWorkouts > 0 ? (
         <div>
           {/* Weekly Recap Card - Full Width */}
           <WeeklyRecapCard />
