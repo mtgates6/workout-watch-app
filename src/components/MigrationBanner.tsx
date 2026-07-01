@@ -33,8 +33,8 @@ const MigrationBanner = ({ userId, onMigrated }: MigrationBannerProps) => {
     const localGoals = (healthData.goals || []).length;
     if (localWorkouts === 0 && localGoals === 0) return;
 
-    // Check if Supabase already has the data
-    supabase.from("workouts").select("id", { count: "exact", head: true }).eq("user_id", userUuid).then(({ count }) => {
+    // Check if Supabase already has the data (compare completed-only counts)
+    supabase.from("workouts").select("id", { count: "exact", head: true }).eq("user_id", userUuid).eq("completed", true).then(({ count }) => {
       if ((count ?? 0) < localWorkouts) setHasLocalData(true);
     });
   }, [userId]);
