@@ -130,6 +130,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (error) {
         console.error("Error loading workouts:", error);
       } else if (data) {
+        // Map the data to Workout objects, handling any mapping errors gracefully
         const mapped: Workout[] = [];
         for (const row of data) {
           try {
