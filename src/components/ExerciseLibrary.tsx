@@ -46,8 +46,10 @@ const ExerciseLibrary = () => {
   useEffect(() => {
     const userId = getUserUuid();
     if (!userId) return;
-    supabase.from("custom_exercises").select("*").eq("user_id", userId).then(({ data }) => {
-      if (data) {
+    supabase.from("custom_exercises").select("*").eq("user_id", userId).then(({ data, error }) => {
+      if (error) {
+        console.error("Failed to load custom exercises:", error);
+      } else if (data) {
         setCustomExercises(data.map(row => ({
           id: row.id,
           name: row.name,
@@ -76,11 +78,10 @@ const ExerciseLibrary = () => {
     };
     setCustomExercises(prev => [...prev, newExercise]);
     setNewExerciseName("");
-    toast({ title: "Exercise Created", description: `${trimmed} added to your library` });
 
     const userId = getUserUuid();
     if (userId) {
-      await supabase.from("custom_exercises").insert({
+      const { error } = await supabase.from("custom_exercises").insert({
         id: newExercise.id,
         name: newExercise.name,
         type: newExercise.type,
@@ -88,7 +89,13 @@ const ExerciseLibrary = () => {
         instructions: null,
         user_id: userId,
       });
+      if (error) {
+        setCustomExercises(prev => prev.filter(e => e.id !== newExercise.id));
+        toast({ title: "Failed to save exercise", description: error.message, variant: "destructive" });
+        return;
+      }
     }
+    toast({ title: "Exercise Created", description: `${trimmed} added to your library` });
   };
 
   const getExerciseHistory = (exercise: Exercise) => {
