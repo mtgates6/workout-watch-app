@@ -8,7 +8,7 @@ import { useWorkout } from "@/context/WorkoutContext";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Workout, Exercise } from "@/types/workout";
-import { exercises } from "@/data/exercises";
+import { useAllExercises } from "@/hooks/useAllExercises";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { DayCard } from "@/components/planner/DayCard";
@@ -32,6 +32,7 @@ const PlannerPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const exercises = useAllExercises();
   
   // Get the start of the current week (Sunday)
   const [weekStart, setWeekStart] = useState<Date>(() => {

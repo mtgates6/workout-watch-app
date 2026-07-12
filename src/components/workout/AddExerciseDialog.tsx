@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { Exercise, MuscleGroup } from "@/types/workout";
-import { exercises } from "@/data/exercises";
+import { useAllExercises } from "@/hooks/useAllExercises";
 import {
   Select,
   SelectContent,
@@ -40,6 +40,7 @@ export const AddExerciseDialog: React.FC<AddExerciseDialogProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<MuscleGroup | "all">("all");
+  const exercises = useAllExercises();
 
   const filteredExercises = exercises.filter(
     (exercise) =>

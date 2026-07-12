@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from "react";
-import { exercises as defaultExercises } from "@/data/exercises";
+import React, { useState } from "react";
+import { useAllExercises } from "@/hooks/useAllExercises";
 import { useWorkout } from "@/context/WorkoutContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -35,7 +35,7 @@ const ExerciseLibrary = () => {
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<MuscleGroup | "all">("all");
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [historyExercise, setHistoryExercise] = useState<Exercise | null>(null);
-  const [customExercises, setCustomExercises] = useState<Exercise[]>([]);
+  const [pendingExercises, setPendingExercises] = useState<Exercise[]>([]);
   const [newExerciseName, setNewExerciseName] = useState("");
   const [newExerciseMuscleGroup, setNewExerciseMuscleGroup] = useState<MuscleGroup>("chest");
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -43,25 +43,8 @@ const ExerciseLibrary = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const userId = getUserUuid();
-    if (!userId) return;
-    supabase.from("custom_exercises").select("*").eq("user_id", userId).then(({ data, error }) => {
-      if (error) {
-        console.error("Failed to load custom exercises:", error);
-      } else if (data) {
-        setCustomExercises(data.map(row => ({
-          id: row.id,
-          name: row.name,
-          type: row.type as Exercise["type"],
-          muscleGroups: row.muscle_groups as MuscleGroup[],
-          instructions: row.instructions ?? undefined,
-        })));
-      }
-    });
-  }, []);
-
-  const exercises = [...defaultExercises, ...customExercises];
+  const loadedExercises = useAllExercises();
+  const exercises = [...loadedExercises, ...pendingExercises];
 
   const handleCreateExercise = async () => {
     const trimmed = newExerciseName.trim();
@@ -76,7 +59,7 @@ const ExerciseLibrary = () => {
       type: "strength",
       muscleGroups: [newExerciseMuscleGroup],
     };
-    setCustomExercises(prev => [...prev, newExercise]);
+    setPendingExercises(prev => [...prev, newExercise]);
     setNewExerciseName("");
 
     const userId = getUserUuid();
@@ -90,7 +73,7 @@ const ExerciseLibrary = () => {
         user_id: userId,
       });
       if (error) {
-        setCustomExercises(prev => prev.filter(e => e.id !== newExercise.id));
+        setPendingExercises(prev => prev.filter(e => e.id !== newExercise.id));
         toast({ title: "Failed to save exercise", description: error.message, variant: "destructive" });
         return;
       }
