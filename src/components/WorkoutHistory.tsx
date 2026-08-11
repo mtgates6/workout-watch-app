@@ -25,7 +25,7 @@ const WorkoutHistory = () => {
   const { toast } = useToast();
   const completedWorkouts = workouts.filter((workout) => workout.completed);
   const [editWorkoutName, setEditWorkoutName] = useState("");
-  const [editingWorkout, setEditingWorkout] = useState(null);
+  const [editingWorkout, setEditingWorkout] = useState<Workout | null>(null);
   const isMobile = useIsMobile();
   const [mobileExerciseModal, setMobileExerciseModal] = useState<{open: boolean, exerciseItem?: any}>({open: false});
   const [searchQuery, setSearchQuery] = useState("");
@@ -245,14 +245,22 @@ const WorkoutHistory = () => {
                       <Button
                         variant="outline"
                         size="sm"
+                        onClick={() => handleEditWorkout(workout)}
+                        className="flex items-center gap-1"
+                      >
+                        <Pencil className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => handleShareWorkout(workout)}
                         className="flex items-center gap-1"
                       >
                         <Share2 className="h-3 w-3" />
                       </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => handleRepeatWorkout(workout)}
                         className="flex items-center gap-1"
                       >
@@ -412,6 +420,31 @@ const WorkoutHistory = () => {
           onOpenChange={(open) => !open && setRecapWorkout(null)}
         />
       )}
+
+      {/* Edit Workout Name Dialog */}
+      <Dialog open={!!editingWorkout} onOpenChange={(open) => !open && setEditingWorkout(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rename Workout</DialogTitle>
+          </DialogHeader>
+          <Input
+            value={editWorkoutName}
+            onChange={(e) => setEditWorkoutName(e.target.value)}
+            placeholder="Workout name"
+            autoFocus
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSaveWorkoutName();
+              if (e.key === "Escape") setEditingWorkout(null);
+            }}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingWorkout(null)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveWorkoutName}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
