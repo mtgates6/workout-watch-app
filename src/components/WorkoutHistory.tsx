@@ -233,7 +233,14 @@ const WorkoutHistory = () => {
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle>{workout.name}</CardTitle>
+                      <button
+                        type="button"
+                        onClick={() => handleEditWorkout(workout)}
+                        className="group flex items-center gap-1.5 text-left"
+                      >
+                        <CardTitle>{workout.name}</CardTitle>
+                        <Pencil className="h-3 w-3 text-muted-foreground opacity-50 group-hover:opacity-100 transition-opacity" />
+                      </button>
                       <div className="flex items-center mt-1 text-muted-foreground text-sm">
                         <CalendarIcon className="mr-1 h-3 w-3" />
                         <span>{format(new Date(workout.date), "MMMM dd, yyyy")}</span>
@@ -242,14 +249,6 @@ const WorkoutHistory = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEditWorkout(workout)}
-                        className="flex items-center gap-1"
-                      >
-                        <Pencil className="h-3 w-3" />
-                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
